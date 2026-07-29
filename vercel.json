@@ -3,7 +3,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/|fonts/|images/|models/|favicon\\.svg|icons\\.svg|a11y-widget\\.(css|js)).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
