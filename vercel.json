@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/((?!assets/|fonts/|images/|models/|favicon\\.svg|icons\\.svg|a11y-widget\\.(css|js)).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
