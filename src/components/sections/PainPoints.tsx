@@ -13,6 +13,20 @@ import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion
 
 gsap.registerPlugin(ScrollTrigger)
 
+const MOBILE_DECK_MQ = '(max-width: 767px)'
+
+function isMobileDeckViewport() {
+  return window.matchMedia(MOBILE_DECK_MQ).matches
+}
+
+function isIOSDevice() {
+  if (typeof navigator === 'undefined') return false
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  )
+}
+
 const pains: {
   title: string
   text: string
@@ -459,6 +473,17 @@ function PainPointsDeck({
       const cards = gsap.utils.toArray<HTMLElement>('[data-deck-card]', stack)
       if (cards.length < 2) return
 
+      const isMobile = isMobileDeckViewport()
+      const useFixedPin = isMobile || isIOSDevice()
+      const stageHeight = Math.round(stack.getBoundingClientRect().height)
+      const usePixelCards = useFixedPin && stageHeight > 0
+
+      pin.classList.toggle('pain-points-deck-pin--mobile', isMobile)
+
+      if (useFixedPin) {
+        ScrollTrigger.config({ ignoreMobileResize: true })
+      }
+
       const glow = pin.querySelector<HTMLElement>('[data-deck-glow]')
       const orbit = pin.querySelector<HTMLElement>('[data-deck-orbit]')
       const beam = pin.querySelector<HTMLElement>('[data-deck-beam]')
@@ -489,8 +514,10 @@ function PainPointsDeck({
           visibility: 'visible',
         })
 
-        cardYSetters = cards.map(
-          (card) => gsap.quickSetter(card, 'yPercent') as (value: number) => void,
+        cardYSetters = cards.map((card) =>
+          usePixelCards
+            ? (gsap.quickSetter(card, 'y', 'px') as (value: number) => void)
+            : (gsap.quickSetter(card, 'yPercent') as (value: number) => void),
         )
 
         if (ctaReveal) {
@@ -519,7 +546,9 @@ function PainPointsDeck({
         }
 
         const updateDeck = (progress: number) => {
-          pin.style.setProperty('--deck-progress', progress.toFixed(4))
+          if (!isMobile) {
+            pin.style.setProperty('--deck-progress', progress.toFixed(4))
+          }
 
           const idx = Math.min(Math.round(progress * (count - 1)), count - 1)
 
@@ -538,10 +567,16 @@ function PainPointsDeck({
               (progress - segmentStart) / segmentSpan,
             )
 
-            cardYSetters[i](Math.round((100 - local * 100) * 10) / 10)
+            if (usePixelCards) {
+              cardYSetters[i](Math.round((1 - local) * stageHeight))
+            } else {
+              cardYSetters[i](Math.round((100 - local * 100) * 10) / 10)
+            }
           })
 
-          pin.style.setProperty('--deck-index', String(idx))
+          if (!isMobile || idx !== activeIndexRef.current) {
+            pin.style.setProperty('--deck-index', String(idx))
+          }
           if (mounted) updateDisplayIndex(idx)
         }
 
@@ -566,7 +601,10 @@ function PainPointsDeck({
               opacity: deckFade,
               y: deckLift,
               scale: deckScale,
-              filter: ctaProgress > 0.05 ? `blur(${ctaProgress * 4}px)` : 'none',
+              filter:
+                !isMobile && ctaProgress > 0.05
+                  ? `blur(${ctaProgress * 4}px)`
+                  : 'none',
               pointerEvents: deckFade > 0.35 ? 'auto' : 'none',
             })
           }
@@ -578,7 +616,10 @@ function PainPointsDeck({
               opacity: revealIn,
               scale: 0.9 + revealIn * 0.1,
               y: 48 - revealIn * 48,
-              filter: revealIn < 1 ? `blur(${(1 - revealIn) * 10}px)` : 'none',
+              filter:
+                !isMobile && revealIn < 1
+                  ? `blur(${(1 - revealIn) * 10}px)`
+                  : 'none',
               pointerEvents: revealIn > 0.92 ? 'auto' : 'none',
             })
 
@@ -614,26 +655,46 @@ function PainPointsDeck({
         cards.forEach((card, i) => {
           gsap.set(card, {
             zIndex: i + 1,
-            yPercent: i === 0 ? 0 : 100,
+            y: usePixelCards ? (i === 0 ? 0 : stageHeight) : 0,
+            yPercent: usePixelCards ? 0 : i === 0 ? 0 : 100,
             scale: 1,
             rotation: 0,
             filter: 'none',
           })
         })
 
-        ScrollTrigger.create({
+        const scrollConfig: ScrollTrigger.Vars = {
           trigger: pin,
-          start: 'top 18%',
+          start: isMobile ? 'top 14%' : 'top 18%',
           end: `+=${totalScrollDistance}`,
           pin: true,
           pinSpacing: true,
-          pinType: 'transform',
-          scrub: 0.75,
-          anticipatePin: 1,
+          pinType: useFixedPin ? 'fixed' : 'transform',
+          scrub: isMobile ? true : 0.75,
+          anticipatePin: isMobile ? 0 : 1,
           invalidateOnRefresh: true,
-          fastScrollEnd: true,
+          fastScrollEnd: !isMobile,
           onUpdate: (self) => updateAll(self.progress),
-        })
+        }
+
+        if (isMobile) {
+          scrollConfig.snap = {
+            snapTo: (value: number) => {
+              if (value <= cardPhaseEnd) {
+                const steps = count - 1
+                const normalized = value / cardPhaseEnd
+                const snapped = Math.round(normalized * steps) / steps
+                return snapped * cardPhaseEnd
+              }
+              return value
+            },
+            duration: { min: 0.18, max: 0.42 },
+            delay: 0.02,
+            ease: 'power1.inOut',
+          }
+        }
+
+        ScrollTrigger.create(scrollConfig)
 
         updateAll(0)
 
@@ -668,7 +729,7 @@ function PainPointsDeck({
       resizeTimer = window.setTimeout(() => {
         setup()
         refresh()
-      }, 150)
+      }, isMobileDeckViewport() ? 280 : 150)
     }
     window.addEventListener('resize', onResize)
 

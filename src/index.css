@@ -183,6 +183,32 @@
     flex-direction: column;
     overflow: clip;
     touch-action: pan-y;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .pain-points-deck-pin--mobile {
+      transform: translateZ(0);
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-scene {
+      display: none;
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-viewport,
+    .pain-points-deck-pin--mobile .pain-points-deck-cta-reveal {
+      will-change: auto;
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-stack {
+      transform: translateZ(0);
+    }
+
+    .pain-points-deck-pin--mobile .pain-point-card--deck {
+      will-change: transform;
+      -webkit-transform: translateZ(0);
+    }
   }
 
   .pain-points-deck-header {
