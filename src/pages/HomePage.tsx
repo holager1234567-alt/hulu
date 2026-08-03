@@ -31,6 +31,8 @@ type HomeContentProps = {
 function BenefitsSection() {
   useEffect(() => {
     scheduleScrollTriggerRefresh(120)
+    scheduleScrollTriggerRefresh(600)
+    scheduleScrollTriggerRefresh(1200)
   }, [])
 
   return <Benefits />
@@ -59,9 +61,7 @@ function HomeContent({ isFirstReveal }: HomeContentProps) {
         <SectionDivider variant="gradient-line" tone="to-surface" />
         <Portfolio />
         <SectionDivider variant="diagonal" flip tone="to-process" />
-        <SectionWrapper reveal parallax>
-          <Process />
-        </SectionWrapper>
+        <Process />
         <SectionDivider variant="gradient-line" tone="to-surface" />
         <SectionWrapper reveal>
           <Faq />

@@ -626,9 +626,11 @@ function PainPointsDeck({
           start: 'top 18%',
           end: `+=${totalScrollDistance}`,
           pin: true,
+          pinSpacing: true,
           scrub: 0.45,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          fastScrollEnd: true,
           onUpdate: (self) => updateAll(self.progress),
         })
 

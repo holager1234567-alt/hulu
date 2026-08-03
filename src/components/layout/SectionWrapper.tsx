@@ -59,7 +59,7 @@ export function SectionWrapper({
 
   useEffect(() => {
     if (reduced || !reveal) return
-    const timer = window.setTimeout(() => setRevealFallback(true), 2000)
+    const timer = window.setTimeout(() => setRevealFallback(true), 1200)
     return () => window.clearTimeout(timer)
   }, [reduced, reveal])
 
@@ -74,10 +74,8 @@ export function SectionWrapper({
       {enableParallax && <SectionParallaxBg wrapRef={wrapRef} />}
       <motion.div
         className="section-wrapper-inner"
-        initial={reveal && !reduced ? { opacity: 0, y: 36 } : false}
-        animate={
-          shouldReveal ? { opacity: 1, y: 0 } : { opacity: 0, y: 36 }
-        }
+        initial={reveal && !reduced ? { opacity: 0 } : false}
+        animate={shouldReveal ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.75, ease: EASE }}
       >
         {children}

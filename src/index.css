@@ -62,7 +62,7 @@
   }
 
   .site-main {
-    padding-bottom: 5.5rem;
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   @media (min-width: 768px) {
@@ -4803,10 +4803,29 @@
     }
   }
 
+  /* GSAP pin spacers inherit section backgrounds to avoid white scroll gaps */
+  .pin-spacer:has(.benefits-section) {
+    background-color: #fdfbf7;
+  }
+
+  .pin-spacer:has(.pain-points-deck-pin) {
+    background-color: #fdfbf7;
+  }
+
+  .dark .pin-spacer:has(.benefits-section),
+  .dark .pin-spacer:has(.pain-points-deck-pin) {
+    background-color: #121012;
+  }
+
   /* ── Benefits: pinned circuit timeline ── */
   .benefits-section {
     isolation: isolate;
     touch-action: pan-y;
+    background-color: #fdfbf7;
+  }
+
+  .dark .benefits-section {
+    background-color: #121012;
   }
 
   .benefits-flash {

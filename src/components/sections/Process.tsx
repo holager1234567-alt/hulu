@@ -124,6 +124,12 @@ export function Process() {
     return () => ctx.revert()
   }, [reduced])
 
+  useEffect(() => {
+    if (reduced) return
+    scheduleScrollTriggerRefresh(400)
+    scheduleScrollTriggerRefresh(1000)
+  }, [reduced])
+
   const progressNum = String(activeStep + 1).padStart(2, '0')
   const progressTotal = String(steps.length).padStart(2, '0')
 
