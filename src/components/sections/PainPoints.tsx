@@ -1,4 +1,12 @@
-import { useEffect, useLayoutEffect, useRef, useState, forwardRef, type RefObject } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  forwardRef,
+  type CSSProperties,
+  type RefObject,
+} from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -436,6 +444,7 @@ function PainPointsDeck({
   showHeadline: boolean
 }) {
   const pinRef = useRef<HTMLDivElement>(null)
+  const scrollTrackRef = useRef<HTMLDivElement>(null)
   const stackRef = useRef<HTMLDivElement>(null)
   const deckContentRef = useRef<HTMLDivElement>(null)
   const ctaRevealRef = useRef<HTMLDivElement>(null)
@@ -449,6 +458,7 @@ function PainPointsDeck({
 
     const pin = pinRef.current
     const stack = stackRef.current
+    const scrollTrack = scrollTrackRef.current
     if (!pin || !stack) return
 
     let ctx: gsap.Context | undefined
@@ -481,35 +491,34 @@ function PainPointsDeck({
 
       const isMobile = isMobileDeckViewport()
       const stageHeight = Math.round(stack.getBoundingClientRect().height)
-      const usePixelCards = isMobile && stageHeight > 0
+      const usePixelCards = stageHeight > 0
       const viewportHeight = getViewportHeight()
       const deckScrollVh = isMobile ? DECK_SCROLL_VH_MOBILE : DECK_SCROLL_VH
       const ctaScrollVh = isMobile ? DECK_CTA_SCROLL_VH_MOBILE : DECK_CTA_SCROLL_VH
+      const count = cards.length
+      const cardSteps = count - 1
 
       pin.classList.toggle('pain-points-deck-pin--mobile', isMobile)
+      pin.style.setProperty('--deck-card-count', String(count))
 
-      const glow = pin.querySelector<HTMLElement>('[data-deck-glow]')
-      const orbit = pin.querySelector<HTMLElement>('[data-deck-orbit]')
-      const beam = pin.querySelector<HTMLElement>('[data-deck-beam]')
-      const grid = pin.querySelector<HTMLElement>('[data-deck-grid]')
       const ctaReveal = ctaRevealRef.current
       const deckContent = deckContentRef.current
       const hint = hintRef.current
       const display = displayRef.current
 
-      ctx = gsap.context(() => {
-        const count = cards.length
-        const cardSteps = count - 1
+      const localCtx = gsap.context(() => {
         const cardScrollDistance = Math.round(
           viewportHeight * deckScrollVh * cardSteps,
         )
         const minCardScroll = Math.round(
-          viewportHeight * (isMobile ? 3.4 : 2.2),
+          viewportHeight * (isMobile ? 4.6 : 2.2),
         )
         const cardScrollDistanceFinal = Math.max(cardScrollDistance, minCardScroll)
         const ctaScrollDistance = Math.round(viewportHeight * ctaScrollVh)
         const totalScrollDistance = cardScrollDistanceFinal + ctaScrollDistance
-        const cardPhaseEnd = cardScrollDistanceFinal / totalScrollDistance
+        const cardPhaseEnd = isMobile
+          ? (count * 80) / (count * 80 + 56)
+          : cardScrollDistanceFinal / totalScrollDistance
 
         gsap.set(cards, {
           position: 'absolute',
@@ -530,13 +539,13 @@ function PainPointsDeck({
         if (ctaReveal) {
           gsap.set(ctaReveal, {
             opacity: 0,
-            scale: 0.9,
-            y: 48,
-            filter: 'blur(10px)',
+            scale: 0.98,
+            y: 32,
+            filter: 'none',
             pointerEvents: 'none',
           })
           gsap.utils.toArray<HTMLElement>('[data-cta-part]', ctaReveal).forEach((part) => {
-            gsap.set(part, { opacity: 0, y: 18 })
+            gsap.set(part, { opacity: 0, y: 12 })
           })
         }
         if (deckContent) {
@@ -552,39 +561,54 @@ function PainPointsDeck({
           gsap.set(display, { opacity: 1 })
         }
 
+        const setCardY = (index: number, value: number) => {
+          if (usePixelCards) {
+            cardYSetters[index](Math.round(value))
+          } else {
+            cardYSetters[index](Math.round(value * 10) / 10)
+          }
+        }
+
         const updateDeck = (progress: number) => {
           if (!isMobile) {
             pin.style.setProperty('--deck-progress', progress.toFixed(4))
           }
 
-          const idx = Math.min(Math.round(progress * (count - 1)), count - 1)
+          const exact = progress * cardSteps
+          const idx = Math.min(Math.floor(exact + 0.0001), cardSteps)
+          const local = gsap.utils.clamp(0, 1, exact - idx)
 
           cards.forEach((_card, i) => {
-            if (i === 0) {
-              cardYSetters[i](0)
+            if (usePixelCards) {
+              if (i <= idx) {
+                setCardY(i, 0)
+              } else if (i === idx + 1) {
+                setCardY(i, (1 - local) * stageHeight)
+              } else {
+                setCardY(i, stageHeight)
+              }
               return
             }
 
-            const segmentStart = (i - 1) / (count - 1)
-            const segmentEnd = i / (count - 1)
+            if (i === 0) {
+              setCardY(i, 0)
+              return
+            }
+
+            const segmentStart = (i - 1) / cardSteps
+            const segmentEnd = i / cardSteps
             const segmentSpan = segmentEnd - segmentStart || 1
-            const local = gsap.utils.clamp(
+            const segmentLocal = gsap.utils.clamp(
               0,
               1,
               (progress - segmentStart) / segmentSpan,
             )
-
-            if (usePixelCards) {
-              cardYSetters[i](Math.round((1 - local) * stageHeight))
-            } else {
-              cardYSetters[i](Math.round((100 - local * 100) * 10) / 10)
-            }
+            setCardY(i, 100 - segmentLocal * 100)
           })
 
-          if (!isMobile || idx !== activeIndexRef.current) {
-            pin.style.setProperty('--deck-index', String(idx))
-          }
-          if (mounted) updateDisplayIndex(idx)
+          const displayIdx = local > 0.35 ? Math.min(idx + 1, cardSteps) : idx
+          pin.style.setProperty('--deck-index', String(displayIdx))
+          if (mounted) updateDisplayIndex(displayIdx)
         }
 
         const updateReveal = (totalProgress: number) => {
@@ -600,18 +624,15 @@ function PainPointsDeck({
           pin.style.setProperty('--deck-cta-progress', ctaProgress.toFixed(4))
 
           const deckFade = 1 - gsap.utils.clamp(0, 1, ctaProgress * 2.8)
-          const deckLift = ctaProgress * -28
-          const deckScale = 1 - ctaProgress * 0.06
+          const deckLift = ctaProgress * -20
+          const deckScale = 1 - ctaProgress * 0.04
 
           if (deckContent) {
             gsap.set(deckContent, {
               opacity: deckFade,
               y: deckLift,
               scale: deckScale,
-              filter:
-                !isMobile && ctaProgress > 0.05
-                  ? `blur(${ctaProgress * 4}px)`
-                  : 'none',
+              filter: 'none',
               pointerEvents: deckFade > 0.35 ? 'auto' : 'none',
             })
           }
@@ -621,12 +642,9 @@ function PainPointsDeck({
           if (ctaReveal) {
             gsap.set(ctaReveal, {
               opacity: revealIn,
-              scale: 0.9 + revealIn * 0.1,
-              y: 48 - revealIn * 48,
-              filter:
-                !isMobile && revealIn < 1
-                  ? `blur(${(1 - revealIn) * 10}px)`
-                  : 'none',
+              scale: 0.98 + revealIn * 0.02,
+              y: 32 - revealIn * 32,
+              filter: 'none',
               pointerEvents: revealIn > 0.92 ? 'auto' : 'none',
             })
 
@@ -635,7 +653,7 @@ function PainPointsDeck({
               const partIn = gsap.utils.clamp(0, 1, (revealIn - i * 0.12) / 0.72)
               gsap.set(part, {
                 opacity: partIn,
-                y: (1 - partIn) * 18,
+                y: (1 - partIn) * 12,
               })
             })
           }
@@ -670,45 +688,83 @@ function PainPointsDeck({
           })
         })
 
-        const scrollConfig: ScrollTrigger.Vars = {
-          trigger: pin,
-          start: isMobile ? 'top 14%' : 'top 18%',
-          end: () => {
-            const vh = getViewportHeight()
-            const cardDist = Math.max(
-              Math.round(vh * deckScrollVh * cardSteps),
-              Math.round(vh * (isMobile ? 3.4 : 2.2)),
-            )
-            const ctaDist = Math.round(vh * ctaScrollVh)
-            return `+=${cardDist + ctaDist}`
-          },
-          pin: true,
-          pinSpacing: true,
-          pinType: 'transform',
-          scrub: isMobile ? 0.35 : 0.75,
-          anticipatePin: isMobile ? 0 : 1,
-          invalidateOnRefresh: true,
-          fastScrollEnd: !isMobile,
-          onUpdate: (self) => updateAll(self.progress),
-        }
+        if (isMobile && scrollTrack) {
+          let scrollRaf = 0
 
-        ScrollTrigger.create(scrollConfig)
+          const readMobileProgress = () => {
+            const rect = scrollTrack.getBoundingClientRect()
+            const trackHeight = scrollTrack.offsetHeight
+            const vh = getViewportHeight()
+            const range = trackHeight - vh
+            if (range <= 0) return 0
+            return gsap.utils.clamp(0, 1, -rect.top / range)
+          }
+
+          const onMobileScroll = () => {
+            if (scrollRaf) return
+            scrollRaf = requestAnimationFrame(() => {
+              scrollRaf = 0
+              updateAll(readMobileProgress())
+            })
+          }
+
+          onMobileScroll()
+          window.addEventListener('scroll', onMobileScroll, { passive: true })
+          window.visualViewport?.addEventListener('scroll', onMobileScroll, {
+            passive: true,
+          })
+
+          localCtx.add(() => {
+            if (scrollRaf) cancelAnimationFrame(scrollRaf)
+            window.removeEventListener('scroll', onMobileScroll)
+            window.visualViewport?.removeEventListener('scroll', onMobileScroll)
+          })
+        } else {
+          ScrollTrigger.create({
+            trigger: pin,
+            start: 'top 18%',
+            end: () => {
+              const vh = getViewportHeight()
+              const cardDist = Math.max(
+                Math.round(vh * deckScrollVh * cardSteps),
+                Math.round(vh * 2.2),
+              )
+              const ctaDist = Math.round(vh * ctaScrollVh)
+              return `+=${cardDist + ctaDist}`
+            },
+            pin: true,
+            pinSpacing: true,
+            pinType: 'transform',
+            scrub: 0.75,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            fastScrollEnd: true,
+            onUpdate: (self) => updateAll(self.progress),
+          })
+
+          const glow = pin.querySelector<HTMLElement>('[data-deck-glow]')
+          const orbit = pin.querySelector<HTMLElement>('[data-deck-orbit]')
+          const beam = pin.querySelector<HTMLElement>('[data-deck-beam]')
+          const grid = pin.querySelector<HTMLElement>('[data-deck-grid]')
+
+          if (glow) {
+            gsap.set(glow, { opacity: 0.35, scale: 0.88 })
+          }
+          if (orbit) {
+            gsap.set(orbit, { rotate: 0, opacity: 0.25 })
+          }
+          if (beam) {
+            gsap.set(beam, { yPercent: -35, opacity: 0.15 })
+          }
+          if (grid) {
+            gsap.set(grid, { opacity: 0.12, scale: 1 })
+          }
+        }
 
         updateAll(0)
-
-        if (glow) {
-          gsap.set(glow, { opacity: 0.35, scale: 0.88 })
-        }
-        if (orbit) {
-          gsap.set(orbit, { rotate: 0, opacity: 0.25 })
-        }
-        if (beam) {
-          gsap.set(beam, { yPercent: -35, opacity: 0.15 })
-        }
-        if (grid) {
-          gsap.set(grid, { opacity: 0.12, scale: 1 })
-        }
       }, pin)
+
+      ctx = localCtx
 
       pin.style.setProperty('--deck-progress', '0')
       pin.style.setProperty('--deck-index', '0')
@@ -755,7 +811,11 @@ function PainPointsDeck({
   }, [reduced])
 
   return (
-    <div ref={pinRef} className="pain-points-deck-pin">
+    <div
+      ref={pinRef}
+      className="pain-points-deck-pin"
+      style={{ '--deck-card-count': pains.length } as CSSProperties}
+    >
       <div className="pain-points-deck-scene" aria-hidden>
         <div className="pain-points-deck-scene-grid" data-deck-grid />
         <div className="pain-points-deck-scene-glow" data-deck-glow />
@@ -768,30 +828,34 @@ function PainPointsDeck({
         showHeadline={showHeadline}
         deckPinned
       />
-      <div className="pain-points-deck-body">
-        <div ref={deckContentRef} className="pain-points-deck-viewport">
-          <div ref={displayRef} className="pain-points-deck-display-shell">
-            <DeckDisplayNumber displayNumRef={displayNumRef} />
-          </div>
-          <div className="pain-points-deck-stage">
-            <div ref={stackRef} className="pain-points-deck-stack">
-              {pains.map((pain, i) => (
-                <DeckPainCard key={pain.title} pain={pain} index={i} />
-              ))}
+      <div ref={scrollTrackRef} className="pain-points-deck-scroll-track">
+        <div className="pain-points-deck-sticky">
+          <div className="pain-points-deck-body">
+            <div ref={deckContentRef} className="pain-points-deck-viewport">
+              <div ref={displayRef} className="pain-points-deck-display-shell">
+                <DeckDisplayNumber displayNumRef={displayNumRef} />
+              </div>
+              <div className="pain-points-deck-stage">
+                <div ref={stackRef} className="pain-points-deck-stack">
+                  {pains.map((pain, i) => (
+                    <DeckPainCard key={pain.title} pain={pain} index={i} />
+                  ))}
+                </div>
+              </div>
+              <p
+                ref={hintRef}
+                className="pain-points-deck-hint font-mono-tech"
+                aria-hidden
+              >
+                גללו ↓
+              </p>
+            </div>
+
+            <div ref={ctaRevealRef} className="pain-points-deck-cta-reveal">
+              <div className="pain-points-deck-cta-reveal-glow" aria-hidden />
+              <PainPointsCta reveal className="pain-points-deck-cta-reveal-card" />
             </div>
           </div>
-          <p
-            ref={hintRef}
-            className="pain-points-deck-hint font-mono-tech"
-            aria-hidden
-          >
-            גללו ↓
-          </p>
-        </div>
-
-        <div ref={ctaRevealRef} className="pain-points-deck-cta-reveal">
-          <div className="pain-points-deck-cta-reveal-glow" aria-hidden />
-          <PainPointsCta reveal className="pain-points-deck-cta-reveal-card" />
         </div>
       </div>
     </div>

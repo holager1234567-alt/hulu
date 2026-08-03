@@ -187,18 +187,53 @@
     backface-visibility: hidden;
   }
 
+  .pain-points-deck-scroll-track {
+    position: relative;
+    width: 100%;
+  }
+
+  .pain-points-deck-sticky {
+    position: relative;
+    width: 100%;
+  }
+
   @media (max-width: 767px) {
     .pain-points-deck-pin--mobile {
+      overflow: visible;
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-scroll-track {
+      height: calc(var(--deck-card-count) * 80svh + 56svh);
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-sticky {
+      position: sticky;
+      top: max(4.25rem, 10svh);
+      display: flex;
+      height: calc(100svh - max(4.25rem, 10svh));
+      flex-direction: column;
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-body {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-viewport {
+      will-change: auto;
+      min-height: 0;
+      flex: 1;
+      justify-content: center;
       transform: translateZ(0);
+    }
+
+    .pain-points-deck-pin--mobile .pain-points-deck-cta-reveal {
+      will-change: auto;
     }
 
     .pain-points-deck-pin--mobile .pain-points-deck-scene {
       display: none;
-    }
-
-    .pain-points-deck-pin--mobile .pain-points-deck-viewport,
-    .pain-points-deck-pin--mobile .pain-points-deck-cta-reveal {
-      will-change: auto;
     }
 
     .pain-points-deck-pin--mobile .pain-points-deck-stack {
@@ -207,7 +242,13 @@
 
     .pain-points-deck-pin--mobile .pain-point-card--deck {
       will-change: transform;
-      -webkit-transform: translateZ(0);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .pain-points-deck-scroll-track,
+    .pain-points-deck-sticky {
+      height: auto;
     }
   }
 
