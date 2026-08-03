@@ -35,9 +35,7 @@ function HomeContent({ isFirstReveal }: HomeContentProps) {
           isFirstReveal={isFirstReveal}
         />
         <SectionDivider variant="wave" tone="to-surface" />
-        <SectionWrapper reveal>
-          <PainPoints />
-        </SectionWrapper>
+        <PainPoints />
         <SectionDivider variant="gradient-line" />
         <Suspense fallback={<div className="benefits-section min-h-svh" aria-hidden />}>
           <Benefits />

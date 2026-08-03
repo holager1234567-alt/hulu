@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion'
-import { MessageCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { LeadQualificationForm } from '@/components/forms/LeadQualificationForm'
 import { EASE, fadeUpScale, viewportOnce } from '@/lib/motion'
-import { WHATSAPP_CONTACT_MESSAGE, whatsAppUrl } from '@/lib/whatsapp'
 
 export function Contact() {
   return (
@@ -19,7 +17,7 @@ export function Contact() {
             בואו נבנה אתר שיעבוד בשבילך ושיתן לך תוצאות
           </h2>
           <p className="mt-4 text-lg text-white/65">
-            כתבו לי בוואטסאפ ונתחיל לדבר.
+            מלאו את הטופס הקצר ונמשיך ישר ל-WhatsApp.
           </p>
 
           <motion.div
@@ -27,27 +25,9 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={viewportOnce}
             transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
-            className="contact-glass-wrap tech-corners tech-corners-light mx-auto mt-10 md:mt-12"
+            className="mx-auto mt-10 max-w-xl md:mt-12"
           >
-            <Button
-              asChild
-              variant="burgundy"
-              size="lg"
-              className="btn-icon-slide h-14 rounded-full px-10 text-lg shadow-elevated"
-            >
-              <a
-                href={whatsAppUrl(WHATSAPP_CONTACT_MESSAGE)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageCircle
-                  className="h-5 w-5"
-                  strokeWidth={1.5}
-                  data-icon
-                />
-                שלחו הודעה בוואטסאפ
-              </a>
-            </Button>
+            <LeadQualificationForm />
           </motion.div>
         </motion.div>
       </div>
