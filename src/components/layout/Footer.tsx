@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Logo } from '@/components/layout/Logo'
 
 const quickLinks = [
@@ -42,6 +43,12 @@ export function Footer() {
           <p className="text-xs text-muted dark:text-white/40">
             © {new Date().getFullYear()} הולו. כל הזכויות שמורות.
           </p>
+          <Link
+            to="/privacy-policy"
+            className="text-sm text-muted hover:underline dark:text-white/40"
+          >
+            מדיניות פרטיות
+          </Link>
           <p className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted/90 dark:text-white/35">
             <span>אתר זה נבנה על ידי</span>
             <Logo className="h-4 w-auto opacity-75 md:h-[1.125rem]" />

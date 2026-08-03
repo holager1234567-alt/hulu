@@ -2479,3 +2479,29 @@
     }
   }
 }
+
+@layer components {
+  .privacy-heading {
+    @apply mb-4 text-2xl font-bold text-primary dark:text-white;
+  }
+
+  .privacy-subheading {
+    @apply mb-3 mt-6 text-lg font-semibold text-primary dark:text-white;
+  }
+
+  .privacy-list {
+    @apply mt-3 list-disc space-y-2 pr-6 marker:text-burgundy dark:marker:text-gold;
+  }
+
+  .privacy-list-plain {
+    @apply list-none pr-0;
+  }
+
+  .privacy-link {
+    @apply text-burgundy underline underline-offset-2 transition-colors hover:text-burgundy/80 dark:text-gold dark:hover:text-gold/80;
+  }
+
+  .privacy-code {
+    @apply rounded bg-neutral-100 px-1.5 py-0.5 text-sm dark:bg-white/10;
+  }
+}
