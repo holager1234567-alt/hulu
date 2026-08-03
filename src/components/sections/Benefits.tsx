@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useLayoutEffect, useRef, useState, useCallback, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
+import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import { EASE } from '@/lib/motion'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -84,129 +86,180 @@ export function Benefits() {
   const pathRef = useRef<SVGPathElement>(null)
   const measurePathRef = useRef<SVGPathElement>(null)
   const glowPathRef = useRef<SVGPathElement>(null)
+  const cursorRef = useRef<HTMLDivElement>(null)
   const prevStepRef = useRef(0)
+  const mountedRef = useRef(true)
+  const pulseTimersRef = useRef<number[]>([])
 
   const reduced = useReducedMotion()
   const isMobile = useIsMobile()
 
   const [activeStep, setActiveStep] = useState(0)
-  const [tip, setTip] = useState({ x: 5, y: 54 })
   const [stations, setStations] = useState<{ x: number; y: number }[]>([])
   const [pulseStep, setPulseStep] = useState<number | null>(null)
   const [flash, setFlash] = useState(false)
+  const [timelineReady, setTimelineReady] = useState(false)
 
   const pathD = isMobile ? MOBILE_PATH : DESKTOP_PATH
   const viewW = isMobile ? MOBILE_VIEW.w : DESKTOP_VIEW.w
   const viewH = isMobile ? MOBILE_VIEW.h : DESKTOP_VIEW.h
 
   const triggerStepPulse = useCallback((stepIndex: number) => {
+    pulseTimersRef.current.forEach((timerId) => window.clearTimeout(timerId))
+    pulseTimersRef.current = []
+
+    if (!mountedRef.current) return
+
     setPulseStep(stepIndex)
     setFlash(true)
-    window.setTimeout(() => setPulseStep(null), 700)
-    window.setTimeout(() => setFlash(false), 400)
+    pulseTimersRef.current.push(
+      window.setTimeout(() => {
+        if (mountedRef.current) setPulseStep(null)
+      }, 700),
+      window.setTimeout(() => {
+        if (mountedRef.current) setFlash(false)
+      }, 400),
+    )
   }, [])
 
   useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      pulseTimersRef.current.forEach((timerId) => window.clearTimeout(timerId))
+      pulseTimersRef.current = []
+    }
+  }, [])
+
+  useLayoutEffect(() => {
     if (reduced) return
 
     const el = sectionRef.current
     const path = pathRef.current
     const measure = measurePathRef.current
     const glow = glowPathRef.current
+    const cursor = cursorRef.current
     if (!el || !path || !measure) return
 
-    const length = path.getTotalLength()
+    let ctx: gsap.Context | undefined
+    let mounted = true
 
-    setStations(
-      standardsData.map((_, index) => {
+    const setup = () => {
+      ctx?.revert()
+
+      const length = measure.getTotalLength()
+      const nextStations = standardsData.map((_, index) => {
         const t = index / (standardsData.length - 1)
         const point = measure.getPointAtLength(t * length)
         return {
           x: (point.x / viewW) * 100,
           y: (point.y / viewH) * 100,
         }
-      }),
-    )
+      })
 
-    gsap.set(path, {
-      strokeDasharray: length,
-      strokeDashoffset: length,
-    })
-    if (glow) {
-      gsap.set(glow, {
+      if (!mounted) return
+
+      setStations(nextStations)
+      setTimelineReady(true)
+
+      gsap.set(path, {
         strokeDasharray: length,
         strokeDashoffset: length,
       })
-    }
-
-    const updateTip = (progress: number) => {
-      const point = measure.getPointAtLength(progress * length)
-      setTip({
-        x: (point.x / viewW) * 100,
-        y: (point.y / viewH) * 100,
-      })
-
-      const stepIndex = Math.min(
-        Math.floor(progress * standardsData.length),
-        standardsData.length - 1,
-      )
-
-      if (stepIndex !== prevStepRef.current) {
-        prevStepRef.current = stepIndex
-        triggerStepPulse(stepIndex)
+      if (glow) {
+        gsap.set(glow, {
+          strokeDasharray: length,
+          strokeDashoffset: length,
+        })
       }
 
-      setActiveStep(stepIndex)
+      const setCursorAt = (progress: number) => {
+        const point = measure.getPointAtLength(progress * length)
+        if (!cursor) return
+        cursor.style.left = `${(point.x / viewW) * 100}%`
+        cursor.style.top = `${(point.y / viewH) * 100}%`
+      }
+
+      const updateProgress = (progress: number) => {
+        const clamped = gsap.utils.clamp(0, 1, progress)
+        setCursorAt(clamped)
+
+        const stepIndex = Math.min(
+          Math.floor(clamped * standardsData.length),
+          standardsData.length - 1,
+        )
+
+        if (stepIndex !== prevStepRef.current) {
+          prevStepRef.current = stepIndex
+          if (!mountedRef.current) return
+          setActiveStep(stepIndex)
+          triggerStepPulse(stepIndex)
+        }
+      }
+
+      prevStepRef.current = 0
+      setActiveStep(0)
+      setCursorAt(0)
+
+      const scrollDistance = isMobile
+        ? Math.round(window.innerHeight * 0.62 * (standardsData.length - 1))
+        : Math.round(window.innerHeight * 2)
+
+      ctx = gsap.context(() => {
+        gsap.to([path, glow].filter(Boolean), {
+          strokeDashoffset: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top top',
+            end: `+=${scrollDistance}`,
+            pin: true,
+            pinSpacing: true,
+            scrub: isMobile ? 0.65 : 0.85,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            fastScrollEnd: true,
+            onUpdate: (self) => updateProgress(self.progress),
+          },
+        })
+      }, el)
+
+      scheduleScrollTriggerRefresh(0)
     }
 
-    updateTip(0)
+    setup()
 
-    const tween = gsap.to([path, glow].filter(Boolean), {
-      strokeDashoffset: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top top',
-        end: '+=200%',
-        pin: true,
-        scrub: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          updateTip(self.progress)
-        },
-      },
-    })
-
-    const refresh = () => ScrollTrigger.refresh()
-    refresh()
     let resizeTimer = 0
     const onResize = () => {
       window.clearTimeout(resizeTimer)
-      resizeTimer = window.setTimeout(refresh, 150)
+      resizeTimer = window.setTimeout(() => {
+        setup()
+        scheduleScrollTriggerRefresh(0)
+      }, 180)
     }
+
     window.addEventListener('resize', onResize)
-    window.addEventListener('load', refresh)
+    window.addEventListener('load', onResize)
 
     return () => {
+      mounted = false
       window.removeEventListener('resize', onResize)
-      window.removeEventListener('load', refresh)
-      tween.scrollTrigger?.kill()
-      tween.kill()
+      window.removeEventListener('load', onResize)
+      window.clearTimeout(resizeTimer)
+      ctx?.revert()
     }
   }, [reduced, isMobile, pathD, viewW, viewH, triggerStepPulse])
 
   const active = standardsData[activeStep]
   const slideDir = activeStep % 2 === 0 ? 1 : -1
-  const blurAmount = isMobile ? 0 : 10
-  const blurExit = isMobile ? 0 : 8
 
   if (reduced) {
     return (
       <section
         id="why"
-        className="benefits-section benefits-section--static relative w-full px-5 py-16 text-primary md:px-8 md:py-24"
+        className="benefits-section benefits-section--static section-pad relative overflow-hidden w-full px-4 text-primary md:px-8"
       >
-        <div className="tech-grid-bg benefits-grid opacity-30" aria-hidden />
+        <SectionLuxuryBg variant="benefits" />
         <div className="relative z-10 mx-auto max-w-3xl text-center">
           <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-5xl dark:text-white">
             הסטנדרטים הגבוהים שהעסק שלך ראוי להם
@@ -238,10 +291,9 @@ export function Benefits() {
     <section
       id="why"
       ref={sectionRef}
-      className="benefits-section relative flex h-svh w-full flex-col overflow-hidden px-4 text-primary md:px-8"
+      className="benefits-section relative flex h-svh max-h-svh w-full flex-col overflow-hidden px-4 text-primary md:px-8"
     >
-      <div className="tech-grid-bg benefits-grid" aria-hidden />
-      <div className="benefits-ambient-glow" aria-hidden />
+      <SectionLuxuryBg variant="benefits" />
       <div
         className={`benefits-flash ${flash ? 'benefits-flash--on' : ''}`}
         aria-hidden
@@ -261,58 +313,35 @@ export function Benefits() {
         </h2>
       </div>
 
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-4 pb-2 md:gap-6 md:pb-4">
-        <div className="benefits-content glass-card tech-corners tech-corners-light relative mx-auto w-full max-w-3xl shrink-0 px-5 py-7 md:px-10 md:py-10">
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={`num-${active.id}`}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ duration: 0.5, ease: EASE }}
-              className="benefits-step-number font-mono-tech"
-              aria-hidden
-            >
-              {active.id}
-            </motion.span>
-          </AnimatePresence>
+      <div className="benefits-stage relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 pb-4 md:gap-5 md:pb-6">
+        <div className="benefits-content glass-card tech-corners tech-corners-light relative w-full shrink-0 px-5 py-7 md:px-10 md:py-10">
+          <span className="benefits-step-number font-mono-tech" aria-hidden>
+            {active.id}
+          </span>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active.id}
-              initial={{
-                opacity: 0,
-                y: 28 * slideDir,
-                scale: 0.9,
-                filter: blurAmount ? `blur(${blurAmount}px)` : 'none',
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                filter: 'none',
-              }}
-              exit={{
-                opacity: 0,
-                y: -24 * slideDir,
-                scale: 0.94,
-                filter: blurExit ? `blur(${blurExit}px)` : 'none',
-              }}
-              transition={{ duration: 0.55, ease: EASE }}
-              className="relative z-10 text-center"
-            >
-              <h3 className="mb-3 text-xl font-bold leading-snug text-burgundy md:mb-4 md:text-3xl lg:text-[2rem]">
-                {active.title}
-              </h3>
-              <p className="text-balance mx-auto max-w-xl text-[0.95rem] leading-relaxed text-primary md:text-lg md:leading-loose dark:text-white/80">
-                {active.description}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+          <div className="benefits-content-body">
+            <AnimatePresence initial={false}>
+              <motion.div
+                key={active.id}
+                initial={{ opacity: 0, y: isMobile ? 10 : 18 * slideDir }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: isMobile ? -8 : -16 * slideDir }}
+                transition={{ duration: isMobile ? 0.28 : 0.42, ease: EASE }}
+                className="benefits-content-slide relative z-10 text-center"
+              >
+                <h3 className="mb-3 text-xl font-bold leading-snug text-burgundy md:mb-4 md:text-3xl lg:text-[2rem]">
+                  {active.title}
+                </h3>
+                <p className="text-balance mx-auto max-w-xl text-[0.95rem] leading-relaxed text-primary md:text-lg md:leading-loose dark:text-white/80">
+                  {active.description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
         <div
-          className={`benefits-timeline relative mt-1 w-full shrink-0 md:mt-2 ${isMobile ? 'benefits-timeline--mobile h-[min(42svh,22rem)] max-w-[8rem]' : 'benefits-timeline--desktop h-28 max-w-5xl'}`}
+          className={`benefits-timeline relative mt-1 w-full shrink-0 md:mt-2 ${isMobile ? 'benefits-timeline--mobile h-[min(36svh,18rem)] max-w-[11rem]' : 'benefits-timeline--desktop h-28 max-w-5xl'}`}
         >
           <svg
             className="absolute inset-0 h-full w-full overflow-visible"
@@ -381,29 +410,31 @@ export function Benefits() {
           </svg>
 
           <div className="pointer-events-none absolute inset-0">
-            {stations.map((station, index) => (
-              <div
-                key={standardsData[index].id}
-                className="absolute -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  left: `${station.x}%`,
-                  top: `${station.y}%`,
-                }}
-              >
-                <HexNode
-                  id={standardsData[index].id}
-                  reached={activeStep >= index}
-                  active={activeStep === index}
-                  pulse={pulseStep === index}
-                />
-              </div>
-            ))}
+            {timelineReady &&
+              stations.map((station, index) => (
+                <div
+                  key={standardsData[index].id}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    left: `${station.x}%`,
+                    top: `${station.y}%`,
+                  }}
+                >
+                  <HexNode
+                    id={standardsData[index].id}
+                    reached={activeStep >= index}
+                    active={activeStep === index}
+                    pulse={pulseStep === index}
+                  />
+                </div>
+              ))}
 
             <div
+              ref={cursorRef}
               className="benefits-cursor absolute -translate-x-1/2 -translate-y-1/2"
               style={{
-                left: `${tip.x}%`,
-                top: `${tip.y}%`,
+                left: stations[0]?.x != null ? `${stations[0].x}%` : '5%',
+                top: stations[0]?.y != null ? `${stations[0].y}%` : '54%',
               }}
             >
               <span className="benefits-cursor-trail" aria-hidden />

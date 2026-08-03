@@ -10,12 +10,14 @@ import {
   useMotionTemplate,
 } from 'framer-motion'
 import huluProfile from '@/assets/hulu-portrait-v2.png'
+import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import {
   EASE,
   staggerContainer,
   staggerItem,
   useCountUp,
   viewportOnce,
+  viewportOnceTight,
 } from '@/lib/motion'
 
 const stats = [
@@ -32,7 +34,6 @@ const textLines = [
 ]
 
 const niceWords = ['NICE', 'TO', 'MEET', 'U']
-const headlineLine = 'אני הולו'
 
 function StatBadge({
   numeric,
@@ -46,7 +47,7 @@ function StatBadge({
   index: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
+  const inView = useInView(ref, viewportOnceTight)
   const count = useCountUp(numeric, inView)
   const done = inView && count >= numeric
 
@@ -54,16 +55,16 @@ function StatBadge({
     <motion.div
       ref={ref}
       variants={staggerItem}
-      className={`about-stat-pill tech-pill rounded-full px-4 py-2 text-center ${inView ? 'about-stat-pill--glow' : ''}`}
+      className={`about-stat-pill rounded-full px-4 py-2 text-center ${inView ? 'about-stat-pill--glow' : ''}`}
       transition={{ delay: index * 0.1 }}
     >
       <span
-        className={`font-mono-tech about-stat-number block text-sm font-bold text-gold md:text-base ${done ? 'about-stat-number--pulse' : ''}`}
+        className={`font-mono-tech about-stat-number block text-sm font-bold text-burgundy md:text-base ${done ? 'about-stat-number--pulse' : ''}`}
       >
         {count}
         {suffix}
       </span>
-      <span className="text-xs text-white/60">{label}</span>
+      <span className="text-xs text-muted dark:text-white/60">{label}</span>
     </motion.div>
   )
 }
@@ -76,7 +77,7 @@ function AboutPortrait({
   sectionRef: React.RefObject<HTMLElement | null>
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
-  const imageInView = useInView(frameRef, { once: true, margin: '-80px' })
+  const imageInView = useInView(frameRef, viewportOnce)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -127,12 +128,12 @@ function AboutPortrait({
 
   return (
     <motion.div
-      style={{ y: imageY }}
-      className="about-image-col flex w-full justify-center lg:col-span-5"
+      style={{ y: imageY, willChange: 'transform' }}
+      className="about-image-col flex w-full justify-center lg:col-span-4"
     >
       <div
         ref={frameRef}
-        className="about-image-wrap group relative w-full max-w-sm md:max-w-md"
+        className="about-image-wrap group relative w-full max-w-[12.5rem] sm:max-w-[14rem] md:max-w-[15.5rem]"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -183,7 +184,7 @@ function AboutPortrait({
               width={640}
               height={800}
               decoding="async"
-              className="about-image-float relative aspect-[4/5] w-full rotate-1 object-contain shadow-[0_24px_48px_-12px_rgb(0_0_0_/_0.45)]"
+              className="about-image-float relative aspect-[4/5] w-full rotate-1 object-contain shadow-[0_20px_40px_-14px_rgb(90_14_35_/_0.22)]"
             />
             <span className="about-scan-line" aria-hidden />
             {!reduced && (
@@ -234,29 +235,29 @@ export function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="about-section section-pad relative overflow-hidden bg-section-burgundy"
+      className="about-section section-pad relative overflow-hidden bg-section-surface"
     >
-      <div className="tech-grid-bg about-grid-bg" aria-hidden />
-      <div className="about-ambient-glow" aria-hidden />
+      <SectionLuxuryBg variant="surface" />
+      <div className="about-accent-glow" aria-hidden />
 
-      <div className="container-site relative z-10 grid items-center gap-8 lg:grid-cols-12 lg:gap-16">
+      <div className="container-site relative z-10 grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
         <AboutPortrait reduced={!!reduced} sectionRef={sectionRef} />
 
         <motion.div
-          style={{ y: contentY }}
+          style={{ y: contentY, willChange: 'transform' }}
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
           variants={staggerContainer}
-          className="lg:col-span-7"
+          className="about-copy lg:col-span-8"
         >
           <motion.div
             ref={headerRef}
             variants={staggerItem}
-            className="mb-6 flex flex-col items-center text-center lg:items-start lg:text-start"
+            className="about-header mb-6 flex flex-col items-center text-center lg:items-start lg:text-start"
           >
             <p
-              className="font-en-display text-[1.45rem] leading-none font-semibold whitespace-nowrap text-white/30 uppercase md:text-[2.1rem] lg:text-[2.45rem]"
+              className="about-kicker font-mono-tech text-[0.72rem] font-semibold tracking-[0.22em] text-burgundy/45 uppercase md:text-xs"
               dir="ltr"
             >
               {niceWords.map((word, i) => (
@@ -285,7 +286,7 @@ export function About() {
               ))}
             </p>
 
-            <h2 className="mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-white md:mt-4 md:text-4xl lg:text-[2.75rem]">
+            <h2 className="mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-primary md:mt-4 md:text-4xl lg:text-[2.75rem] dark:text-white">
               <span className="block overflow-hidden py-0.5">
                 <motion.span
                   className="block"
@@ -297,29 +298,31 @@ export function About() {
                   }
                   transition={{ duration: 0.75, ease: EASE, delay: 0.32 }}
                 >
-                  {headlineLine}
+                  אני{' '}
+                  <span className="text-burgundy">הולו</span>
                 </motion.span>
               </span>
             </h2>
+            <hr className="tech-divider about-header-divider mx-auto mt-5 max-w-xs lg:mx-0 lg:max-w-sm" />
           </motion.div>
 
-          <motion.p
+          <motion.div
             variants={staggerItem}
-            className="text-center text-lg leading-relaxed text-white/80 lg:text-start"
+            className="about-body text-center text-base leading-relaxed text-primary/85 md:text-lg lg:text-start dark:text-white/80"
           >
             {textLines.map((line, i) => (
-              <motion.span
+              <motion.p
                 key={i}
                 initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
+                viewport={viewportOnceTight}
                 transition={{ duration: 0.55, delay: i * 0.08, ease: EASE }}
-                className="block"
+                className={i > 0 ? 'mt-3' : undefined}
               >
                 {line}
-              </motion.span>
+              </motion.p>
             ))}
-          </motion.p>
+          </motion.div>
 
           <motion.div
             variants={staggerContainer}
@@ -340,9 +343,9 @@ export function About() {
             variants={staggerItem}
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
+            viewport={viewportOnce}
             transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
-            className="mx-auto mt-8 h-px w-24 origin-center bg-gold/40 lg:mx-0 lg:origin-right"
+            className="mx-auto mt-8 h-px w-24 origin-center bg-burgundy/25 lg:mx-0 lg:origin-right"
           />
         </motion.div>
       </div>

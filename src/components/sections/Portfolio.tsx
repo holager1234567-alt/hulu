@@ -6,12 +6,13 @@ import {
   type Variants,
 } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion'
 
 const projects = [
   {
     title: 'כהן בן עמי',
-    category: 'משרד עורכי דין · תדמית',
+    url: 'cohen-law.co.il',
     hero: {
       src: '/images/portfolio/cohen-law-hero.png',
       alt: 'כהן בן עמי, עמוד ראשי',
@@ -23,7 +24,7 @@ const projects = [
   },
   {
     title: 'סוכן AI',
-    category: 'בינה מלאכותית · שירות לקוחות',
+    url: 'ai-agent.io',
     hero: {
       src: '/images/portfolio/ai-agent-hero.png',
       alt: 'סוכן AI, עמוד ראשי',
@@ -35,7 +36,7 @@ const projects = [
   },
   {
     title: 'tru_riss',
-    category: 'ריסים וגבות · אתר תדמית',
+    url: 'tru-riss.co.il',
     hero: {
       src: '/images/portfolio/tru-riss-hero.png',
       alt: 'tru_riss, עמוד ראשי',
@@ -47,7 +48,7 @@ const projects = [
   },
   {
     title: 'Ride With Yoav',
-    category: 'אירועי רכיבה · קהילה',
+    url: 'ridewithyoav.com',
     hero: {
       src: '/images/portfolio/ride-yoav-hero.png',
       alt: 'Ride With Yoav, עמוד ראשי',
@@ -64,6 +65,43 @@ const headlineLines = [
   'דיוק עיצוב עם חשיבה עסקית ברורה',
 ]
 
+function BrowserMockup({
+  src,
+  alt,
+  url,
+  variant = 'main',
+}: {
+  src: string
+  alt: string
+  url: string
+  variant?: 'main' | 'secondary'
+}) {
+  return (
+    <div className={`portfolio-browser portfolio-browser--${variant}`}>
+      <div className="portfolio-browser-chrome">
+        <div className="portfolio-browser-dots" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
+        <span className="portfolio-browser-url font-mono-tech">{url}</span>
+      </div>
+      <div className="portfolio-browser-screen">
+        <img
+          src={src}
+          alt={alt}
+          width={1280}
+          height={800}
+          loading="lazy"
+          decoding="async"
+          className="portfolio-browser-shot"
+        />
+      </div>
+      <span className="portfolio-browser-shine" aria-hidden />
+    </div>
+  )
+}
+
 function ProjectCard({
   project,
   index,
@@ -79,90 +117,24 @@ function ProjectCard({
   const num = String(index + 1).padStart(2, '0')
   const flipped = index % 2 === 1
 
-  const hasEntered = useInView(ref, {
-    once: true,
-    amount: 0.3,
-    margin: viewportOnceTight.margin,
-  })
+  const hasEntered = useInView(ref, viewportOnceTight)
 
   const cardVariants: Variants = reduced
     ? {
-        hidden: { opacity: 1, y: 0, rotateX: 0, scale: 1 },
-        visible: { opacity: 1, y: 0, rotateX: 0, scale: 1 },
+        hidden: { opacity: 1, y: 0 },
+        visible: { opacity: 1, y: 0 },
       }
     : {
-        hidden: {
-          opacity: 0,
-          y: 64,
-          rotateX: 10,
-          scale: 0.94,
-          filter: 'blur(4px)',
-        },
+        hidden: { opacity: 0, y: 48, filter: 'blur(4px)' },
         visible: {
           opacity: 1,
           y: 0,
-          rotateX: 0,
-          scale: 1,
           filter: 'blur(0px)',
           transition: {
-            duration: 0.85,
+            duration: 0.8,
             ease: EASE,
-            delay: index * 0.1,
+            delay: index * 0.08,
           },
-        },
-      }
-
-  const stackVariants: Variants = reduced
-    ? { hidden: {}, visible: {} }
-    : {
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: 0.14,
-            delayChildren: index * 0.1 + 0.15,
-          },
-        },
-      }
-
-  const secondaryVariants: Variants = reduced
-    ? {
-        hidden: { opacity: 1, y: 0, rotateX: 5, scale: 0.985 },
-        visible: { opacity: 1, y: 0, rotateX: 5, scale: 0.985 },
-      }
-    : {
-        hidden: {
-          opacity: 0,
-          y: 40,
-          rotateX: 14,
-          scale: 0.94,
-        },
-        visible: {
-          opacity: 1,
-          y: 0,
-          rotateX: 5,
-          scale: 0.985,
-          transition: { duration: 0.7, ease: EASE },
-        },
-      }
-
-  const heroVariants: Variants = reduced
-    ? {
-        hidden: { opacity: 1, y: 0, rotateX: 5, scale: 1 },
-        visible: { opacity: 1, y: 0, rotateX: 5, scale: 1 },
-      }
-    : {
-        hidden: {
-          opacity: 0,
-          y: 56,
-          rotateX: 16,
-          scale: 0.9,
-        },
-        visible: {
-          opacity: 1,
-          y: 0,
-          rotateX: 5,
-          scale: 1,
-          transition: { duration: 0.75, ease: EASE },
         },
       }
 
@@ -174,15 +146,6 @@ function ProjectCard({
         whileInView="visible"
         viewport={viewportOnceTight}
         variants={cardVariants}
-        style={{ perspective: 1200 }}
-        whileHover={
-          reduced
-            ? undefined
-            : {
-                scale: 1.012,
-                transition: { duration: 0.32, ease: EASE },
-              }
-        }
         className={`portfolio-card group ${flipped ? 'portfolio-card--flipped' : ''}`}
       >
         <span
@@ -193,72 +156,38 @@ function ProjectCard({
         </span>
 
         <div className="portfolio-card-inner">
-          <div className="portfolio-stack-col">
-            <motion.div
-              variants={stackVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnceTight}
-              className="tech-corners portfolio-stack"
-            >
-              <motion.div
-                variants={secondaryVariants}
-                className="portfolio-frame portfolio-frame-secondary"
-              >
-                <div className="portfolio-frame-inner">
-                  <img
-                    src={project.secondary.src}
-                    alt={project.secondary.alt}
-                    width={1280}
-                    height={800}
-                    loading="lazy"
-                    decoding="async"
-                    className="portfolio-shot-img"
-                  />
-                  <span className="portfolio-scan-line" aria-hidden />
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={heroVariants}
-                className="portfolio-frame portfolio-frame-main"
-              >
-                <div className="portfolio-frame-inner">
-                  <img
-                    src={project.hero.src}
-                    alt={project.hero.alt}
-                    width={1280}
-                    height={800}
-                    loading="lazy"
-                    decoding="async"
-                    className="portfolio-shot-img"
-                  />
-                  <span className="portfolio-scan-line portfolio-scan-line--delayed" aria-hidden />
-                </div>
-              </motion.div>
-            </motion.div>
+          <div className="portfolio-showcase-col">
+            <div className="portfolio-showcase">
+              <BrowserMockup
+                variant="secondary"
+                src={project.secondary.src}
+                alt={project.secondary.alt}
+                url={project.url}
+              />
+              <BrowserMockup
+                variant="main"
+                src={project.hero.src}
+                alt={project.hero.alt}
+                url={project.url}
+              />
+            </div>
           </div>
 
           <motion.div
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnceTight}
             transition={{
-              duration: 0.6,
+              duration: 0.55,
               ease: EASE,
-              delay: reduced ? 0 : index * 0.1 + 0.35,
+              delay: reduced ? 0 : index * 0.08 + 0.2,
             }}
             className="portfolio-meta-col"
           >
             <span className="portfolio-index font-mono-tech">{num}</span>
-            <h3 className="portfolio-title text-xl font-bold text-burgundy md:text-2xl">
+            <h3 className="portfolio-title text-xl font-bold text-burgundy md:text-2xl lg:text-[1.65rem]">
               {project.title}
             </h3>
-            <p
-              className={`portfolio-category ${hasEntered ? 'portfolio-category--glow' : ''}`}
-            >
-              {project.category}
-            </p>
           </motion.div>
         </div>
       </motion.article>
@@ -285,10 +214,11 @@ export function Portfolio() {
   return (
     <section
       id="work"
-      className="portfolio-section section-pad relative overflow-hidden"
+      className="portfolio-section section-pad relative overflow-hidden bg-section-portfolio"
     >
-      <div className="tech-grid-bg portfolio-grid-bg" aria-hidden />
-      <div className="portfolio-ambient-glow" aria-hidden />
+      <SectionLuxuryBg variant="portfolio" />
+      <div className="portfolio-accent-glow" aria-hidden />
+      <div className="portfolio-horizon" aria-hidden />
 
       <div className="container-site relative z-10">
         <motion.header
@@ -299,6 +229,9 @@ export function Portfolio() {
           variants={fadeUpScale}
           className="mx-auto mb-14 max-w-3xl text-center md:mb-16"
         >
+          <p className="portfolio-kicker font-mono-tech mb-4 text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:text-xs">
+            selected work
+          </p>
           <h2 className="text-3xl font-bold leading-tight text-burgundy md:text-4xl lg:text-[2.75rem]">
             {headlineLines.map((line, i) => (
               <span key={line} className="block overflow-hidden py-0.5">

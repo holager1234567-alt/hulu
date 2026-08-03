@@ -9,8 +9,9 @@ export const defaultTransition: Transition = {
   ease: EASE,
 }
 
-export const viewportOnce = { once: true, margin: '-80px' as const }
-export const viewportOnceTight = { once: true, margin: '-40px' as const }
+export const viewportOnce = { once: true, amount: 0.15 as const }
+export const viewportOnceTight = { once: true, amount: 0.15, margin: '-40px' as const }
+export const viewportInView = { once: true, amount: 0.15, margin: '-72px' as const }
 
 export const fadeUpScale: Variants = {
   hidden: { opacity: 0, y: 24, scale: 0.95 },

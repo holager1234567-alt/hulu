@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion'
 import { LeadQualificationForm } from '@/components/forms/LeadQualificationForm'
+import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { EASE, fadeUpScale, viewportOnce } from '@/lib/motion'
 
 export function Contact() {
   return (
-    <section id="contact" className="section-pad bg-section-burgundy">
-      <div className="container-site">
+    <section id="contact" className="section-pad relative overflow-hidden bg-section-burgundy">
+      <SectionLuxuryBg variant="burgundy" />
+      <div className="container-site relative z-10">
         <motion.div
           initial="hidden"
           whileInView="visible"

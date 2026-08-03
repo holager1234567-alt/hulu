@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/layout/Logo'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { useHeaderScrollState } from '@/hooks/useHeaderScrollState'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
 
@@ -13,41 +16,16 @@ const links = [
 ]
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false)
-  const [visible, setVisible] = useState(true)
+  const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
-  const lastScrollY = useRef(0)
+  const { scrolled, visible } = useHeaderScrollState()
   const { toggle, Icon } = useTheme()
 
+  useBodyScrollLock(isMobile && open)
+
   useEffect(() => {
-    let ticking = false
-
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-
-      requestAnimationFrame(() => {
-        const currentScrollY = window.scrollY
-        setScrolled(currentScrollY > 24)
-
-        if (currentScrollY <= 24) {
-          setVisible(true)
-        } else if (currentScrollY > lastScrollY.current + 8) {
-          setVisible(false)
-          setOpen(false)
-        } else if (currentScrollY < lastScrollY.current - 8) {
-          setVisible(true)
-        }
-
-        lastScrollY.current = currentScrollY
-        ticking = false
-      })
-    }
-
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    if (!visible) setOpen(false)
+  }, [visible])
 
   return (
     <header
@@ -100,7 +78,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             className="lg:hidden"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen((value) => !value)}
             aria-label="תפריט"
           >
             {open ? (
@@ -112,7 +90,7 @@ export function Header() {
         </div>
       </div>
 
-      {open && (
+      {open ? (
         <div className="container-site mt-2 rounded-lg border border-black/5 bg-white/90 p-4 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-black/80 lg:hidden">
           <nav className="flex flex-col gap-3">
             {links.map((link) => (
@@ -132,7 +110,7 @@ export function Header() {
             </Button>
           </nav>
         </div>
-      )}
+      ) : null}
     </header>
   )
 }

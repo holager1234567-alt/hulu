@@ -1,4 +1,4 @@
-import { useRef, type ReactNode, type RefObject } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import {
   motion,
   useInView,
@@ -7,7 +7,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import { EASE } from '@/lib/motion'
+import { EASE, viewportInView } from '@/lib/motion'
 
 type SectionWrapperProps = {
   children: ReactNode
@@ -39,7 +39,7 @@ function SectionParallaxBg({
   return (
     <motion.div
       className="section-parallax-bg"
-      style={{ y: bgY, willChange: 'transform' }}
+      style={{ y: bgY, willChange: 'transform', transform: 'translateZ(0)' }}
       aria-hidden
     />
   )
@@ -54,9 +54,16 @@ export function SectionWrapper({
   const wrapRef = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
   const isMobile = useIsMobile()
-  const inView = useInView(wrapRef, { once: true, margin: '-72px' })
+  const inView = useInView(wrapRef, viewportInView)
+  const [revealFallback, setRevealFallback] = useState(false)
 
-  const shouldReveal = !reveal || reduced || inView
+  useEffect(() => {
+    if (reduced || !reveal) return
+    const timer = window.setTimeout(() => setRevealFallback(true), 2000)
+    return () => window.clearTimeout(timer)
+  }, [reduced, reveal])
+
+  const shouldReveal = !reveal || reduced || inView || revealFallback
   const enableParallax = parallax && !isMobile && !reduced
 
   return (

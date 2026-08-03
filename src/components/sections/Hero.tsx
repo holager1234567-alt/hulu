@@ -15,7 +15,7 @@ import {
   lineRevealItemReduced,
 } from '@/lib/motion'
 
-const headlineLight = 'אני לא מעצבת עוד אתר.'
+const headlineLight = 'אני לא מעצבת עוד אתר...'
 const subheadline =
   'שילוב של עיצוב UI/UX מתקדם, קופירייטינג מדויק, אלמנטים תלת-ממדיים ואופטימיזציה להמרות, כדי להוציא את המותג שלך מהתבנית ולהפוך גולשים ללקוחות.'
 
@@ -87,11 +87,29 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
       ) : null}
 
       <div className="hero-luxury-bg" aria-hidden />
+      <div className="hero-luxury-mesh" aria-hidden />
+      <div className="hero-luxury-perspective-grid" aria-hidden>
+        <div className="hero-luxury-perspective-grid-inner" />
+      </div>
+      <div className="hero-luxury-horizon" aria-hidden />
+      <div className="hero-luxury-texture" aria-hidden />
+      <div className="hero-luxury-ambient hero-luxury-ambient--primary" aria-hidden />
+      <div className="hero-luxury-ambient hero-luxury-ambient--secondary" aria-hidden />
+      <div className="hero-luxury-ambient hero-luxury-ambient--accent" aria-hidden />
+      <div className="hero-luxury-spotlight" aria-hidden />
+      <div className="hero-luxury-nodes" aria-hidden>
+        <span className="hero-luxury-node hero-luxury-node--1" />
+        <span className="hero-luxury-node hero-luxury-node--2" />
+        <span className="hero-luxury-node hero-luxury-node--3" />
+        <span className="hero-luxury-node hero-luxury-node--4" />
+      </div>
       <div className="tech-grid-bg hero-luxury-grid" aria-hidden />
-      <div className="grain-overlay" aria-hidden />
+      <div className="hero-luxury-scanlines" aria-hidden />
+      <div className="hero-luxury-vignette" aria-hidden />
+      <div className="grain-overlay hero-luxury-grain" aria-hidden />
 
       <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
+        style={{ y: contentY, opacity: contentOpacity, willChange: 'transform' }}
         initial={
           useReveal
             ? { opacity: 0, scale: 0.97, filter: reduced ? 'none' : 'blur(8px)' }
@@ -112,7 +130,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               <span className="block overflow-hidden py-0.5">
                 <motion.span
                   variants={lineVariants}
-                  className="hero-luxury-headline-light block"
+                  className="hero-luxury-headline-light font-mono-tech block"
                 >
                   {headlineLight}
                 </motion.span>
@@ -130,7 +148,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                     <span className="hero-luxury-emphasis-line" aria-hidden />
                   </span>
                   <br />
-                  לעסק שלך.
+                  <span className="whitespace-nowrap">לעסק שלך.</span>
                 </motion.span>
               </span>
             </h1>
@@ -150,18 +168,18 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               initial="hidden"
               animate="visible"
               variants={ctaVariants}
-              className="hero-luxury-actions mt-6 flex flex-wrap items-center gap-3 md:mt-7"
+              className="hero-luxury-actions mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center md:mt-7"
             >
               <Button
                 asChild
                 variant="burgundy"
                 size="lg"
-                className="group hero-luxury-cta-primary h-12 rounded-full px-7 text-base shadow-soft hover:scale-[1.03]"
+                className="group hero-luxury-cta-primary luxury-interactive h-12 w-full rounded-full px-7 text-base sm:w-auto"
               >
                 <a href="#contact">
                   להתחלת השאלון המהיר
                   <ArrowLeft
-                    className="size-4 shrink-0 transition-transform duration-300 ease-out group-hover:-translate-x-1.5"
+                    className="size-4 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1.5"
                     aria-hidden
                   />
                 </a>
@@ -171,7 +189,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                 asChild
                 variant="outline"
                 size="lg"
-                className="hero-luxury-cta-secondary h-12 rounded-full px-7 text-base"
+                className="hero-luxury-cta-secondary luxury-interactive luxury-interactive--glass h-12 w-full rounded-full px-7 text-base sm:w-auto"
               >
                 <a href="#work">צפייה בעבודות</a>
               </Button>

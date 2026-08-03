@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import huluProfile from '@/assets/hulu-portrait-v2.png'
+import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import {
   EASE,
   fadeUpScale,
@@ -94,6 +95,7 @@ function FaqItem({
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            key={`faq-answer-${id}`}
             id={`faq-answer-${id}`}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -143,8 +145,9 @@ export function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section id="faq" className="section-pad bg-section-surface">
-      <div className="container-site">
+    <section id="faq" className="section-pad relative overflow-hidden bg-section-surface">
+      <SectionLuxuryBg variant="surface" />
+      <div className="container-site relative z-10">
         <motion.div
           initial="hidden"
           whileInView="visible"

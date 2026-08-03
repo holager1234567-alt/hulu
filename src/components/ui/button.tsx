@@ -4,16 +4,16 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-white shadow-soft hover:scale-[1.02] hover:bg-primary/90',
+          'bg-primary text-white shadow-soft hover:scale-[1.03] hover:bg-primary/90 hover:shadow-[0_16px_40px_-12px_rgb(0_0_0_/_0.18)]',
         burgundy:
-          'btn-burgundy-glow bg-burgundy text-white shadow-soft hover:scale-[1.02] hover:bg-burgundy/90',
+          'btn-burgundy-glow bg-burgundy text-white shadow-soft hover:bg-burgundy/90',
         outline:
-          'border border-primary/20 bg-transparent text-primary hover:bg-primary hover:text-white dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-primary',
+          'border border-primary/20 bg-white/30 text-primary backdrop-blur-md hover:scale-[1.02] hover:border-burgundy/35 hover:bg-white/50 hover:text-burgundy hover:shadow-[0_16px_40px_-16px_rgb(90_14_35_/_0.18)] dark:border-white/20 dark:text-white dark:hover:bg-white/10',
         ghost:
           'bg-transparent text-primary hover:bg-primary/5 dark:text-white dark:hover:bg-white/10',
         gold: 'bg-gold text-primary hover:scale-[1.02] hover:bg-gold/90',

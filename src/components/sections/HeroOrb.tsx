@@ -1,3 +1,4 @@
+import { Zap } from 'lucide-react'
 import {
   motion,
   useReducedMotion,
@@ -12,22 +13,97 @@ type HeroShowcaseProps = {
   sectionRef: RefObject<HTMLElement | null>
 }
 
+function ShowcaseCursor3D() {
+  return (
+    <div className="hero-showcase-cursor-rig">
+      <span className="hero-showcase-cursor-ground" aria-hidden />
+      <span className="hero-showcase-cursor-ring" aria-hidden />
+      <svg
+        className="hero-showcase-cursor-svg"
+        viewBox="0 0 36 44"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden
+      >
+        <defs>
+          <linearGradient
+            id="showcase-cursor-face"
+            x1="6"
+            y1="4"
+            x2="28"
+            y2="36"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor="#ffffff" />
+            <stop offset="0.55" stopColor="#f7f0f2" />
+            <stop offset="1" stopColor="#e8d9de" />
+          </linearGradient>
+          <linearGradient
+            id="showcase-cursor-side"
+            x1="16"
+            y1="18"
+            x2="30"
+            y2="34"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor="#d4bcc4" />
+            <stop offset="1" stopColor="#9a7080" />
+          </linearGradient>
+          <filter
+            id="showcase-cursor-soft-shadow"
+            x="-20%"
+            y="-10%"
+            width="140%"
+            height="150%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="3"
+              stdDeviation="2.5"
+              floodColor="#5a0e23"
+              floodOpacity="0.28"
+            />
+          </filter>
+        </defs>
+        <path
+          d="M6 4 L6 34 L14.5 25.5 L20.5 39 L25 36.5 L19 23.5 L30.5 23.5 Z"
+          fill="url(#showcase-cursor-side)"
+          transform="translate(1.5 1.5)"
+          opacity="0.88"
+        />
+        <path
+          d="M5 3 L5 33 L13.5 24.5 L19.5 38 L24 35.5 L18 22.5 L29.5 22.5 Z"
+          fill="url(#showcase-cursor-face)"
+          stroke="#5a0e23"
+          strokeWidth="1.35"
+          strokeLinejoin="round"
+          filter="url(#showcase-cursor-soft-shadow)"
+        />
+        <path
+          d="M7.5 6.5 L7.5 18.5 L12.5 14.5 L12.5 10.5 Z"
+          fill="rgb(255 255 255 / 0.72)"
+        />
+      </svg>
+    </div>
+  )
+}
+
 function ShowcaseCanvas({
   mouseRotateX,
   mouseRotateY,
   scrollRotateX,
   scrollRotateY,
   scrollScale,
-  sphereX,
-  sphereY,
+  cursorLeft,
+  cursorTop,
 }: {
   mouseRotateX: MotionValue<number>
   mouseRotateY: MotionValue<number>
   scrollRotateX: MotionValue<number>
   scrollRotateY: MotionValue<number>
   scrollScale: MotionValue<number>
-  sphereX: MotionValue<number>
-  sphereY: MotionValue<number>
+  cursorLeft: MotionValue<number>
+  cursorTop: MotionValue<number>
 }) {
   const rigRotateX = useTransform(
     [scrollRotateX, mouseRotateX],
@@ -37,6 +113,8 @@ function ShowcaseCanvas({
     [scrollRotateY, mouseRotateY],
     ([scroll, mouse]) => (scroll as number) + (mouse as number),
   )
+  const cursorLeftPct = useTransform(cursorLeft, (value) => `${value}%`)
+  const cursorTopPct = useTransform(cursorTop, (value) => `${value}%`)
 
   return (
     <motion.div
@@ -46,11 +124,14 @@ function ShowcaseCanvas({
         rotateY: rigRotateY,
         scale: scrollScale,
         transformStyle: 'preserve-3d',
+        willChange: 'transform',
       }}
     >
       <div className="hero-showcase-isometric">
         {/* Layer 0 — glass browser base */}
         <article className="hero-showcase-window hero-showcase-layer hero-showcase-layer--0">
+          <span className="hero-showcase-window-shine" aria-hidden />
+          <span className="hero-showcase-window-edge" aria-hidden />
           <div className="hero-showcase-window-chrome">
             <div className="hero-showcase-window-dots" aria-hidden>
               <span />
@@ -84,23 +165,23 @@ function ShowcaseCanvas({
               <span />
               <span />
             </div>
+
+            <div className="hero-showcase-cursor-layer hero-showcase-layer hero-showcase-layer--2">
+              <motion.div
+                className="hero-showcase-cursor"
+                style={{ left: cursorLeftPct, top: cursorTopPct }}
+                aria-hidden
+              >
+                <ShowcaseCursor3D />
+              </motion.div>
+            </div>
           </div>
         </article>
 
-        {/* Layer 2 — glass orb breaking frame (+60px Z) */}
-        <div className="hero-showcase-sphere-wrap hero-showcase-layer hero-showcase-layer--2">
-          <motion.div
-            className="hero-showcase-sphere-inner"
-            style={{ x: sphereX, y: sphereY }}
-            aria-hidden
-          >
-            <div className="hero-showcase-sphere">
-              <div className="hero-showcase-sphere-glow" />
-              <div className="hero-showcase-sphere-core" />
-              <div className="hero-showcase-sphere-shine" />
-              <div className="hero-showcase-sphere-rim" />
-            </div>
-          </motion.div>
+        <div className="hero-showcase-badge hero-showcase-badge--speed hero-showcase-layer hero-showcase-layer--2">
+          <Zap className="hero-showcase-badge-icon" strokeWidth={2} aria-hidden />
+          <span className="hero-showcase-badge-value">14</span>
+          <span className="hero-showcase-badge-label">ימי מסירה</span>
         </div>
 
         <div className="hero-showcase-shadow hero-showcase-layer hero-showcase-layer--0" aria-hidden />
@@ -113,17 +194,10 @@ export function HeroOrb({ sectionRef }: HeroShowcaseProps) {
   const reduced = useReducedMotion()
   const tiltEnabled = !reduced
 
-  const {
-    sceneRef,
-    rotateX,
-    rotateY,
-    sphereX,
-    sphereY,
-    onMouseMove,
-    onMouseLeave,
-    onTouchMove,
-    onTouchEnd,
-  } = useParallaxTilt({ enabled: tiltEnabled, maxTilt: 11 })
+  const { sceneRef, rotateX, rotateY, cursorLeft, cursorTop } = useParallaxTilt({
+    enabled: tiltEnabled,
+    maxTilt: 11,
+  })
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -150,28 +224,21 @@ export function HeroOrb({ sectionRef }: HeroShowcaseProps) {
   return (
     <motion.div
       className="hero-showcase-scene"
-      style={{ y: sceneY }}
+      style={{ y: sceneY, willChange: 'transform' }}
       aria-hidden
     >
       <div className="hero-showcase-ambient" aria-hidden />
       <div className="hero-showcase-ambient hero-showcase-ambient--secondary" aria-hidden />
 
-      <div
-        ref={sceneRef}
-        className="hero-showcase-stage"
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
+      <div ref={sceneRef} className="hero-showcase-stage">
         <ShowcaseCanvas
           mouseRotateX={rotateX}
           mouseRotateY={rotateY}
           scrollRotateX={scrollRotateX}
           scrollRotateY={scrollRotateY}
           scrollScale={scrollScale}
-          sphereX={sphereX}
-          sphereY={sphereY}
+          cursorLeft={cursorLeft}
+          cursorTop={cursorTop}
         />
       </div>
     </motion.div>

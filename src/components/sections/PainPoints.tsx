@@ -9,6 +9,7 @@ import {
   type Variants,
 } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -120,7 +121,7 @@ function PainPointsHeader({
         }`}
       >
         אני שומעת הרבה מבעלי עסקים את התסכול מאתר שלא עובד בשבילם,
-        <br className="hidden sm:block" />
+        <br className="hidden sm:block" />{' '}
         הנה מה שאני שומעת שוב ושוב ואולי גם את/ה מזהה את עצמך כאן
       </motion.p>
     </motion.header>
@@ -275,11 +276,7 @@ const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
       margin: '-28% 0px -28% 0px',
     })
 
-    const hasEntered = useInView(localRef, {
-      once: true,
-      amount: 0.35,
-      margin: viewportOnceTight.margin,
-    })
+    const hasEntered = useInView(localRef, viewportOnceTight)
 
     useEffect(() => {
       if (reduced || !hasEntered) return
@@ -446,19 +443,16 @@ function PainPointsDeck({
     if (!pin || !stack) return
 
     let ctx: gsap.Context | undefined
+    let mounted = true
 
     const setActiveCard = (index: number) => {
       if (index === activeIndexRef.current) return
       activeIndexRef.current = index
-      setActiveIndex(index)
+      if (mounted) setActiveIndex(index)
     }
 
     const setup = () => {
       ctx?.revert()
-
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.vars.trigger === pin) trigger.kill()
-      })
 
       const cards = gsap.utils.toArray<HTMLElement>('[data-deck-card]', stack)
       if (cards.length < 2) return
@@ -520,9 +514,11 @@ function PainPointsDeck({
         const updateDeck = (progress: number) => {
           pin.style.setProperty('--deck-progress', progress.toFixed(4))
 
+          const idx = Math.min(Math.round(progress * (count - 1)), count - 1)
+
           cards.forEach((card, i) => {
             if (i === 0) {
-              gsap.set(card, { yPercent: 0, y: 0, rotation: 0, scale: 1 })
+              gsap.set(card, { yPercent: 0, y: 0, rotation: 0, scale: 1, visibility: 'visible' })
               return
             }
 
@@ -540,10 +536,10 @@ function PainPointsDeck({
               y: 0,
               rotation: 0,
               scale: 1,
+              visibility: local > 0.02 || i <= idx ? 'visible' : 'hidden',
             })
           })
 
-          const idx = Math.min(Math.round(progress * (count - 1)), count - 1)
           pin.style.setProperty('--deck-index', String(idx))
           setActiveCard(idx)
         }
@@ -674,6 +670,7 @@ function PainPointsDeck({
     window.addEventListener('resize', onResize)
 
     return () => {
+      mounted = false
       cancelAnimationFrame(raf)
       window.removeEventListener('load', refresh)
       window.removeEventListener('resize', onResize)
@@ -764,10 +761,9 @@ export function PainPoints() {
   return (
     <section
       id="pains"
-      className="pain-points-section section-pad relative bg-section-surface"
+      className="pain-points-section section-pad relative overflow-x-clip bg-section-surface"
     >
-      <div className="tech-grid-bg pain-points-grid-bg" aria-hidden />
-      <div className="pain-points-ambient-glow" aria-hidden />
+      <SectionLuxuryBg variant="surface" />
 
       <div className="container-site relative z-10">
         {reduced ? (

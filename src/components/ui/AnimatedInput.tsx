@@ -2,6 +2,7 @@ import type { ChangeEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { viewportOnceTight } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 type AnimatedInputProps = {
@@ -28,7 +29,7 @@ export function AnimatedInput({
       className="group space-y-2"
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
+      viewport={viewportOnceTight}
       transition={{ duration: 0.4 }}
     >
       <Label

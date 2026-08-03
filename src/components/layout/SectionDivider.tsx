@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
-import { EASE } from '@/lib/motion'
+import { EASE, viewportOnceTight } from '@/lib/motion'
 
 export type SectionDividerVariant = 'wave' | 'diagonal' | 'gradient-line' | 'fade'
 
@@ -27,7 +27,7 @@ export function SectionDivider({
 }: SectionDividerProps) {
   const ref = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
-  const inView = useInView(ref, { once: true, margin: '-20px' })
+  const inView = useInView(ref, viewportOnceTight)
 
   if (variant === 'gradient-line') {
     return (

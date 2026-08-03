@@ -15,8 +15,11 @@ export function ScrollProgress() {
 
   return (
     <motion.div
-      className="scroll-progress fixed inset-x-0 top-0 z-[60] origin-left"
-      style={{ scaleX: isMobile ? scrollYProgress : scaleX }}
+      className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-[60] origin-left"
+      style={{
+        scaleX: isMobile ? scrollYProgress : scaleX,
+        willChange: 'transform',
+      }}
       aria-hidden
     />
   )

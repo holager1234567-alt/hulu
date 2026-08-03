@@ -14,6 +14,10 @@ import { Portfolio } from '@/components/sections/Portfolio'
 import { Process } from '@/components/sections/Process'
 import { Faq } from '@/components/sections/Faq'
 import { Contact } from '@/components/sections/Contact'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { useGsapScrollMode } from '@/hooks/useGsapScrollMode'
+import { useSmoothAnchorScroll } from '@/hooks/useSmoothAnchorScroll'
+import { scheduleScrollTriggerRefresh, cancelScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import { EASE } from '@/lib/motion'
 
 const Benefits = lazy(() =>
@@ -22,6 +26,14 @@ const Benefits = lazy(() =>
 
 type HomeContentProps = {
   isFirstReveal: boolean
+}
+
+function BenefitsSection() {
+  useEffect(() => {
+    scheduleScrollTriggerRefresh(120)
+  }, [])
+
+  return <Benefits />
 }
 
 function HomeContent({ isFirstReveal }: HomeContentProps) {
@@ -38,16 +50,14 @@ function HomeContent({ isFirstReveal }: HomeContentProps) {
         <PainPoints />
         <SectionDivider variant="gradient-line" />
         <Suspense fallback={<div className="benefits-section min-h-svh" aria-hidden />}>
-          <Benefits />
+          <BenefitsSection />
         </Suspense>
-        <SectionDivider variant="diagonal" tone="to-burgundy" />
+        <SectionDivider variant="diagonal" tone="to-surface" />
         <SectionWrapper reveal parallax>
           <About />
         </SectionWrapper>
-        <SectionDivider variant="fade" tone="from-burgundy" />
-        <SectionWrapper reveal>
-          <Portfolio />
-        </SectionWrapper>
+        <SectionDivider variant="gradient-line" tone="to-surface" />
+        <Portfolio />
         <SectionDivider variant="diagonal" flip tone="to-process" />
         <SectionWrapper reveal parallax>
           <Process />
@@ -72,6 +82,10 @@ export default function HomePage() {
   const [showSplash, setShowSplash] = useState(!reducedMotion)
   const [isFirstReveal, setIsFirstReveal] = useState(false)
 
+  useBodyScrollLock(showSplash)
+  useSmoothAnchorScroll(!showSplash)
+  useGsapScrollMode(!showSplash)
+
   const handleSplashComplete = () => {
     setShowSplash(false)
     setIsFirstReveal(true)
@@ -80,9 +94,15 @@ export default function HomePage() {
   useEffect(() => {
     if (showSplash) return
 
-    import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
-      requestAnimationFrame(() => ScrollTrigger.refresh())
-    })
+    scheduleScrollTriggerRefresh(0)
+    scheduleScrollTriggerRefresh(450)
+
+    const onLoad = () => scheduleScrollTriggerRefresh(0)
+    window.addEventListener('load', onLoad)
+    return () => {
+      window.removeEventListener('load', onLoad)
+      cancelScrollTriggerRefresh()
+    }
   }, [showSplash])
 
   return (
