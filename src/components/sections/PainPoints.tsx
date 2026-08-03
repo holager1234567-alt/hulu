@@ -63,7 +63,13 @@ const headlineLines = [
 ]
 
 const DECK_SCROLL_VH = 0.52
+const DECK_SCROLL_VH_MOBILE = 0.88
 const DECK_CTA_SCROLL_VH = 0.65
+const DECK_CTA_SCROLL_VH_MOBILE = 0.52
+
+function getViewportHeight() {
+  return window.visualViewport?.height ?? window.innerHeight
+}
 
 type PainPointsHeaderProps = {
   headerRef: RefObject<HTMLElement | null>
@@ -474,15 +480,13 @@ function PainPointsDeck({
       if (cards.length < 2) return
 
       const isMobile = isMobileDeckViewport()
-      const useFixedPin = isMobile || isIOSDevice()
       const stageHeight = Math.round(stack.getBoundingClientRect().height)
-      const usePixelCards = useFixedPin && stageHeight > 0
+      const usePixelCards = isMobile && stageHeight > 0
+      const viewportHeight = getViewportHeight()
+      const deckScrollVh = isMobile ? DECK_SCROLL_VH_MOBILE : DECK_SCROLL_VH
+      const ctaScrollVh = isMobile ? DECK_CTA_SCROLL_VH_MOBILE : DECK_CTA_SCROLL_VH
 
       pin.classList.toggle('pain-points-deck-pin--mobile', isMobile)
-
-      if (useFixedPin) {
-        ScrollTrigger.config({ ignoreMobileResize: true })
-      }
 
       const glow = pin.querySelector<HTMLElement>('[data-deck-glow]')
       const orbit = pin.querySelector<HTMLElement>('[data-deck-orbit]')
@@ -495,14 +499,17 @@ function PainPointsDeck({
 
       ctx = gsap.context(() => {
         const count = cards.length
+        const cardSteps = count - 1
         const cardScrollDistance = Math.round(
-          window.innerHeight * DECK_SCROLL_VH * (count - 1),
+          viewportHeight * deckScrollVh * cardSteps,
         )
-        const ctaScrollDistance = Math.round(
-          window.innerHeight * DECK_CTA_SCROLL_VH,
+        const minCardScroll = Math.round(
+          viewportHeight * (isMobile ? 3.4 : 2.2),
         )
-        const totalScrollDistance = cardScrollDistance + ctaScrollDistance
-        const cardPhaseEnd = cardScrollDistance / totalScrollDistance
+        const cardScrollDistanceFinal = Math.max(cardScrollDistance, minCardScroll)
+        const ctaScrollDistance = Math.round(viewportHeight * ctaScrollVh)
+        const totalScrollDistance = cardScrollDistanceFinal + ctaScrollDistance
+        const cardPhaseEnd = cardScrollDistanceFinal / totalScrollDistance
 
         gsap.set(cards, {
           position: 'absolute',
@@ -666,32 +673,23 @@ function PainPointsDeck({
         const scrollConfig: ScrollTrigger.Vars = {
           trigger: pin,
           start: isMobile ? 'top 14%' : 'top 18%',
-          end: `+=${totalScrollDistance}`,
+          end: () => {
+            const vh = getViewportHeight()
+            const cardDist = Math.max(
+              Math.round(vh * deckScrollVh * cardSteps),
+              Math.round(vh * (isMobile ? 3.4 : 2.2)),
+            )
+            const ctaDist = Math.round(vh * ctaScrollVh)
+            return `+=${cardDist + ctaDist}`
+          },
           pin: true,
           pinSpacing: true,
-          pinType: useFixedPin ? 'fixed' : 'transform',
-          scrub: isMobile ? true : 0.75,
+          pinType: 'transform',
+          scrub: isMobile ? 0.35 : 0.75,
           anticipatePin: isMobile ? 0 : 1,
           invalidateOnRefresh: true,
           fastScrollEnd: !isMobile,
           onUpdate: (self) => updateAll(self.progress),
-        }
-
-        if (isMobile) {
-          scrollConfig.snap = {
-            snapTo: (value: number) => {
-              if (value <= cardPhaseEnd) {
-                const steps = count - 1
-                const normalized = value / cardPhaseEnd
-                const snapped = Math.round(normalized * steps) / steps
-                return snapped * cardPhaseEnd
-              }
-              return value
-            },
-            duration: { min: 0.18, max: 0.42 },
-            delay: 0.02,
-            ease: 'power1.inOut',
-          }
         }
 
         ScrollTrigger.create(scrollConfig)
@@ -724,20 +722,33 @@ function PainPointsDeck({
     window.addEventListener('load', refresh)
 
     let resizeTimer = 0
-    const onResize = () => {
+    let settleTimer = 0
+
+    const onViewportChange = () => {
       window.clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(() => {
         setup()
         refresh()
-      }, isMobileDeckViewport() ? 280 : 150)
+      }, isMobileDeckViewport() ? 220 : 150)
     }
-    window.addEventListener('resize', onResize)
+
+    if (isMobileDeckViewport() || isIOSDevice()) {
+      settleTimer = window.setTimeout(() => {
+        setup()
+        refresh()
+      }, 650)
+    }
+
+    window.addEventListener('resize', onViewportChange)
+    window.visualViewport?.addEventListener('resize', onViewportChange)
 
     return () => {
       mounted = false
       cancelAnimationFrame(raf)
+      window.clearTimeout(settleTimer)
       window.removeEventListener('load', refresh)
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', onViewportChange)
+      window.visualViewport?.removeEventListener('resize', onViewportChange)
       window.clearTimeout(resizeTimer)
       ctx?.revert()
     }
