@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState, forwardRef, type RefObjec
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
-  AnimatePresence,
   motion,
   useInView,
   useReducedMotion,
@@ -220,34 +219,24 @@ function DeckPainCard({ pain, index }: DeckPainCardProps) {
   )
 }
 
-function DeckDisplayNumber({ index }: { index: number }) {
-  const num = String(index + 1).padStart(2, '0')
-
+function DeckDisplayNumber({
+  displayNumRef,
+}: {
+  displayNumRef: RefObject<HTMLSpanElement | null>
+}) {
   return (
     <div
       className="pain-points-deck-display"
       aria-live="polite"
-      aria-label={`קלף ${index + 1}`}
+      aria-label="קלף 1"
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={num}
-          initial={{ opacity: 0, y: 36, scale: 0.82, filter: 'blur(8px)' }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            filter: 'blur(0px)',
-            color: 'rgba(122, 28, 46, 0.18)',
-          }}
-          exit={{ opacity: 0, y: -28, scale: 1.08, filter: 'blur(6px)' }}
-          transition={{ duration: 0.5, ease: EASE }}
-          className="pain-points-deck-display-num font-mono-tech"
-          aria-hidden
-        >
-          {num}
-        </motion.span>
-      </AnimatePresence>
+      <span
+        ref={displayNumRef}
+        className="pain-points-deck-display-num font-mono-tech"
+        aria-hidden
+      >
+        01
+      </span>
     </div>
   )
 }
@@ -432,8 +421,8 @@ function PainPointsDeck({
   const ctaRevealRef = useRef<HTMLDivElement>(null)
   const hintRef = useRef<HTMLParagraphElement>(null)
   const displayRef = useRef<HTMLDivElement>(null)
+  const displayNumRef = useRef<HTMLSpanElement>(null)
   const activeIndexRef = useRef(0)
-  const [activeIndex, setActiveIndex] = useState(0)
 
   useLayoutEffect(() => {
     if (reduced) return
@@ -444,11 +433,24 @@ function PainPointsDeck({
 
     let ctx: gsap.Context | undefined
     let mounted = true
+    let cardYSetters: Array<(value: number) => void> = []
 
-    const setActiveCard = (index: number) => {
-      if (index === activeIndexRef.current) return
-      activeIndexRef.current = index
-      if (mounted) setActiveIndex(index)
+    const updateDisplayIndex = (idx: number) => {
+      if (idx === activeIndexRef.current) return
+      activeIndexRef.current = idx
+
+      const num = String(idx + 1).padStart(2, '0')
+      if (displayNumRef.current) {
+        displayNumRef.current.textContent = num
+      }
+
+      const displayShell = displayRef.current
+      const displayEl = displayNumRef.current?.closest('.pain-points-deck-display')
+      if (displayEl) {
+        displayEl.setAttribute('aria-label', `קלף ${idx + 1}`)
+      } else if (displayShell) {
+        displayShell.setAttribute('aria-label', `קלף ${idx + 1}`)
+      }
     }
 
     const setup = () => {
@@ -484,7 +486,12 @@ function PainPointsDeck({
           height: '100%',
           transformOrigin: '50% 100%',
           force3D: true,
+          visibility: 'visible',
         })
+
+        cardYSetters = cards.map(
+          (card) => gsap.quickSetter(card, 'yPercent') as (value: number) => void,
+        )
 
         if (ctaReveal) {
           gsap.set(ctaReveal, {
@@ -516,9 +523,9 @@ function PainPointsDeck({
 
           const idx = Math.min(Math.round(progress * (count - 1)), count - 1)
 
-          cards.forEach((card, i) => {
+          cards.forEach((_card, i) => {
             if (i === 0) {
-              gsap.set(card, { yPercent: 0, y: 0, rotation: 0, scale: 1, visibility: 'visible' })
+              cardYSetters[i](0)
               return
             }
 
@@ -531,17 +538,11 @@ function PainPointsDeck({
               (progress - segmentStart) / segmentSpan,
             )
 
-            gsap.set(card, {
-              yPercent: 100 - local * 100,
-              y: 0,
-              rotation: 0,
-              scale: 1,
-              visibility: local > 0.02 || i <= idx ? 'visible' : 'hidden',
-            })
+            cardYSetters[i](Math.round((100 - local * 100) * 10) / 10)
           })
 
           pin.style.setProperty('--deck-index', String(idx))
-          setActiveCard(idx)
+          if (mounted) updateDisplayIndex(idx)
         }
 
         const updateReveal = (totalProgress: number) => {
@@ -614,7 +615,6 @@ function PainPointsDeck({
           gsap.set(card, {
             zIndex: i + 1,
             yPercent: i === 0 ? 0 : 100,
-            y: 0,
             scale: 1,
             rotation: 0,
             filter: 'none',
@@ -627,7 +627,8 @@ function PainPointsDeck({
           end: `+=${totalScrollDistance}`,
           pin: true,
           pinSpacing: true,
-          scrub: 0.45,
+          pinType: 'transform',
+          scrub: 0.75,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
@@ -698,7 +699,7 @@ function PainPointsDeck({
       <div className="pain-points-deck-body">
         <div ref={deckContentRef} className="pain-points-deck-viewport">
           <div ref={displayRef} className="pain-points-deck-display-shell">
-            <DeckDisplayNumber index={activeIndex} />
+            <DeckDisplayNumber displayNumRef={displayNumRef} />
           </div>
           <div className="pain-points-deck-stage">
             <div ref={stackRef} className="pain-points-deck-stack">

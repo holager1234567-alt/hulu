@@ -404,6 +404,7 @@
     pointer-events: none;
     -webkit-text-stroke: 1.5px rgb(122 28 46 / 0.28);
     paint-order: stroke fill;
+    transform: translate3d(0, 0, 0);
   }
 
   .dark .pain-points-deck-display-num {
@@ -429,9 +430,10 @@
     inset: 0;
     overflow: hidden;
     border-radius: 0.65rem;
+    transform: translateZ(0);
     transform-style: flat;
     perspective: none;
-    contain: paint;
+    contain: layout paint;
     isolation: isolate;
   }
 
@@ -448,6 +450,9 @@
     padding: 0;
     border: 1px solid rgb(90 14 35 / 0.78);
     border-radius: 0.65rem;
+    transform-style: flat;
+    backface-visibility: hidden;
+    transition: none;
     background:
       radial-gradient(
         circle at 18% 12%,
