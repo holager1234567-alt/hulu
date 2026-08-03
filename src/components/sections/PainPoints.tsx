@@ -1,39 +1,12 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  forwardRef,
-  type CSSProperties,
-  type RefObject,
-} from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useEffect, useRef, useState } from 'react'
 import {
   motion,
   useInView,
   useReducedMotion,
-  type Variants,
 } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { EASE, fadeUpScale, viewportPainPoints } from '@/lib/motion'
-
-gsap.registerPlugin(ScrollTrigger)
-
-const MOBILE_DECK_MQ = '(max-width: 767px)'
-
-function isMobileDeckViewport() {
-  return window.matchMedia(MOBILE_DECK_MQ).matches
-}
-
-function isIOSDevice() {
-  if (typeof navigator === 'undefined') return false
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  )
-}
 
 const pains: {
   title: string
@@ -70,27 +43,16 @@ const headlineLines = [
   'ולהתחיל לתת לו לעבוד בשבילך',
 ]
 
-const DECK_SCROLL_VH = 0.52
-const DECK_SCROLL_VH_MOBILE = 0.88
-const DECK_CTA_SCROLL_VH = 0.65
-const DECK_CTA_SCROLL_VH_MOBILE = 0.52
-
-function getViewportHeight() {
-  return window.visualViewport?.height ?? window.innerHeight
-}
-
 type PainPointsHeaderProps = {
-  headerRef: RefObject<HTMLElement | null>
+  headerRef: React.RefObject<HTMLElement | null>
   reduced: boolean
   showHeadline: boolean
-  deckPinned?: boolean
 }
 
 function PainPointsHeader({
   headerRef,
   reduced,
   showHeadline,
-  deckPinned = false,
 }: PainPointsHeaderProps) {
   return (
     <motion.header
@@ -99,17 +61,9 @@ function PainPointsHeader({
       whileInView="visible"
       viewport={viewportPainPoints}
       variants={fadeUpScale}
-      className={`mx-auto max-w-3xl text-center ${
-        deckPinned ? 'pain-points-deck-header' : 'mb-10 md:mb-12'
-      }`}
+      className="pain-points-header mx-auto mb-10 max-w-3xl text-center md:mb-12"
     >
-      <h2
-        className={`font-bold text-primary dark:text-white ${
-          deckPinned
-            ? 'text-[1.35rem] leading-snug sm:text-2xl md:text-3xl'
-            : 'text-3xl md:text-4xl'
-        }`}
-      >
+      <h2 className="text-3xl font-bold text-primary dark:text-white md:text-4xl">
         {headlineLines.map((line, i) => (
           <span key={line} className="block overflow-hidden py-0.5">
             <motion.span
@@ -130,22 +84,14 @@ function PainPointsHeader({
         ))}
       </h2>
 
-      <hr
-        className={`tech-divider mx-auto max-w-xs md:max-w-sm ${
-          deckPinned ? 'mt-4 md:mt-5' : 'mt-6 md:mt-8'
-        }`}
-      />
+      <hr className="tech-divider mx-auto mt-6 max-w-xs md:mt-8 md:max-w-sm" />
 
       <motion.p
         initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={viewportPainPoints}
         transition={{ duration: 0.6, ease: EASE, delay: 0.28 }}
-        className={`leading-relaxed text-muted dark:text-white/65 ${
-          deckPinned
-            ? 'mt-3 text-sm max-[480px]:text-[0.8125rem] md:mt-4 md:text-base'
-            : 'mt-5 text-base max-[480px]:text-[0.875rem] md:mt-6 md:text-lg'
-        }`}
+        className="mt-5 text-base leading-relaxed text-muted max-[480px]:text-[0.875rem] dark:text-white/65 md:mt-6 md:text-lg"
       >
         אני שומעת הרבה מבעלי עסקים את התסכול מאתר שלא עובד בשבילם,
         <br className="hidden sm:block" />{' '}
@@ -155,29 +101,14 @@ function PainPointsHeader({
   )
 }
 
-function PainPointsCta({
-  className = '',
-  reveal = false,
-}: {
-  className?: string
-  reveal?: boolean
-}) {
+function PainPointsCta({ className = '' }: { className?: string }) {
   return (
     <div
-      className={`pain-points-cta-wrap text-center glass-card tech-corners ${
-        reveal ? 'pain-points-cta-wrap--reveal' : ''
-      } ${className}`}
+      className={`pain-points-cta-wrap text-center glass-card tech-corners ${className}`}
     >
-      {!reveal ? <hr className="tech-divider mb-6" aria-hidden /> : null}
+      <hr className="tech-divider mb-6" aria-hidden />
 
-      <p
-        data-cta-part="lead"
-        className={`leading-relaxed ${
-          reveal
-            ? 'pain-points-cta-wrap--reveal-lead text-lg text-primary dark:text-white/85'
-            : 'text-lg text-primary dark:text-white/85'
-        }`}
-      >
+      <p className="text-lg leading-relaxed text-primary dark:text-white/85">
         אם משהו כאן נגע בך,
         <br />
         זה סימן שאתה מוכן ליותר מאתר.
@@ -188,14 +119,7 @@ function PainPointsCta({
         <br />
         ושמרגיש כמו העסק שלך באמת.
       </p>
-      <p
-        data-cta-part="sub"
-        className={
-          reveal
-            ? 'pain-points-cta-wrap--reveal-sub mt-4 text-muted dark:text-white/60'
-            : 'mt-4 text-muted dark:text-white/60'
-        }
-      >
+      <p className="mt-4 text-muted dark:text-white/60">
         בוא נדבר. בלי לחץ, בלי מכירה אגרסיבית. רק שיחה כנה על מה שאתה
         צריך.
       </p>
@@ -206,25 +130,32 @@ function PainPointsCta({
         size="lg"
         className="btn-burgundy-glow mt-8 h-12 rounded-full px-8 shadow-soft"
       >
-        <a href="#contact" data-cta-part="btn">
-          רוצה לשנות את המצב? בוא נדבר
-        </a>
+        <a href="#contact">רוצה לשנות את המצב? בוא נדבר</a>
       </Button>
     </div>
   )
 }
 
-type DeckPainCardProps = {
+function PlayingCard({
+  pain,
+  index,
+  reduced,
+}: {
   pain: (typeof pains)[number]
   index: number
-}
+  reduced: boolean
+}) {
+  const ref = useRef<HTMLElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.3 })
+  const num = String(index + 1).padStart(2, '0')
 
-function DeckPainCard({ pain, index }: DeckPainCardProps) {
   return (
-    <article
-      data-deck-card
-      data-stack-index={index}
-      className="pain-point-card pain-point-card--playing pain-point-card--deck pain-point-card--active group relative overflow-hidden"
+    <motion.article
+      ref={ref}
+      initial={reduced ? false : { opacity: 0, y: 32 }}
+      animate={reduced || inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+      transition={{ duration: 0.55, ease: EASE, delay: reduced ? 0 : 0.04 }}
+      className="pain-point-card pain-point-card--playing pain-point-card--scroll group relative overflow-hidden"
     >
       <span className="pain-point-card-index pain-point-card-index--tl" aria-hidden>
         <span className="pain-point-card-index-letter font-en-display">H</span>
@@ -235,653 +166,15 @@ function DeckPainCard({ pain, index }: DeckPainCardProps) {
         <span className="pain-point-card-index-suit">♥</span>
       </span>
 
-      <div className="pain-point-card-body pain-point-card-body--deck relative z-10">
-        <h3 className="font-bold text-burgundy">
-          {pain.title}
-        </h3>
-        <p className="text-primary dark:text-white/80">
-          {pain.text}
-        </p>
-      </div>
-    </article>
-  )
-}
-
-function DeckDisplayNumber({
-  displayNumRef,
-}: {
-  displayNumRef: RefObject<HTMLSpanElement | null>
-}) {
-  return (
-    <div
-      className="pain-points-deck-display"
-      aria-live="polite"
-      aria-label="קלף 1"
-    >
-      <span
-        ref={displayNumRef}
-        className="pain-points-deck-display-num font-mono-tech"
-        aria-hidden
-      >
-        01
+      <span className="pain-points-scroll-num font-mono-tech" aria-hidden>
+        {num}
       </span>
-    </div>
-  )
-}
 
-type PainPointCardProps = {
-  pain: (typeof pains)[number]
-  index: number
-  reduced: boolean
-}
-
-const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
-  function PainPointCard({ pain, index, reduced }, forwardedRef) {
-    const localRef = useRef<HTMLElement>(null)
-    const [flash, setFlash] = useState(false)
-    const num = String(index + 1).padStart(2, '0')
-    const fromStart = index % 2 === 0
-
-    const setRef = (node: HTMLElement | null) => {
-      localRef.current = node
-      if (typeof forwardedRef === 'function') forwardedRef(node)
-      else if (forwardedRef) forwardedRef.current = node
-    }
-
-    const isActive = useInView(localRef, {
-      amount: 0.55,
-      margin: '-28% 0px -28% 0px',
-    })
-
-    const hasEntered = useInView(localRef, viewportPainPoints)
-
-    useEffect(() => {
-      if (reduced || !hasEntered) return
-      setFlash(true)
-      const timer = window.setTimeout(() => setFlash(false), 450)
-      return () => window.clearTimeout(timer)
-    }, [hasEntered, reduced])
-
-    const cardVariants: Variants = reduced
-      ? {
-          hidden: { opacity: 1, x: 0, y: 0, rotateX: 0, rotateY: 0, scale: 1 },
-          visible: { opacity: 1, x: 0, y: 0, rotateX: 0, rotateY: 0, scale: 1 },
-        }
-      : {
-          hidden: {
-            opacity: 0,
-            x: fromStart ? 72 : -72,
-            y: 36,
-            rotateX: 10,
-            rotateY: fromStart ? -8 : 8,
-            scale: 0.92,
-            filter: 'blur(6px)',
-          },
-          visible: {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            rotateX: 0,
-            rotateY: 0,
-            scale: 1,
-            filter: 'blur(0px)',
-            transition: {
-              duration: 0.85,
-              ease: EASE,
-              delay: index * 0.07,
-            },
-          },
-        }
-
-    return (
-      <motion.article
-        ref={setRef}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportPainPoints}
-        variants={cardVariants}
-        style={{ perspective: 900 }}
-        whileHover={
-          reduced
-            ? undefined
-            : {
-                y: -6,
-                scale: 1.015,
-                transition: { duration: 0.28, ease: EASE },
-              }
-        }
-        className={`pain-point-card group relative overflow-hidden glass-card tech-corners rounded-2xl p-6 md:p-7 ${isActive ? 'pain-point-card--active' : ''}`}
-      >
-        <span
-          className={`pain-point-entry-flash ${flash ? 'pain-point-entry-flash--on' : ''}`}
-          aria-hidden
-        />
-
-        <motion.span
-          initial={reduced ? { scaleY: 1 } : { scaleY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          viewport={viewportPainPoints}
-          transition={{
-            duration: 0.65,
-            ease: EASE,
-            delay: index * 0.07 + 0.12,
-          }}
-          className="pain-point-accent-bar"
-          aria-hidden
-        />
-
-        <motion.span
-          initial={reduced ? { scaleY: 1 } : { scaleY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          viewport={viewportPainPoints}
-          transition={{
-            duration: 0.55,
-            ease: EASE,
-            delay: index * 0.07 + 0.22,
-          }}
-          className="pain-point-edge-line"
-          aria-hidden
-        />
-
-        <motion.span
-          initial={
-            reduced
-              ? { opacity: 1, scale: 1, color: 'rgba(122, 28, 46, 0.18)' }
-              : {
-                  opacity: 0,
-                  scale: 0.55,
-                  y: 24,
-                  color: 'rgba(163, 163, 163, 0.75)',
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            color: 'rgba(122, 28, 46, 0.18)',
-          }}
-          viewport={viewportPainPoints}
-          transition={{
-            duration: 0.9,
-            ease: EASE,
-            delay: index * 0.07 + 0.08,
-          }}
-          whileHover={
-            reduced
-              ? undefined
-              : {
-                  scale: 1.08,
-                  color: 'rgba(122, 28, 46, 0.42)',
-                }
-          }
-          className="pain-point-watermark font-mono-tech pain-point-watermark--revealed"
-          aria-hidden
-        >
-          {num}
-        </motion.span>
-
-        <div className="pain-point-card-body relative z-10">
-          <span className="pain-point-index font-mono-tech">{num}</span>
-          <h3 className="mb-3 text-lg font-bold text-burgundy md:text-xl">
-            {pain.title}
-          </h3>
-          <p className="text-base leading-relaxed text-primary dark:text-white/80">
-            {pain.text}
-          </p>
-        </div>
-      </motion.article>
-    )
-  },
-)
-
-function PainPointsDeck({
-  reduced,
-  headerRef,
-  showHeadline,
-}: {
-  reduced: boolean
-  headerRef: RefObject<HTMLElement | null>
-  showHeadline: boolean
-}) {
-  const pinRef = useRef<HTMLDivElement>(null)
-  const scrollTrackRef = useRef<HTMLDivElement>(null)
-  const stackRef = useRef<HTMLDivElement>(null)
-  const deckContentRef = useRef<HTMLDivElement>(null)
-  const ctaRevealRef = useRef<HTMLDivElement>(null)
-  const hintRef = useRef<HTMLParagraphElement>(null)
-  const displayRef = useRef<HTMLDivElement>(null)
-  const displayNumRef = useRef<HTMLSpanElement>(null)
-  const activeIndexRef = useRef(0)
-
-  useLayoutEffect(() => {
-    if (reduced) return
-
-    const pin = pinRef.current
-    const stack = stackRef.current
-    const scrollTrack = scrollTrackRef.current
-    if (!pin || !stack) return
-
-    let ctx: gsap.Context | undefined
-    let mounted = true
-    let cardYSetters: Array<(value: number) => void> = []
-
-    const updateDisplayIndex = (idx: number) => {
-      if (idx === activeIndexRef.current) return
-      activeIndexRef.current = idx
-
-      const num = String(idx + 1).padStart(2, '0')
-      if (displayNumRef.current) {
-        displayNumRef.current.textContent = num
-      }
-
-      const displayShell = displayRef.current
-      const displayEl = displayNumRef.current?.closest('.pain-points-deck-display')
-      if (displayEl) {
-        displayEl.setAttribute('aria-label', `קלף ${idx + 1}`)
-      } else if (displayShell) {
-        displayShell.setAttribute('aria-label', `קלף ${idx + 1}`)
-      }
-    }
-
-    const setup = () => {
-      ctx?.revert()
-
-      const cards = gsap.utils.toArray<HTMLElement>('[data-deck-card]', stack)
-      if (cards.length < 2) return
-
-      const isMobile = isMobileDeckViewport()
-      const stageHeight = Math.round(stack.getBoundingClientRect().height)
-      const usePixelCards = stageHeight > 0
-      const viewportHeight = getViewportHeight()
-      const deckScrollVh = isMobile ? DECK_SCROLL_VH_MOBILE : DECK_SCROLL_VH
-      const ctaScrollVh = isMobile ? DECK_CTA_SCROLL_VH_MOBILE : DECK_CTA_SCROLL_VH
-      const count = cards.length
-      const cardSteps = count - 1
-
-      pin.classList.toggle('pain-points-deck-pin--mobile', isMobile)
-      pin.style.setProperty('--deck-card-count', String(count))
-
-      const ctaReveal = ctaRevealRef.current
-      const deckContent = deckContentRef.current
-      const hint = hintRef.current
-      const display = displayRef.current
-
-      ctx = gsap.context(function (this: gsap.Context) {
-        const cardScrollDistance = Math.round(
-          viewportHeight * deckScrollVh * cardSteps,
-        )
-        const minCardScroll = Math.round(
-          viewportHeight * (isMobile ? 4.6 : 2.2),
-        )
-        const cardScrollDistanceFinal = Math.max(cardScrollDistance, minCardScroll)
-        const ctaScrollDistance = Math.round(viewportHeight * ctaScrollVh)
-        const totalScrollDistance = cardScrollDistanceFinal + ctaScrollDistance
-        const cardPhaseEnd = isMobile
-          ? (count * 80) / (count * 80 + 56)
-          : cardScrollDistanceFinal / totalScrollDistance
-
-        gsap.set(cards, {
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          transformOrigin: '50% 100%',
-          force3D: true,
-          visibility: 'visible',
-        })
-
-        cardYSetters = cards.map((card) =>
-          usePixelCards
-            ? (gsap.quickSetter(card, 'y', 'px') as (value: number) => void)
-            : (gsap.quickSetter(card, 'yPercent') as (value: number) => void),
-        )
-
-        if (ctaReveal) {
-          gsap.set(ctaReveal, {
-            opacity: 0,
-            scale: 0.98,
-            y: 32,
-            filter: 'none',
-            pointerEvents: 'none',
-          })
-          gsap.utils.toArray<HTMLElement>('[data-cta-part]', ctaReveal).forEach((part) => {
-            gsap.set(part, { opacity: 0, y: 12 })
-          })
-        }
-        if (deckContent) {
-          gsap.set(deckContent, { opacity: 1, scale: 1, y: 0, filter: 'none' })
-        }
-        if (stackRef.current) {
-          gsap.set(stackRef.current, { opacity: 1 })
-        }
-        if (hint) {
-          gsap.set(hint, { opacity: 1 })
-        }
-        if (display) {
-          gsap.set(display, { opacity: 1 })
-        }
-
-        const setCardY = (index: number, value: number) => {
-          if (usePixelCards) {
-            cardYSetters[index](Math.round(value))
-          } else {
-            cardYSetters[index](Math.round(value * 10) / 10)
-          }
-        }
-
-        let lastDeckProgress = ''
-        let lastDeckCtaProgress = ''
-        let lastDeckIndex = -1
-
-        const updateDeck = (progress: number) => {
-          if (!isMobile) {
-            const nextProgress = progress.toFixed(3)
-            if (nextProgress !== lastDeckProgress) {
-              pin.style.setProperty('--deck-progress', nextProgress)
-              lastDeckProgress = nextProgress
-            }
-          }
-
-          const exact = progress * cardSteps
-          const idx = Math.min(Math.floor(exact + 0.0001), cardSteps)
-          const local = gsap.utils.clamp(0, 1, exact - idx)
-
-          cards.forEach((_card, i) => {
-            if (usePixelCards) {
-              if (i <= idx) {
-                setCardY(i, 0)
-              } else if (i === idx + 1) {
-                setCardY(i, (1 - local) * stageHeight)
-              } else {
-                setCardY(i, stageHeight)
-              }
-              return
-            }
-
-            if (i === 0) {
-              setCardY(i, 0)
-              return
-            }
-
-            const segmentStart = (i - 1) / cardSteps
-            const segmentEnd = i / cardSteps
-            const segmentSpan = segmentEnd - segmentStart || 1
-            const segmentLocal = gsap.utils.clamp(
-              0,
-              1,
-              (progress - segmentStart) / segmentSpan,
-            )
-            setCardY(i, 100 - segmentLocal * 100)
-          })
-
-          const displayIdx = local > 0.35 ? Math.min(idx + 1, cardSteps) : idx
-          if (displayIdx !== lastDeckIndex) {
-            pin.style.setProperty('--deck-index', String(displayIdx))
-            lastDeckIndex = displayIdx
-          }
-          if (mounted) updateDisplayIndex(displayIdx)
-        }
-
-        const updateReveal = (totalProgress: number) => {
-          const ctaProgress =
-            totalProgress <= cardPhaseEnd
-              ? 0
-              : gsap.utils.clamp(
-                  0,
-                  1,
-                  (totalProgress - cardPhaseEnd) / (1 - cardPhaseEnd),
-                )
-
-          const nextCtaProgress = ctaProgress.toFixed(3)
-          if (nextCtaProgress !== lastDeckCtaProgress) {
-            pin.style.setProperty('--deck-cta-progress', nextCtaProgress)
-            lastDeckCtaProgress = nextCtaProgress
-          }
-
-          const deckFade = 1 - gsap.utils.clamp(0, 1, ctaProgress * 2.8)
-          const deckLift = ctaProgress * -20
-          const deckScale = 1 - ctaProgress * 0.04
-
-          if (deckContent) {
-            gsap.set(deckContent, {
-              opacity: deckFade,
-              y: deckLift,
-              scale: deckScale,
-              filter: 'none',
-              pointerEvents: deckFade > 0.35 ? 'auto' : 'none',
-            })
-          }
-
-          const revealIn = gsap.utils.clamp(0, 1, (ctaProgress - 0.12) / 0.88)
-
-          if (ctaReveal) {
-            gsap.set(ctaReveal, {
-              opacity: revealIn,
-              scale: 0.98 + revealIn * 0.02,
-              y: 32 - revealIn * 32,
-              filter: 'none',
-              pointerEvents: revealIn > 0.92 ? 'auto' : 'none',
-            })
-
-            const parts = gsap.utils.toArray<HTMLElement>('[data-cta-part]', ctaReveal)
-            parts.forEach((part, i) => {
-              const partIn = gsap.utils.clamp(0, 1, (revealIn - i * 0.12) / 0.72)
-              gsap.set(part, {
-                opacity: partIn,
-                y: (1 - partIn) * 12,
-              })
-            })
-          }
-
-          const uiFade = 1 - Math.min(ctaProgress * 2.5, 1)
-          if (hint) {
-            gsap.set(hint, { opacity: uiFade })
-          }
-          if (display) {
-            gsap.set(display, { opacity: uiFade })
-          }
-        }
-
-        const updateAll = (totalProgress: number) => {
-          const cardProgress =
-            totalProgress <= cardPhaseEnd
-              ? gsap.utils.clamp(0, 1, totalProgress / cardPhaseEnd)
-              : 1
-
-          updateDeck(cardProgress)
-          updateReveal(totalProgress)
-        }
-
-        cards.forEach((card, i) => {
-          gsap.set(card, {
-            zIndex: i + 1,
-            y: usePixelCards ? (i === 0 ? 0 : stageHeight) : 0,
-            yPercent: usePixelCards ? 0 : i === 0 ? 0 : 100,
-            scale: 1,
-            rotation: 0,
-            filter: 'none',
-          })
-        })
-
-        if (isMobile && scrollTrack) {
-          let scrollRaf = 0
-
-          const readMobileProgress = () => {
-            const rect = scrollTrack.getBoundingClientRect()
-            const trackHeight = scrollTrack.offsetHeight
-            const vh = getViewportHeight()
-            const range = trackHeight - vh
-            if (range <= 0) return 0
-            return gsap.utils.clamp(0, 1, -rect.top / range)
-          }
-
-          const onMobileScroll = () => {
-            if (scrollRaf) return
-            scrollRaf = requestAnimationFrame(() => {
-              scrollRaf = 0
-              updateAll(readMobileProgress())
-            })
-          }
-
-          onMobileScroll()
-          window.addEventListener('scroll', onMobileScroll, { passive: true })
-          window.visualViewport?.addEventListener('scroll', onMobileScroll, {
-            passive: true,
-          })
-
-          this.add(() => {
-            if (scrollRaf) cancelAnimationFrame(scrollRaf)
-            window.removeEventListener('scroll', onMobileScroll)
-            window.visualViewport?.removeEventListener('scroll', onMobileScroll)
-          })
-        } else {
-          ScrollTrigger.create({
-            trigger: pin,
-            start: 'top 18%',
-            end: () => {
-              const vh = getViewportHeight()
-              const cardDist = Math.max(
-                Math.round(vh * deckScrollVh * cardSteps),
-                Math.round(vh * 2.2),
-              )
-              const ctaDist = Math.round(vh * ctaScrollVh)
-              return `+=${cardDist + ctaDist}`
-            },
-            pin: true,
-            pinSpacing: true,
-            pinType: 'transform',
-            scrub: 0.75,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            fastScrollEnd: true,
-            onUpdate: (self) => updateAll(self.progress),
-          })
-
-          const glow = pin.querySelector<HTMLElement>('[data-deck-glow]')
-          const orbit = pin.querySelector<HTMLElement>('[data-deck-orbit]')
-          const beam = pin.querySelector<HTMLElement>('[data-deck-beam]')
-          const grid = pin.querySelector<HTMLElement>('[data-deck-grid]')
-
-          if (glow) {
-            gsap.set(glow, { opacity: 0.35, scale: 0.88 })
-          }
-          if (orbit) {
-            gsap.set(orbit, { rotate: 0, opacity: 0.25 })
-          }
-          if (beam) {
-            gsap.set(beam, { yPercent: -35, opacity: 0.15 })
-          }
-          if (grid) {
-            gsap.set(grid, { opacity: 0.12, scale: 1 })
-          }
-        }
-
-        updateAll(0)
-      }, pin)
-
-      pin.style.setProperty('--deck-progress', '0')
-      pin.style.setProperty('--deck-index', '0')
-      pin.style.setProperty('--deck-cta-progress', '0')
-    }
-
-    setup()
-
-    const refresh = () => ScrollTrigger.refresh()
-    const raf = requestAnimationFrame(() => requestAnimationFrame(refresh))
-    window.addEventListener('load', refresh)
-
-    let resizeTimer = 0
-    let settleTimer = 0
-
-    const onViewportChange = () => {
-      window.clearTimeout(resizeTimer)
-      resizeTimer = window.setTimeout(() => {
-        setup()
-        refresh()
-      }, isMobileDeckViewport() ? 220 : 150)
-    }
-
-    if (isMobileDeckViewport() || isIOSDevice()) {
-      settleTimer = window.setTimeout(() => {
-        setup()
-        refresh()
-      }, 650)
-    }
-
-    window.addEventListener('resize', onViewportChange)
-    window.visualViewport?.addEventListener('resize', onViewportChange)
-
-    return () => {
-      mounted = false
-      cancelAnimationFrame(raf)
-      window.clearTimeout(settleTimer)
-      window.removeEventListener('load', refresh)
-      window.removeEventListener('resize', onViewportChange)
-      window.visualViewport?.removeEventListener('resize', onViewportChange)
-      window.clearTimeout(resizeTimer)
-      ctx?.revert()
-    }
-  }, [reduced])
-
-  return (
-    <div
-      ref={pinRef}
-      className="pain-points-deck-pin"
-      style={{ '--deck-card-count': pains.length } as CSSProperties}
-    >
-      <div className="pain-points-deck-scene" aria-hidden>
-        <div className="pain-points-deck-scene-grid" data-deck-grid />
-        <div className="pain-points-deck-scene-glow" data-deck-glow />
-        <div className="pain-points-deck-scene-orbit" data-deck-orbit />
-        <div className="pain-points-deck-scene-beam" data-deck-beam />
+      <div className="pain-point-card-body pain-point-card-body--deck relative z-10">
+        <h3 className="font-bold text-burgundy">{pain.title}</h3>
+        <p className="text-primary dark:text-white/80">{pain.text}</p>
       </div>
-      <PainPointsHeader
-        headerRef={headerRef}
-        reduced={reduced}
-        showHeadline={showHeadline}
-        deckPinned
-      />
-      <div ref={scrollTrackRef} className="pain-points-deck-scroll-track">
-        <div className="pain-points-deck-sticky">
-          <div className="pain-points-deck-body">
-            <div ref={deckContentRef} className="pain-points-deck-viewport">
-              <div ref={displayRef} className="pain-points-deck-display-shell">
-                <DeckDisplayNumber displayNumRef={displayNumRef} />
-              </div>
-              <div className="pain-points-deck-stage">
-                <div ref={stackRef} className="pain-points-deck-stack">
-                  {pains.map((pain, i) => (
-                    <DeckPainCard key={pain.title} pain={pain} index={i} />
-                  ))}
-                </div>
-              </div>
-              <p
-                ref={hintRef}
-                className="pain-points-deck-hint font-mono-tech"
-                aria-hidden
-              >
-                גללו ↓
-              </p>
-            </div>
-
-            <div ref={ctaRevealRef} className="pain-points-deck-cta-reveal">
-              <div className="pain-points-deck-cta-reveal-glow" aria-hidden />
-              <PainPointsCta reveal className="pain-points-deck-cta-reveal-card" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function PainPointsList({ reduced }: { reduced: boolean }) {
-  return (
-    <div className="pain-points-grid grid gap-7 md:grid-cols-2 md:gap-6">
-      {pains.map((pain, i) => (
-        <PainPointCard key={pain.title} pain={pain} index={i} reduced={reduced} />
-      ))}
-    </div>
+    </motion.article>
   )
 }
 
@@ -897,17 +190,6 @@ export function PainPoints() {
     return () => window.clearTimeout(timer)
   }, [reduced])
 
-  useEffect(() => {
-    if (reduced) return
-    const refresh = () => ScrollTrigger.refresh()
-    const timer = window.setTimeout(refresh, 400)
-    window.addEventListener('load', refresh)
-    return () => {
-      window.clearTimeout(timer)
-      window.removeEventListener('load', refresh)
-    }
-  }, [reduced])
-
   const showHeadline = reduced || headlineInView || headlineFallback
 
   return (
@@ -918,38 +200,33 @@ export function PainPoints() {
       <SectionLuxuryBg variant="surface" />
 
       <div className="container-site relative z-10">
-        {reduced ? (
-          <PainPointsHeader
-            headerRef={headerRef}
-            reduced={reduced}
-            showHeadline={showHeadline}
-          />
-        ) : null}
+        <PainPointsHeader
+          headerRef={headerRef}
+          reduced={reduced}
+          showHeadline={showHeadline}
+        />
 
-        <div className="pain-points-stack relative mx-auto max-w-2xl">
-          {reduced ? (
-            <PainPointsList reduced={reduced} />
-          ) : (
-            <PainPointsDeck
+        <div className="pain-points-scroll relative mx-auto max-w-2xl">
+          {pains.map((pain, i) => (
+            <PlayingCard
+              key={pain.title}
+              pain={pain}
+              index={i}
               reduced={reduced}
-              headerRef={headerRef}
-              showHeadline={showHeadline}
             />
-          )}
+          ))}
         </div>
 
-        {reduced ? (
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportPainPoints}
-            variants={fadeUpScale}
-            transition={{ delay: 0.15 }}
-            className="mx-auto mt-14 max-w-2xl md:mt-16"
-          >
-            <PainPointsCta />
-          </motion.div>
-        ) : null}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportPainPoints}
+          variants={fadeUpScale}
+          transition={{ delay: 0.1 }}
+          className="mx-auto mt-12 max-w-2xl md:mt-16"
+        >
+          <PainPointsCta />
+        </motion.div>
       </div>
     </section>
   )

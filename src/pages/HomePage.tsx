@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -9,6 +9,7 @@ import { ScrollProgress } from '@/components/ui/ScrollProgress'
 import { SplashScreen } from '@/components/layout/SplashScreen'
 import { Hero } from '@/components/sections/Hero'
 import { PainPoints } from '@/components/sections/PainPoints'
+import { Benefits } from '@/components/sections/Benefits'
 import { About } from '@/components/sections/About'
 import { Portfolio } from '@/components/sections/Portfolio'
 import { Process } from '@/components/sections/Process'
@@ -20,22 +21,8 @@ import { useSmoothAnchorScroll } from '@/hooks/useSmoothAnchorScroll'
 import { scheduleScrollTriggerRefresh, cancelScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import { EASE } from '@/lib/motion'
 
-const Benefits = lazy(() =>
-  import('@/components/sections/Benefits').then((m) => ({ default: m.Benefits })),
-)
-
 type HomeContentProps = {
   isFirstReveal: boolean
-}
-
-function BenefitsSection() {
-  useEffect(() => {
-    scheduleScrollTriggerRefresh(120)
-    scheduleScrollTriggerRefresh(600)
-    scheduleScrollTriggerRefresh(1200)
-  }, [])
-
-  return <Benefits />
 }
 
 function HomeContent({ isFirstReveal }: HomeContentProps) {
@@ -51,9 +38,7 @@ function HomeContent({ isFirstReveal }: HomeContentProps) {
         <SectionDivider variant="wave" tone="to-surface" />
         <PainPoints />
         <SectionDivider variant="gradient-line" />
-        <Suspense fallback={<div className="benefits-section min-h-svh" aria-hidden />}>
-          <BenefitsSection />
-        </Suspense>
+        <Benefits />
         <SectionDivider variant="diagonal" tone="to-surface" />
         <SectionWrapper reveal parallax>
           <About />
