@@ -506,7 +506,7 @@ function PainPointsDeck({
       const hint = hintRef.current
       const display = displayRef.current
 
-      const localCtx = gsap.context(() => {
+      ctx = gsap.context(function (this: gsap.Context) {
         const cardScrollDistance = Math.round(
           viewportHeight * deckScrollVh * cardSteps,
         )
@@ -729,7 +729,7 @@ function PainPointsDeck({
             passive: true,
           })
 
-          localCtx.add(() => {
+          this.add(() => {
             if (scrollRaf) cancelAnimationFrame(scrollRaf)
             window.removeEventListener('scroll', onMobileScroll)
             window.visualViewport?.removeEventListener('scroll', onMobileScroll)
@@ -778,8 +778,6 @@ function PainPointsDeck({
 
         updateAll(0)
       }, pin)
-
-      ctx = localCtx
 
       pin.style.setProperty('--deck-progress', '0')
       pin.style.setProperty('--deck-index', '0')
