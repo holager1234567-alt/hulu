@@ -17,7 +17,7 @@ import {
 } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
-import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion'
+import { EASE, fadeUpScale, viewportPainPoints } from '@/lib/motion'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -97,7 +97,7 @@ function PainPointsHeader({
       ref={headerRef}
       initial="hidden"
       whileInView="visible"
-      viewport={viewportOnce}
+      viewport={viewportPainPoints}
       variants={fadeUpScale}
       className={`mx-auto max-w-3xl text-center ${
         deckPinned ? 'pain-points-deck-header' : 'mb-10 md:mb-12'
@@ -139,7 +139,7 @@ function PainPointsHeader({
       <motion.p
         initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={viewportOnce}
+        viewport={viewportPainPoints}
         transition={{ duration: 0.6, ease: EASE, delay: 0.28 }}
         className={`leading-relaxed text-muted dark:text-white/65 ${
           deckPinned
@@ -293,7 +293,7 @@ const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
       margin: '-28% 0px -28% 0px',
     })
 
-    const hasEntered = useInView(localRef, viewportOnceTight)
+    const hasEntered = useInView(localRef, viewportPainPoints)
 
     useEffect(() => {
       if (reduced || !hasEntered) return
@@ -338,7 +338,7 @@ const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
         ref={setRef}
         initial="hidden"
         whileInView="visible"
-        viewport={viewportOnceTight}
+        viewport={viewportPainPoints}
         variants={cardVariants}
         style={{ perspective: 900 }}
         whileHover={
@@ -360,7 +360,7 @@ const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
         <motion.span
           initial={reduced ? { scaleY: 1 } : { scaleY: 0 }}
           whileInView={{ scaleY: 1 }}
-          viewport={viewportOnceTight}
+          viewport={viewportPainPoints}
           transition={{
             duration: 0.65,
             ease: EASE,
@@ -373,7 +373,7 @@ const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
         <motion.span
           initial={reduced ? { scaleY: 1 } : { scaleY: 0 }}
           whileInView={{ scaleY: 1 }}
-          viewport={viewportOnceTight}
+          viewport={viewportPainPoints}
           transition={{
             duration: 0.55,
             ease: EASE,
@@ -400,7 +400,7 @@ const PainPointCard = forwardRef<HTMLElement, PainPointCardProps>(
             y: 0,
             color: 'rgba(122, 28, 46, 0.18)',
           }}
-          viewport={viewportOnceTight}
+          viewport={viewportPainPoints}
           transition={{
             duration: 0.9,
             ease: EASE,
@@ -569,9 +569,17 @@ function PainPointsDeck({
           }
         }
 
+        let lastDeckProgress = ''
+        let lastDeckCtaProgress = ''
+        let lastDeckIndex = -1
+
         const updateDeck = (progress: number) => {
           if (!isMobile) {
-            pin.style.setProperty('--deck-progress', progress.toFixed(4))
+            const nextProgress = progress.toFixed(3)
+            if (nextProgress !== lastDeckProgress) {
+              pin.style.setProperty('--deck-progress', nextProgress)
+              lastDeckProgress = nextProgress
+            }
           }
 
           const exact = progress * cardSteps
@@ -607,7 +615,10 @@ function PainPointsDeck({
           })
 
           const displayIdx = local > 0.35 ? Math.min(idx + 1, cardSteps) : idx
-          pin.style.setProperty('--deck-index', String(displayIdx))
+          if (displayIdx !== lastDeckIndex) {
+            pin.style.setProperty('--deck-index', String(displayIdx))
+            lastDeckIndex = displayIdx
+          }
           if (mounted) updateDisplayIndex(displayIdx)
         }
 
@@ -621,7 +632,11 @@ function PainPointsDeck({
                   (totalProgress - cardPhaseEnd) / (1 - cardPhaseEnd),
                 )
 
-          pin.style.setProperty('--deck-cta-progress', ctaProgress.toFixed(4))
+          const nextCtaProgress = ctaProgress.toFixed(3)
+          if (nextCtaProgress !== lastDeckCtaProgress) {
+            pin.style.setProperty('--deck-cta-progress', nextCtaProgress)
+            lastDeckCtaProgress = nextCtaProgress
+          }
 
           const deckFade = 1 - gsap.utils.clamp(0, 1, ctaProgress * 2.8)
           const deckLift = ctaProgress * -20
@@ -875,7 +890,7 @@ function PainPointsList({ reduced }: { reduced: boolean }) {
 export function PainPoints() {
   const reduced = !!useReducedMotion()
   const headerRef = useRef<HTMLElement>(null)
-  const headlineInView = useInView(headerRef, viewportOnce)
+  const headlineInView = useInView(headerRef, viewportPainPoints)
   const [headlineFallback, setHeadlineFallback] = useState(false)
 
   useEffect(() => {
@@ -929,7 +944,7 @@ export function PainPoints() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportOnceTight}
+            viewport={viewportPainPoints}
             variants={fadeUpScale}
             transition={{ delay: 0.15 }}
             className="mx-auto mt-14 max-w-2xl md:mt-16"

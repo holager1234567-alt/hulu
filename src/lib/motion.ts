@@ -10,6 +10,7 @@ export const defaultTransition: Transition = {
 }
 
 export const viewportOnce = { once: true, amount: 0.15 as const }
+export const viewportPainPoints = { once: true, amount: 0.2 as const }
 export const viewportOnceTight = { once: true, amount: 0.15, margin: '-40px' as const }
 export const viewportInView = { once: true, amount: 0.15, margin: '-72px' as const }
 
