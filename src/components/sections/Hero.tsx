@@ -15,9 +15,16 @@ import {
   lineRevealItemReduced,
 } from '@/lib/motion'
 
-const headlineLight = 'אני לא מעצבת עוד אתר...'
-const subheadline =
-  'שילוב של עיצוב UI/UX מתקדם, קופירייטינג מדויק, אלמנטים תלת-ממדיים ואופטימיזציה להמרות, כדי להוציא את המותג שלך מהתבנית ולהפוך גולשים ללקוחות.'
+import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
+
+const HERO_HEADLINE_LINE_1 = 'העסק שלכם כבר מדבר.'
+const HERO_HEADLINE_LINE_2 = 'הגיע הזמן שהאתר'
+const HERO_HEADLINE_EMPHASIS = 'יספר את הסיפור שלו'
+const HERO_SUBHEADLINE_LEAD = 'אתר דמו בחינם + שיחת אפיון אישית'
+const HERO_SUBHEADLINE_DETAIL =
+  'כדי להבין את העסק, הלקוחות והחזון שלכם לפני שמעצבים.'
+const HERO_SECONDARY_CTA = 'לראות עבודות נבחרות'
+const PORTFOLIO_ANCHOR = '#work'
 
 type HeroProps = {
   isFirstReveal?: boolean
@@ -130,54 +137,70 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               <span className="block overflow-hidden py-0.5">
                 <motion.span
                   variants={lineVariants}
-                  className="hero-luxury-headline-light font-mono-tech block"
+                  className="hero-luxury-headline-bold block"
                 >
-                  {headlineLight}
+                  {HERO_HEADLINE_LINE_1}
                 </motion.span>
               </span>
 
-              <span className="block overflow-hidden py-0.5">
+              <span className="hero-luxury-headline-line--story block overflow-visible py-0.5">
                 <motion.span
                   variants={lineVariants}
                   className="hero-luxury-headline-bold block"
                 >
-                  אני בונה{' '}
+                  {HERO_HEADLINE_LINE_2}
                   <span className="hero-luxury-emphasis">
                     <span className="hero-luxury-emphasis-glow" aria-hidden />
-                    <span className="hero-luxury-emphasis-text">מנוע צמיחה</span>
-                    <span className="hero-luxury-emphasis-line" aria-hidden />
+                    <span className="hero-luxury-emphasis-text">
+                      <span className="hero-luxury-emphasis-words-wrap">
+                        <span className="hero-luxury-emphasis-words-glint" aria-hidden />
+                        <span className="hero-luxury-emphasis-words-rail" aria-hidden />
+                        <span
+                          className="hero-luxury-emphasis-words-corner hero-luxury-emphasis-words-corner--start"
+                          aria-hidden
+                        />
+                        <span
+                          className="hero-luxury-emphasis-words-corner hero-luxury-emphasis-words-corner--end"
+                          aria-hidden
+                        />
+                        <span className="hero-luxury-emphasis-words">{HERO_HEADLINE_EMPHASIS}</span>
+                      </span>
+                      <span className="hero-luxury-emphasis-dot" aria-hidden>
+                        .
+                      </span>
+                    </span>
+                    <span className="hero-luxury-emphasis-shadow" aria-hidden />
                   </span>
-                  <br />
-                  <span className="whitespace-nowrap">לעסק שלך.</span>
                 </motion.span>
               </span>
             </h1>
 
-            <motion.p
+            <motion.div
               custom={0}
               initial="hidden"
               animate="visible"
               variants={bodyVariants}
-              className="hero-luxury-subheadline mt-4 max-w-lg md:mt-5"
+              className="hero-luxury-subheadline mt-5 max-w-xl space-y-1 md:mt-6 md:max-w-2xl"
             >
-              {subheadline}
-            </motion.p>
+              <p>{HERO_SUBHEADLINE_LEAD}</p>
+              <p>{HERO_SUBHEADLINE_DETAIL}</p>
+            </motion.div>
 
             <motion.div
               custom={1}
               initial="hidden"
               animate="visible"
               variants={ctaVariants}
-              className="hero-luxury-actions mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center md:mt-7"
+              className="hero-luxury-actions mt-7 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center md:mt-8"
             >
               <Button
                 asChild
                 variant="burgundy"
                 size="lg"
-                className="group hero-luxury-cta-primary luxury-interactive h-12 w-full rounded-full px-7 text-base sm:w-auto"
+                className="group btn-burgundy-glow hero-luxury-cta-primary luxury-interactive h-12 w-full rounded-full px-8 text-base font-semibold sm:w-auto md:h-[3.25rem] md:px-9 md:text-[1.05rem]"
               >
-                <a href="#contact">
-                  להתחלת השאלון המהיר
+                <a href={LEAD_FLOW_ANCHOR}>
+                  {LEAD_FLOW_CTA_LABEL}
                   <ArrowLeft
                     className="size-4 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1.5"
                     aria-hidden
@@ -189,9 +212,9 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                 asChild
                 variant="outline"
                 size="lg"
-                className="hero-luxury-cta-secondary luxury-interactive luxury-interactive--glass h-12 w-full rounded-full px-7 text-base sm:w-auto"
+                className="hero-luxury-cta-secondary luxury-interactive luxury-interactive--glass h-12 w-full rounded-full border-white/50 bg-white/25 px-7 text-base font-medium text-[#121212]/85 sm:w-auto md:h-[3.25rem]"
               >
-                <a href="#work">צפייה בעבודות</a>
+                <a href={PORTFOLIO_ANCHOR}>{HERO_SECONDARY_CTA}</a>
               </Button>
             </motion.div>
           </motion.div>

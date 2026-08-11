@@ -1,65 +1,51 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import {
   EASE,
-  fadeUpScale,
+  headlineStagger,
+  lineRevealItem,
+  lineRevealItemReduced,
   viewportOnce,
-  viewportOnceTight,
 } from '@/lib/motion'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const steps = [
   {
-    title: 'שיחת מכירה',
-    text: 'הכרות ראשונית, הבנת הצרכים של העסק שלך והגדרת המטרות שלשמן אתה צריך את האתר.',
+    title: 'מכירים את העסק',
+    text: 'מבינים מי אתם, למי אתם מדברים ומה אתם רוצים להשיג.',
   },
   {
-    title: 'פגישת אפיון ושליחת חומרים',
-    text: 'פגישת זום ממוקדת שבה נגדיר את הויזן, המראה והסגנון הוויזואלי של האתר, לצד שליחת החומרים והתמונות הדרושים.',
+    title: 'בונים כיוון',
+    text: 'מגדירים את המסר, המבנה והחוויה.',
   },
   {
-    title: 'מקדמה וחתימת חוזה',
-    text: 'מסדירים את תחילת העבודה באופן רשמי כדי לצאת לדרך בראש שקט.',
+    title: 'מעצבים',
+    text: 'הופכים את הכיוון לשפה ויזואלית מדויקת.',
   },
   {
-    title: 'פיתוח ובניית האתר (כ14 ימים)',
-    text: 'תהליך העבודה נמשך כשבועיים (בתלות במורכבות הדרישות ובזמינות שליחת החומרים). לאורך התקופה יעברו אליך גרסאות ניסיון (טיוטות) של האתר לאישור, עם עד 3 סבבי תיקונים ושינויים לבחירתך.',
+    title: 'בונים',
+    text: 'הופכים את העיצוב לאתר אמיתי שעובד.',
   },
   {
-    title: 'השקת האתר וקידום ממומן',
-    text: 'האתר יוצא לאוויר העולם, מוכן להתחיל לעבוד בשבילך ולהביא תוצאות, כולל חיבור ופרסום בקמפיינים ממומנים.',
+    title: 'עולים לאוויר',
+    text: 'בודקים, מלטשים ומשחררים את האתר לעולם.',
   },
+] as const
+
+const headlineLines = [
+  'מרעיון',
+  'לאתר שעובד',
+  'בשביל העסק שלכם.',
 ]
 
-function ProcessNode({
-  index,
-  active,
-  done,
-  reduced,
-}: {
-  index: number
-  active: boolean
-  done: boolean
-  reduced: boolean
-}) {
-  const num = String(index + 1).padStart(2, '0')
-
-  return (
-    <div
-      className={`process-node ${active ? 'process-node--active' : ''} ${done ? 'process-node--done' : ''}`}
-    >
-      <span className="process-node-ring" aria-hidden />
-      {active && !reduced && <span className="process-node-pulse" aria-hidden />}
-      <span className="process-node-core">
-        <span className="process-node-num font-mono-tech">{num}</span>
-      </span>
-    </div>
-  )
+const DESIGN_PREVIEW = {
+  src: '/images/portfolio/cohen-law-hero.png',
+  alt: 'תצוגה מקדימה של עיצוב אתר, משרד עורכי דין כהן',
 }
 
 export function Process() {
@@ -96,9 +82,9 @@ export function Process() {
           ease: 'none',
           scrollTrigger: {
             trigger: track,
-            start: 'top 58%',
-            end: 'bottom 42%',
-            scrub: 0.45,
+            start: 'top 62%',
+            end: 'bottom 38%',
+            scrub: 0.55,
           },
         },
       )
@@ -107,8 +93,8 @@ export function Process() {
         if (!el) return
         ScrollTrigger.create({
           trigger: el,
-          start: 'top 60%',
-          end: 'bottom 40%',
+          start: 'top 58%',
+          end: 'bottom 42%',
           onEnter: () => {
             if (mountedRef.current) setActiveStep(i)
           },
@@ -130,62 +116,90 @@ export function Process() {
     scheduleScrollTriggerRefresh(1000)
   }, [reduced])
 
-  const progressNum = String(activeStep + 1).padStart(2, '0')
-  const progressTotal = String(steps.length).padStart(2, '0')
+  const lineVariants = reduced ? lineRevealItemReduced : lineRevealItem
 
   return (
     <section
       ref={sectionRef}
       id="process"
-      className="process-section section-pad relative overflow-hidden bg-section-process"
+      className="process-section section-pad relative overflow-x-clip bg-section-process"
+      aria-labelledby="process-heading"
     >
       <SectionLuxuryBg variant="process" />
-      <div className="process-accent-glow" aria-hidden />
 
       <div className="container-site relative z-10">
-        <motion.header
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={fadeUpScale}
-          className="process-header mx-auto mb-12 max-w-3xl text-center md:mb-16"
-        >
-          <p className="process-kicker font-mono-tech mb-4 text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:text-xs">
-            the process
-          </p>
-          <h2 className="font-display text-3xl font-bold leading-tight md:text-4xl lg:text-[2.5rem]">
-            <span className="block text-burgundy">איך התהליך עובד?</span>
-            <span className="process-headline-sub mt-1 block text-xl font-semibold text-primary md:mt-1.5 md:text-2xl lg:text-[1.85rem] dark:text-white">
-              שלב אחר שלב
-            </span>
-          </h2>
-          <hr className="tech-divider mx-auto mt-6 max-w-xs md:mt-8 md:max-w-sm" />
-        </motion.header>
+        <div className="process-editorial">
+          <header className="process-intro">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              variants={headlineStagger}
+            >
+              <p className="process-kicker font-mono-tech mb-5 text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:mb-6 md:text-xs">
+                the process
+              </p>
 
-        <div className="process-layout mx-auto max-w-3xl lg:max-w-4xl">
-          <div
-            className="process-progress font-mono-tech"
-            aria-live="polite"
-            aria-label={`שלב ${activeStep + 1} מתוך ${steps.length}`}
-          >
-            <span className="process-progress-current">{progressNum}</span>
-            <span className="process-progress-sep" aria-hidden>
-              /
-            </span>
-            <span className="process-progress-total">{progressTotal}</span>
-          </div>
+              <h2
+                id="process-heading"
+                className="process-headline font-display font-bold leading-[1.06] text-burgundy"
+              >
+                {headlineLines.map((line) => (
+                  <span key={line} className="process-headline-line block overflow-hidden py-0.5">
+                    <motion.span className="block" variants={lineVariants}>
+                      {line}
+                    </motion.span>
+                  </span>
+                ))}
+              </h2>
 
-          <div ref={trackRef} className="process-track">
+              <motion.p
+                className="process-lead mt-5 max-w-md text-base leading-relaxed text-muted md:mt-6 md:text-lg dark:text-white/65"
+                variants={lineVariants}
+              >
+                תהליך מדויק שמחבר בין אסטרטגיה, עיצוב וחוויה,
+                כדי שהאתר ירגיש בדיוק כמו העסק שלכם.
+              </motion.p>
+            </motion.div>
+
+            <motion.aside
+              className="process-diff"
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.7, ease: EASE, delay: reduced ? 0 : 0.35 }}
+            >
+              <p className="process-diff-lead font-display text-lg font-semibold leading-snug text-burgundy md:text-xl">
+                אני לא מתחילה מהמסך.
+                <br />
+                אני מתחילה מהעסק.
+              </p>
+              <p className="process-diff-note mt-3 max-w-xs text-sm leading-relaxed text-muted dark:text-white/50">
+                לפני העיצוב, אני מבינה מה צריך לקרות באתר כדי שהלקוח הנכון ירגיש
+                שהוא הגיע למקום הנכון.
+              </p>
+            </motion.aside>
+          </header>
+
+          <div ref={trackRef} className="process-timeline-wrap">
             <div className="process-rail" aria-hidden>
               <div className="process-rail-track" />
-              <div ref={fillRef} className="process-rail-fill" />
+              <div ref={fillRef} className="process-rail-fill">
+                {!reduced && <span className="process-rail-marker" />}
+              </div>
             </div>
 
-            <ol className="process-list">
+            <ol
+              className="process-list"
+              aria-label="שלבי תהליך העבודה"
+              aria-live="polite"
+            >
               {steps.map((step, i) => {
                 const num = String(i + 1).padStart(2, '0')
                 const isActive = activeStep === i
-                const isDone = i < activeStep
+                const isPast = !reduced && i < activeStep
+                const isFuture = !reduced && i > activeStep
+                const isDesignStep = i === 2
 
                 return (
                   <li
@@ -193,45 +207,103 @@ export function Process() {
                     ref={(el) => {
                       stepRefs.current[i] = el
                     }}
-                    className={`process-step ${isActive ? 'process-step--active' : ''} ${isDone ? 'process-step--done' : ''}`}
+                    className={[
+                      'process-step',
+                      isActive ? 'process-step--active' : '',
+                      isPast ? 'process-step--past' : '',
+                      isFuture ? 'process-step--future' : '',
+                      isDesignStep ? 'process-step--design' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-current={!reduced && isActive ? 'step' : undefined}
                   >
-                    <div className="process-node-col">
-                      <ProcessNode
-                        index={i}
-                        active={isActive}
-                        done={isDone}
-                        reduced={!!reduced}
-                      />
-                    </div>
-
-                    <motion.article
-                      initial={
-                        reduced
-                          ? { opacity: 1, x: 0, filter: 'blur(0px)' }
-                          : { opacity: 0, x: -24, filter: 'blur(6px)' }
-                      }
-                      whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                      viewport={{ ...viewportOnceTight, margin: '0px 0px -8% 0px' }}
-                      transition={{
-                        duration: 0.65,
-                        ease: EASE,
-                        delay: i * 0.06,
-                      }}
-                      className={`process-step-card glass-card tech-corners tech-corners-light ${isActive ? 'process-step-card--active' : ''}`}
+                    <span
+                      className="process-step-num font-mono-tech"
+                      aria-hidden
                     >
-                      <span className="process-step-watermark font-mono-tech" aria-hidden>
-                        {num}
-                      </span>
-                      <span className="process-step-index font-mono-tech">{num}</span>
+                      {num}
+                    </span>
+
+                    <div className="process-step-body">
                       <h3 className="process-step-title">{step.title}</h3>
-                      <p className="process-step-text">{step.text}</p>
-                    </motion.article>
+
+                      <motion.p
+                        className="process-step-text"
+                        initial={false}
+                        animate={
+                          reduced
+                            ? { opacity: 1, y: 0 }
+                            : {
+                                opacity: isActive ? 1 : 0.42,
+                                y: isActive ? 0 : 6,
+                              }
+                        }
+                        transition={{ duration: 0.55, ease: EASE }}
+                      >
+                        {step.text}
+                      </motion.p>
+
+                      {isDesignStep && (
+                        <AnimatePresence>
+                          {(reduced || isActive) && (
+                            <motion.div
+                              className="process-design-preview"
+                              initial={
+                                reduced
+                                  ? { opacity: 1, clipPath: 'inset(0 0 0 0)' }
+                                  : { opacity: 0, clipPath: 'inset(0 0 100% 0)' }
+                              }
+                              animate={{
+                                opacity: 1,
+                                clipPath: 'inset(0 0 0 0)',
+                              }}
+                              exit={
+                                reduced
+                                  ? undefined
+                                  : { opacity: 0, clipPath: 'inset(0 0 100% 0)' }
+                              }
+                              transition={{ duration: 0.85, ease: EASE }}
+                            >
+                              <img
+                                src={DESIGN_PREVIEW.src}
+                                alt={DESIGN_PREVIEW.alt}
+                                width={960}
+                                height={540}
+                                loading="lazy"
+                                decoding="async"
+                                className="process-design-preview-img"
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </div>
                   </li>
                 )
               })}
             </ol>
           </div>
         </div>
+
+        <motion.footer
+          className="process-closing"
+          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.75, ease: EASE }}
+        >
+          <p className="process-closing-text font-display font-bold leading-tight text-burgundy">
+            <span className="block">ומכאן</span>
+            <span className="block">האתר מתחיל לעבוד בשבילכם.</span>
+          </p>
+          <a href="#work" className="process-closing-link group">
+            <span>לצפייה בפרויקטים</span>
+            <span className="process-closing-link-arrow" aria-hidden>
+              →
+            </span>
+          </a>
+        </motion.footer>
       </div>
     </section>
   )

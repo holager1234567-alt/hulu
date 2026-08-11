@@ -3,15 +3,31 @@ import {
   motion,
   useInView,
   useReducedMotion,
-  type Variants,
+  useScroll,
+  useTransform,
 } from 'framer-motion'
+import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
+import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion'
 
-const projects = [
+type Project = {
+  title: string
+  field: string
+  insight: string
+  url: string
+  /** Live site URL — set to enable the hover CTA link. */
+  href?: string
+  hero: { src: string; alt: string }
+  secondary: { src: string; alt: string }
+}
+
+const projects: Project[] = [
   {
     title: 'כהן בן עמי',
+    field: 'משרד עורכי דין',
+    insight: 'אתר שמשדר ביטחון וסמכות בעולם המשפט.',
     url: 'cohen-law.co.il',
     hero: {
       src: '/images/portfolio/cohen-law-hero.png',
@@ -24,6 +40,8 @@ const projects = [
   },
   {
     title: 'סוכן AI',
+    field: 'טכנולוגיה ואוטומציה',
+    insight: 'אתר שמפשט מוצר טכנולוגי ומייצר תחושת אמון.',
     url: 'ai-agent.io',
     hero: {
       src: '/images/portfolio/ai-agent-hero.png',
@@ -36,6 +54,8 @@ const projects = [
   },
   {
     title: 'tru_riss',
+    field: 'סטודיו יופי וריסים',
+    insight: 'אתר שמכניס את האישיות והאסתטיקה של המותג לתוך החוויה.',
     url: 'tru-riss.co.il',
     hero: {
       src: '/images/portfolio/tru-riss-hero.png',
@@ -48,6 +68,8 @@ const projects = [
   },
   {
     title: 'Ride With Yoav',
+    field: 'קהילת רכיבה וטיולי שטח',
+    insight: 'אתר שמחבר קהילה, אקשן ואווירה אותנטית.',
     url: 'ridewithyoav.com',
     hero: {
       src: '/images/portfolio/ride-yoav-hero.png',
@@ -60,21 +82,20 @@ const projects = [
   },
 ]
 
-const headlineLines = [
-  'מבחר פרויקטים שמשלבים',
-  'דיוק עיצוב עם חשיבה עסקית ברורה',
-]
+const headlineLines = ['אתרים שנבנו סביב המותג.']
 
 function BrowserMockup({
   src,
   alt,
   url,
   variant = 'main',
+  overlay,
 }: {
   src: string
   alt: string
   url: string
   variant?: 'main' | 'secondary'
+  overlay?: Project
 }) {
   return (
     <div className={`portfolio-browser portfolio-browser--${variant}`}>
@@ -96,6 +117,28 @@ function BrowserMockup({
           decoding="async"
           className="portfolio-browser-shot"
         />
+        {overlay ? (
+          <div className="portfolio-overlay">
+            <div className="portfolio-overlay-meta">
+              <p className="portfolio-overlay-title">{overlay.title}</p>
+              <p className="portfolio-overlay-field">{overlay.field}</p>
+              {overlay.href ? (
+                <a
+                  href={overlay.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="portfolio-overlay-cta group/cta"
+                >
+                  לצפייה בפרויקט
+                  <ArrowLeft
+                    className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/cta:-translate-x-1"
+                    aria-hidden
+                  />
+                </a>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
       <span className="portfolio-browser-shine" aria-hidden />
     </div>
@@ -106,102 +149,149 @@ function ProjectCard({
   project,
   index,
   reduced,
-  isLast,
 }: {
   project: (typeof projects)[number]
   index: number
   reduced: boolean
-  isLast: boolean
 }) {
   const ref = useRef<HTMLElement>(null)
   const num = String(index + 1).padStart(2, '0')
   const flipped = index % 2 === 1
 
-  const hasEntered = useInView(ref, viewportOnceTight)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 0.92', 'end 0.2'],
+  })
 
-  const cardVariants: Variants = reduced
-    ? {
-        hidden: { opacity: 1, y: 0 },
-        visible: { opacity: 1, y: 0 },
-      }
-    : {
-        hidden: { opacity: 0, y: 48, filter: 'blur(4px)' },
-        visible: {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          transition: {
-            duration: 0.8,
-            ease: EASE,
-            delay: index * 0.08,
-          },
-        },
-      }
+  const cardOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.22, 0.55, 0.88, 1],
+    reduced ? [1, 1, 1, 1, 1] : [0.2, 1, 1, 1, 0.35],
+  )
+  const cardScale = useTransform(
+    scrollYProgress,
+    [0, 0.28, 0.72, 1],
+    reduced ? [1, 1, 1, 1] : [0.94, 1, 1, 0.97],
+  )
+  const cardY = useTransform(
+    scrollYProgress,
+    [0, 0.32],
+    reduced ? [0, 0] : [40, 0],
+  )
+  const showcaseY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    reduced ? [0, 0] : [28, -28],
+  )
+  const metaX = useTransform(
+    scrollYProgress,
+    [0, 0.35],
+    reduced ? [0, 0] : flipped ? [20, 0] : [-20, 0],
+  )
+  const watermarkOpacity = useTransform(
+    scrollYProgress,
+    [0.15, 0.45, 0.85],
+    reduced ? [0.22, 0.22, 0.22] : [0, 0.22, 0.08],
+  )
 
   return (
-    <>
-      <motion.article
-        ref={ref}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnceTight}
-        variants={cardVariants}
-        className={`portfolio-card group ${flipped ? 'portfolio-card--flipped' : ''}`}
+    <motion.article
+      ref={ref}
+      style={
+        reduced
+          ? undefined
+          : {
+              opacity: cardOpacity,
+              scale: cardScale,
+              y: cardY,
+              willChange: 'transform, opacity',
+            }
+      }
+      className={`portfolio-card group ${flipped ? 'portfolio-card--flipped' : ''}`}
+    >
+      <motion.span
+        className="portfolio-watermark font-mono-tech portfolio-watermark--scroll"
+        style={reduced ? undefined : { opacity: watermarkOpacity }}
+        aria-hidden
       >
-        <span
-          className={`portfolio-watermark font-mono-tech ${hasEntered ? 'portfolio-watermark--revealed' : ''}`}
-          aria-hidden
+        {num}
+      </motion.span>
+
+      <div className="portfolio-card-inner">
+        <motion.div
+          className="portfolio-showcase-col"
+          style={
+            reduced ? undefined : { y: showcaseY, willChange: 'transform' }
+          }
         >
-          {num}
-        </span>
-
-        <div className="portfolio-card-inner">
-          <div className="portfolio-showcase-col">
-            <div className="portfolio-showcase">
-              <BrowserMockup
-                variant="secondary"
-                src={project.secondary.src}
-                alt={project.secondary.alt}
-                url={project.url}
-              />
-              <BrowserMockup
-                variant="main"
-                src={project.hero.src}
-                alt={project.hero.alt}
-                url={project.url}
-              />
-            </div>
+          <div className="portfolio-showcase">
+            <BrowserMockup
+              variant="secondary"
+              src={project.secondary.src}
+              alt={project.secondary.alt}
+              url={project.url}
+            />
+            <BrowserMockup
+              variant="main"
+              src={project.hero.src}
+              alt={project.hero.alt}
+              url={project.url}
+              overlay={project}
+            />
           </div>
+        </motion.div>
 
-          <motion.div
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnceTight}
-            transition={{
-              duration: 0.55,
-              ease: EASE,
-              delay: reduced ? 0 : index * 0.08 + 0.2,
-            }}
-            className="portfolio-meta-col"
-          >
-            <span className="portfolio-index font-mono-tech">{num}</span>
-            <h3 className="portfolio-title text-xl font-bold text-burgundy md:text-2xl lg:text-[1.65rem]">
-              {project.title}
-            </h3>
-          </motion.div>
-        </div>
-      </motion.article>
-
-      {!isLast && <hr className="portfolio-divider tech-divider" aria-hidden />}
-    </>
+        <motion.div
+          style={
+            reduced ? undefined : { x: metaX, willChange: 'transform' }
+          }
+          className="portfolio-meta-col"
+        >
+          <span className="portfolio-index font-mono-tech">{num}</span>
+          <h3 className="portfolio-title text-xl font-bold text-burgundy md:text-2xl lg:text-[1.65rem]">
+            {project.title}
+          </h3>
+          <p className="portfolio-field mt-1.5 text-sm text-muted md:text-base dark:text-white/60">
+            {project.field}
+          </p>
+          <p className="portfolio-insight mt-2 text-sm leading-relaxed text-primary/80 md:text-base dark:text-white/75">
+            {project.insight}
+          </p>
+        </motion.div>
+      </div>
+    </motion.article>
   )
 }
 
 export function Portfolio() {
   const reduced = useReducedMotion()
+  const sectionRef = useRef<HTMLElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
   const headlineInView = useInView(headerRef, viewportOnce)
   const [headlineFallback, setHeadlineFallback] = useState(false)
+
+  const { scrollYProgress: sectionProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  })
+
+  const { scrollYProgress: listProgress } = useScroll({
+    target: listRef,
+    offset: ['start 0.75', 'end 0.25'],
+  })
+
+  const railFill = useTransform(listProgress, [0, 1], [0, 1])
+  const headerY = useTransform(
+    sectionProgress,
+    [0, 0.35],
+    reduced ? [0, 0] : [24, 0],
+  )
+  const headerOpacity = useTransform(
+    sectionProgress,
+    [0, 0.2],
+    reduced ? [1, 1] : [0.4, 1],
+  )
 
   useEffect(() => {
     if (reduced) return
@@ -213,21 +303,35 @@ export function Portfolio() {
 
   return (
     <section
+      ref={sectionRef}
       id="work"
-      className="portfolio-section section-pad relative overflow-hidden bg-section-portfolio"
+      className="portfolio-section portfolio-section--white section-pad relative overflow-x-clip bg-section-portfolio"
     >
       <SectionLuxuryBg variant="portfolio" />
-      <div className="portfolio-accent-glow" aria-hidden />
-      <div className="portfolio-horizon" aria-hidden />
+
+      {!reduced ? (
+        <div className="portfolio-scroll-rail" aria-hidden>
+          <div className="portfolio-scroll-rail-track" />
+          <motion.div
+            className="portfolio-scroll-rail-fill"
+            style={{ scaleY: railFill }}
+          />
+        </div>
+      ) : null}
 
       <div className="container-site relative z-10">
         <motion.header
           ref={headerRef}
+          style={
+            reduced
+              ? undefined
+              : { y: headerY, opacity: headerOpacity, willChange: 'transform' }
+          }
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
           variants={fadeUpScale}
-          className="mx-auto mb-14 max-w-3xl text-center md:mb-16"
+          className="mx-auto mb-10 max-w-3xl text-center md:mb-12"
         >
           <p className="portfolio-kicker font-mono-tech mb-4 text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:text-xs">
             selected work
@@ -255,17 +359,26 @@ export function Portfolio() {
             ))}
           </h2>
 
+          <motion.p
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.24 }}
+            className="mt-5 text-base leading-relaxed text-muted dark:text-white/65 md:text-lg"
+          >
+            כל פרויקט נבנה סביב העסק שמאחוריו, כדי להרגיש מדויק, ייחודי ונכון לקהל שלו.
+          </motion.p>
+
           <hr className="tech-divider mx-auto mt-6 max-w-xs md:mt-8 md:max-w-sm" />
         </motion.header>
 
-        <div className="portfolio-list mx-auto max-w-5xl">
+        <div ref={listRef} className="portfolio-list mx-auto max-w-5xl">
           {projects.map((project, i) => (
             <ProjectCard
               key={project.title}
               project={project}
               index={i}
               reduced={!!reduced}
-              isLast={i === projects.length - 1}
             />
           ))}
         </div>
@@ -276,15 +389,13 @@ export function Portfolio() {
           viewport={viewportOnceTight}
           variants={fadeUpScale}
           transition={{ delay: 0.15 }}
-          className="mx-auto mt-16 max-w-2xl md:mt-20"
+          className="mx-auto mt-12 max-w-2xl md:mt-14"
         >
           <div className="portfolio-cta-wrap glass-card tech-corners text-center">
             <hr className="tech-divider mb-6" aria-hidden />
 
             <p className="text-sm leading-relaxed text-primary md:text-base dark:text-white/85">
-              חלק מהעבודות המוצגות כאן הן אתרים אמיתיים שנבנו עבור לקוחות
-              פעילים, וחלקן הן דמו שנועדו להמחיש יכולות עיצוביות, חדשנות
-              טכנולוגית ויצירתיות בלתי מתפשרת.
+              כאן תראו איך עסקים שונים קיבלו אתר שמתאים לשפה, לקהל ולרמה שלהם.
             </p>
 
             <Button
@@ -293,7 +404,7 @@ export function Portfolio() {
               size="lg"
               className="btn-burgundy-glow mt-8 h-12 rounded-full px-8 shadow-soft"
             >
-              <a href="#contact">אני גם רוצה אתר לעסק שלי</a>
+              <a href={LEAD_FLOW_ANCHOR}>{LEAD_FLOW_CTA_LABEL}</a>
             </Button>
           </div>
         </motion.div>

@@ -1,7 +1,7 @@
 export const WHATSAPP_PHONE = '972533402891'
 
 export const WHATSAPP_FLOAT_MESSAGE =
-  'היי הולו , אני מעוניין/ת באתר / דף נחיתה  ולעסק שלי ואשמח לשמוע פרטים'
+  'היי הולו 🤍 הגעתי אלייך דרך האתר שלך , אני רוצה אתר דמו בחינם לעסק שלי'
 
 export const WHATSAPP_CONTACT_MESSAGE = 'היי, אשמח לשמוע על בניית אתר'
 

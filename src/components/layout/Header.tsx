@@ -7,11 +7,13 @@ import { useHeaderScrollState } from '@/hooks/useHeaderScrollState'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
+import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
 const links = [
   { href: '#about', label: 'אודות' },
-  { href: '#work', label: 'עבודות' },
-  { href: '#why', label: 'למה אני' },
+  { href: '#process', label: 'תהליך' },
+  { href: '#work', label: 'פרויקטים' },
+  { href: '#faq', label: 'שאלות ותשובות' },
   { href: '#contact', label: 'צור קשר' },
 ]
 
@@ -72,7 +74,7 @@ export function Header() {
             <Icon className="h-4 w-4" strokeWidth={1.5} />
           </Button>
           <Button asChild variant="burgundy" size="sm" className="hidden rounded-full sm:inline-flex">
-            <a href="#contact">השאירו פרטים</a>
+            <a href={LEAD_FLOW_ANCHOR}>{LEAD_FLOW_CTA_LABEL}</a>
           </Button>
           <Button
             variant="ghost"
@@ -104,8 +106,8 @@ export function Header() {
               </a>
             ))}
             <Button asChild variant="burgundy" className="mt-2">
-              <a href="#contact" onClick={() => setOpen(false)}>
-                השאירו פרטים
+              <a href={LEAD_FLOW_ANCHOR} onClick={() => setOpen(false)}>
+                {LEAD_FLOW_CTA_LABEL}
               </a>
             </Button>
           </nav>

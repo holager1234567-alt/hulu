@@ -8,138 +8,52 @@ import {
 import {
   ArrowLeft,
   ArrowRight,
-  Building2,
-  Calendar,
   Check,
-  Clock,
-  Crown,
-  RefreshCw,
-  Rocket,
-  Target,
   Terminal,
-  Users,
-  Zap,
+  X,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { EASE } from '@/lib/motion'
-import { WHATSAPP_PHONE, whatsAppUrl } from '@/lib/whatsapp'
 import { cn } from '@/lib/utils'
 
-const TOTAL_STEPS = 4
+const TOTAL_STEPS = 2
+const FORMSPREE_URL = 'https://formspree.io/f/xnpaddqa'
+
+const THANK_YOU_TITLE = 'מעולה, אנחנו בדרך לאתר שלכם.'
+const THANK_YOU_BODY =
+  'השארתם את הפרטים עכשיו נשאר לנו להכיר את העסק, להבין את החזון שלכם ולבנות את הכיוון הנכון לאתר.'
+const THANK_YOU_FOOTER = 'בקרוב ניצור איתכם קשר לתיאום שיחת האפיון.'
+
+type YesNoValue = '' | 'כן' | 'לא'
 
 type FormData = {
-  projectType: string
-  businessGoal: string
-  timeline: string
   fullName: string
-  businessName: string
+  phone: string
+  activeBusiness: YesNoValue
+  hasPortfolio: YesNoValue
+  age18Plus: YesNoValue
 }
 
-type RadioOption = {
-  value: string
-  label: string
-  icon: LucideIcon
+type YesNoQuestion = {
+  key: keyof Pick<FormData, 'activeBusiness' | 'hasPortfolio' | 'age18Plus'>
+  title: string
   code: string
 }
 
-type StepConfig = {
-  key: keyof Pick<FormData, 'projectType' | 'businessGoal' | 'timeline'>
-  title: string
-  subtitle: string
-  module: string
-  options: RadioOption[]
-}
-
-const STEPS: StepConfig[] = [
-  {
-    key: 'projectType',
-    module: 'PROJECT_TYPE',
-    title: 'מה סוג הפרויקט?',
-    subtitle: 'בחרו את האפשרות שהכי מתאימה לכם',
-    options: [
-      {
-        value: 'דף נחיתה ממוקד המרה',
-        label: 'דף נחיתה ממוקד המרה',
-        icon: Rocket,
-        code: 'LP_CVR',
-      },
-      {
-        value: 'אתר תדמית / פרימיום',
-        label: 'אתר תדמית / פרימיום',
-        icon: Building2,
-        code: 'BRAND',
-      },
-      {
-        value: 'שדרוג / מתיחת פנים לאתר קיים',
-        label: 'שדרוג / מתיחת פנים לאתר קיים',
-        icon: RefreshCw,
-        code: 'REFRESH',
-      },
-    ],
-  },
-  {
-    key: 'businessGoal',
-    module: 'BUSINESS_GOAL',
-    title: 'מה המטרה העסקית?',
-    subtitle: 'נבין יחד מה חשוב לכם להשיג',
-    options: [
-      {
-        value: 'להביא יותר לידים ולקוחות חדשים',
-        label: 'להביא יותר לידים ולקוחות חדשים',
-        icon: Users,
-        code: 'LEADS',
-      },
-      {
-        value: 'לחזק את המותג ולשדר יוקרה',
-        label: 'לחזק את המותג ולשדר יוקרה',
-        icon: Crown,
-        code: 'LUXURY',
-      },
-      {
-        value: 'להחליף אתר ישן ולא מעודכן',
-        label: 'להחליף אתר ישן ולא מעודכן',
-        icon: Target,
-        code: 'REPLACE',
-      },
-    ],
-  },
-  {
-    key: 'timeline',
-    module: 'TIMELINE',
-    title: 'מתי תרצו להתחיל?',
-    subtitle: 'כדי שנוכל לתכנן יחד את לוח הזמנים',
-    options: [
-      {
-        value: 'מיידית (בימים הקרובים)',
-        label: 'מיידית (בימים הקרובים)',
-        icon: Zap,
-        code: 'ASAP',
-      },
-      {
-        value: 'בחודש הקרוב',
-        label: 'בחודש הקרוב',
-        icon: Calendar,
-        code: '30D',
-      },
-      {
-        value: 'גמיש / בתכנון',
-        label: 'גמיש / בתכנון',
-        icon: Clock,
-        code: 'FLEX',
-      },
-    ],
-  },
+const YES_NO_QUESTIONS: YesNoQuestion[] = [
+  { key: 'activeBusiness', title: 'יש עסק פעיל?', code: 'BIZ' },
+  { key: 'hasPortfolio', title: 'יש תיק עבודות / תוכן?', code: 'PORT' },
+  { key: 'age18Plus', title: 'גיל 18+?', code: '18+' },
 ]
 
 const INITIAL_FORM: FormData = {
-  projectType: '',
-  businessGoal: '',
-  timeline: '',
   fullName: '',
-  businessName: '',
+  phone: '',
+  activeBusiness: '',
+  hasPortfolio: '',
+  age18Plus: '',
 }
 
 const stepVariants = {
@@ -160,20 +74,33 @@ const stepVariants = {
   }),
 }
 
-function formatWhatsAppMessage(data: FormData): string {
-  const lines = [
-    'היי הולו! 👋',
-    'שלחתי פנייה דרך האתר:',
-    '',
-    `📋 *סוג פרויקט:* ${data.projectType}`,
-    `🎯 *מטרה:* ${data.businessGoal}`,
-    `⏱️ *לוח זמנים:* ${data.timeline}`,
-    '',
-    `👤 *שם:* ${data.fullName}`,
-    `🏢 *שם העסק:* ${data.businessName}`,
-  ]
+function normalizePhone(value: string): string {
+  return value.replace(/\D/g, '')
+}
 
-  return lines.join('\n')
+function isValidPhone(value: string): boolean {
+  const digits = normalizePhone(value)
+  return digits.length >= 9 && digits.length <= 12
+}
+
+async function submitLeadToFormspree(data: FormData): Promise<boolean> {
+  const response = await fetch(FORMSPREE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      name: data.fullName.trim(),
+      phone: data.phone.trim(),
+      activeBusiness: data.activeBusiness,
+      hasPortfolio: data.hasPortfolio,
+      age18Plus: data.age18Plus,
+      source: 'hulu-site',
+    }),
+  })
+
+  return response.ok
 }
 
 function StepPipeline({ step }: { step: number }) {
@@ -252,50 +179,84 @@ export function LeadQualificationForm({
   const [direction, setDirection] = useState(1)
   const [form, setForm] = useState<FormData>(INITIAL_FORM)
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const progress = (step / TOTAL_STEPS) * 100
-  const currentRadioStep = step <= 3 ? STEPS[step - 1] : null
-  const currentModule = currentRadioStep?.module ?? 'CONTACT_DATA'
+  const progress = isSubmitted ? 100 : (step / TOTAL_STEPS) * 100
 
-  const setField = (key: keyof FormData, value: string) => {
+  const setField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }))
     setErrors((prev) => ({ ...prev, [key]: undefined }))
+    setSubmitError(null)
   }
 
-  const validateCurrentStep = (): boolean => {
-    if (step <= 3 && currentRadioStep) {
-      const value = form[currentRadioStep.key]
-      if (!value) {
-        setErrors({ [currentRadioStep.key]: 'נא לבחור אפשרות' })
-        return false
-      }
-      return true
-    }
-
+  const validateStep1 = (): boolean => {
     const nextErrors: Partial<Record<keyof FormData, string>> = {}
     if (!form.fullName.trim()) nextErrors.fullName = 'שדה חובה'
-    if (!form.businessName.trim()) nextErrors.businessName = 'שדה חובה'
+    if (!form.phone.trim()) nextErrors.phone = 'שדה חובה'
+    else if (!isValidPhone(form.phone)) nextErrors.phone = 'מספר טלפון לא תקין'
 
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
 
+  const validateStep2 = (): boolean => {
+    const nextErrors: Partial<Record<keyof FormData, string>> = {}
+
+    for (const question of YES_NO_QUESTIONS) {
+      if (!form[question.key]) nextErrors[question.key] = 'נא לבחור תשובה'
+    }
+
+    setErrors(nextErrors)
+    return Object.keys(nextErrors).length === 0
+  }
+
+  const validateCurrentStep = (): boolean => {
+    if (step === 1) return validateStep1()
+    if (step === 2) return validateStep2()
+    return true
+  }
+
   const goNext = () => {
     if (!validateCurrentStep()) return
+
     setDirection(1)
     setStep((s) => Math.min(s + 1, TOTAL_STEPS))
+  }
+
+  const submitForm = async () => {
+    if (!validateCurrentStep()) return
+
+    setIsSubmitting(true)
+    setSubmitError(null)
+
+    try {
+      const ok = await submitLeadToFormspree(form)
+      if (!ok) {
+        setSubmitError('לא הצלחנו לשמור את הפרטים. נסי שוב.')
+        setIsSubmitting(false)
+        return
+      }
+      setIsSubmitted(true)
+    } catch {
+      setSubmitError('לא הצלחנו לשמור את הפרטים. נסי שוב.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const goBack = () => {
     setDirection(-1)
     setStep((s) => Math.max(s - 1, 1))
+    setSubmitError(null)
   }
 
-  const handleSubmit = () => {
-    if (!validateCurrentStep()) return
-    const message = formatWhatsAppMessage(form)
-    window.open(whatsAppUrl(message), '_blank', 'noopener,noreferrer')
-  }
+  const currentModule = isSubmitted
+    ? 'COMPLETE'
+    : step === 1
+      ? 'CONTACT_DATA'
+      : 'QUALIFICATION'
 
   const formCard = (
     <div
@@ -345,13 +306,15 @@ export function LeadQualificationForm({
               </span>
             </div>
             <span className="font-mono-tech text-xs tabular-nums text-[#5A0E23]/50">
-              {String(step).padStart(2, '0')}/{TOTAL_STEPS}
+              {isSubmitted
+                ? 'DONE'
+                : `${String(step).padStart(2, '0')}/${TOTAL_STEPS}`}
               <span className="mx-1.5 opacity-40">|</span>
               {Math.round(progress)}%
             </span>
           </div>
 
-          <StepPipeline step={step} />
+          <StepPipeline step={isSubmitted ? TOTAL_STEPS : step} />
 
           <div className="mt-3 h-1 overflow-hidden rounded-sm bg-[#5A0E23]/8">
             <motion.div
@@ -366,95 +329,35 @@ export function LeadQualificationForm({
         {/* Step content */}
         <div className="relative z-[1] min-h-[340px] px-5 py-6 md:min-h-[380px] md:px-7 md:py-7">
           <AnimatePresence mode="wait" custom={direction}>
-            {currentRadioStep ? (
+            {isSubmitted ? (
               <motion.div
-                key={`step-${step}`}
-                custom={direction}
-                variants={reducedMotion ? undefined : stepVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.38, ease: EASE }}
-                className="space-y-5"
+                key="success"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: reducedMotion ? 0 : 0.4, ease: EASE }}
+                className="flex min-h-[280px] flex-col items-center justify-center space-y-5 text-center md:min-h-[320px]"
               >
-                <div className="text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#5A0E23]/20 bg-[#5A0E23]/[0.06]">
+                  <Check className="h-7 w-7 text-[#5A0E23]" strokeWidth={2} />
+                </div>
+                <div className="max-w-md space-y-4 px-1">
                   <p className="font-mono-tech text-[0.62rem] font-bold tracking-[0.16em] text-[#5A0E23]/45">
-                    STEP_{String(step).padStart(2, '0')} // INPUT_REQUIRED
+                    STATUS // SAVED
                   </p>
-                  <h3 className="mt-2 text-xl font-bold text-[#111111] md:text-2xl">
-                    {currentRadioStep.title}
+                  <h3 className="text-xl font-bold leading-snug text-[#111111] md:text-2xl">
+                    {THANK_YOU_TITLE}
                   </h3>
-                  <p className="mt-1.5 text-sm text-[#555555] md:text-base">
-                    {currentRadioStep.subtitle}
+                  <p className="text-sm leading-relaxed text-[#555555] md:text-base">
+                    {THANK_YOU_BODY}
                   </p>
-                  <hr className="tech-divider mx-auto mt-4 max-w-xs opacity-60" aria-hidden />
-                </div>
-
-                <div
-                  className="space-y-2.5"
-                  role="radiogroup"
-                  aria-label={currentRadioStep.title}
-                >
-                  {currentRadioStep.options.map((option, idx) => {
-                    const selected = form[currentRadioStep.key] === option.value
-                    const Icon = option.icon
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        onClick={() => setField(currentRadioStep.key, option.value)}
-                        className={cn(
-                          'lead-form-option group',
-                          selected && 'lead-form-option--selected',
-                        )}
-                      >
-                        <span className="lead-form-option-accent" aria-hidden />
-                        <span className="lead-form-option-index">
-                          <span>{String(idx + 1).padStart(2, '0')}</span>
-                          <span className="text-[0.52rem] opacity-70">{option.code}</span>
-                        </span>
-                        <span className="flex flex-1 items-center gap-3 px-3 py-3.5 md:px-4">
-                          <span
-                            className={cn(
-                              'flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition-all duration-300',
-                              selected
-                                ? 'border-[#5A0E23]/30 bg-[#5A0E23] text-white shadow-[0_0_14px_rgb(90_14_35_/_0.35)]'
-                                : 'border-[#5A0E23]/12 bg-[#5A0E23]/[0.05] text-[#5A0E23]',
-                            )}
-                          >
-                            <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
-                          </span>
-                          <span className="flex-1 text-sm font-medium leading-snug text-[#111111] md:text-base">
-                            {option.label}
-                          </span>
-                          <span
-                            className={cn(
-                              'font-mono-tech shrink-0 text-xs font-bold tracking-wider transition-colors duration-300',
-                              selected ? 'text-[#5A0E23]' : 'text-[#5A0E23]/25',
-                            )}
-                          >
-                            {selected ? '[x]' : '[ ]'}
-                          </span>
-                        </span>
-                      </button>
-                    )
-                  })}
-                </div>
-
-                {errors[currentRadioStep.key] && (
-                  <p
-                    className="text-center font-mono-tech text-xs text-red-600"
-                    role="alert"
-                  >
-                    ERR: {errors[currentRadioStep.key]}
+                  <p className="text-sm font-medium leading-relaxed text-[#111111] md:text-base">
+                    {THANK_YOU_FOOTER}
                   </p>
-                )}
+                </div>
               </motion.div>
-            ) : (
+            ) : step === 1 ? (
               <motion.div
-                key="step-4"
+                key="step-1"
                 custom={direction}
                 variants={reducedMotion ? undefined : stepVariants}
                 initial="enter"
@@ -465,13 +368,13 @@ export function LeadQualificationForm({
               >
                 <div className="text-center">
                   <p className="font-mono-tech text-[0.62rem] font-bold tracking-[0.16em] text-[#5A0E23]/45">
-                    STEP_04 // CONTACT_DATA
+                    STEP_01 // CONTACT_DATA
                   </p>
                   <h3 className="mt-2 text-xl font-bold text-[#111111] md:text-2xl">
-                    פרטי יצירת קשר
+                    בואי נכיר
                   </h3>
                   <p className="mt-1.5 text-sm text-[#555555] md:text-base">
-                    נשמח לחזור אליכם ולהמשיך ל-WhatsApp
+                    שם וטלפון — ונמשיך לשלב הבא
                   </p>
                   <hr className="tech-divider mx-auto mt-4 max-w-xs opacity-60" aria-hidden />
                 </div>
@@ -490,6 +393,7 @@ export function LeadQualificationForm({
                         setField('fullName', e.target.value)
                       }
                       placeholder="ישראל ישראלי"
+                      autoComplete="name"
                       className="lead-form-field-input h-11"
                       aria-invalid={!!errors.fullName}
                     />
@@ -501,71 +405,174 @@ export function LeadQualificationForm({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="businessName" className="lead-form-field-label">
+                    <Label htmlFor="phone" className="lead-form-field-label">
                       <span className="text-[#5A0E23]/40">&gt;</span>
-                      BUSINESS_NAME
+                      PHONE
                       <span className="text-[#5A0E23]">*</span>
                     </Label>
                     <Input
-                      id="businessName"
-                      value={form.businessName}
+                      id="phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      value={form.phone}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        setField('businessName', e.target.value)
+                        setField('phone', e.target.value)
                       }
-                      placeholder="שם העסק שלי"
+                      placeholder="050-0000000"
                       className="lead-form-field-input h-11"
-                      aria-invalid={!!errors.businessName}
+                      aria-invalid={!!errors.phone}
+                      dir="ltr"
                     />
-                    {errors.businessName && (
+                    {errors.phone && (
                       <p className="font-mono-tech text-xs text-red-600">
-                        ERR: {errors.businessName}
+                        ERR: {errors.phone}
                       </p>
                     )}
                   </div>
                 </div>
               </motion.div>
-            )}
+            ) : step === 2 ? (
+              <motion.div
+                key="step-2"
+                custom={direction}
+                variants={reducedMotion ? undefined : stepVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.38, ease: EASE }}
+                className="space-y-5"
+              >
+                <div className="text-center">
+                  <p className="font-mono-tech text-[0.62rem] font-bold tracking-[0.16em] text-[#5A0E23]/45">
+                    STEP_02 // QUALIFICATION
+                  </p>
+                  <h3 className="mt-2 text-xl font-bold text-[#111111] md:text-2xl">
+                    כמה שאלות קצרות
+                  </h3>
+                  <p className="mt-1.5 text-sm text-[#555555] md:text-base">
+                    ענו בכן או לא — ונמשיך
+                  </p>
+                  <hr className="tech-divider mx-auto mt-4 max-w-xs opacity-60" aria-hidden />
+                </div>
+
+                <div className="space-y-4">
+                  {YES_NO_QUESTIONS.map((question, idx) => (
+                    <div
+                      key={question.key}
+                      className="rounded-lg border border-dashed border-[#5A0E23]/15 bg-white/50 p-4 md:p-5"
+                    >
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-[#111111] md:text-base">
+                          {question.title}
+                        </p>
+                        <span className="font-mono-tech shrink-0 text-[0.58rem] tracking-wider text-[#5A0E23]/45">
+                          {String(idx + 1).padStart(2, '0')} {question.code}
+                        </span>
+                      </div>
+
+                      <div
+                        className="grid grid-cols-2 gap-2"
+                        role="radiogroup"
+                        aria-label={question.title}
+                      >
+                        {(['כן', 'לא'] as const).map((value) => {
+                          const selected = form[question.key] === value
+                          const isYes = value === 'כן'
+                          return (
+                            <button
+                              key={value}
+                              type="button"
+                              role="radio"
+                              aria-checked={selected}
+                              onClick={() => setField(question.key, value)}
+                              className={cn(
+                                'lead-form-yesno-btn',
+                                selected && 'lead-form-yesno-btn--selected',
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-all duration-300',
+                                  selected
+                                    ? 'border-[#5A0E23]/30 bg-[#5A0E23] text-white'
+                                    : 'border-[#5A0E23]/12 bg-[#5A0E23]/[0.05] text-[#5A0E23]',
+                                )}
+                              >
+                                {isYes ? (
+                                  <Check className="h-4 w-4" strokeWidth={2} />
+                                ) : (
+                                  <X className="h-4 w-4" strokeWidth={2} />
+                                )}
+                              </span>
+                              <span className="text-sm font-medium text-[#111111]">{value}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {errors[question.key] && (
+                        <p className="mt-2 font-mono-tech text-xs text-red-600" role="alert">
+                          ERR: {errors[question.key]}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {submitError && (
+                  <p className="text-center font-mono-tech text-xs text-red-600" role="alert">
+                    ERR: {submitError}
+                  </p>
+                )}
+              </motion.div>
+            ) : null}
           </AnimatePresence>
         </div>
 
-        {/* Command bar */}
-        <div className="lead-form-cmdbar relative z-[1]">
-          <span className="lead-form-cmd-hint hidden md:inline">
-            {step < TOTAL_STEPS ? 'ENTER → NEXT' : 'SEND → WHATSAPP'}
-          </span>
-          <div className="lead-form-cmdbar-actions">
-            {step > 1 ? (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={goBack}
-                className="lead-form-cmd-btn lead-form-cmd-btn--back border-[#5A0E23]/25 bg-white/70 font-mono-tech text-xs tracking-wide text-[#111111] hover:border-[#5A0E23]/45 hover:bg-[#5A0E23]/5"
-              >
-                <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                הקודם
-              </Button>
-            ) : null}
+        {!isSubmitted ? (
+          <div className="lead-form-cmdbar relative z-[1]">
+            <span className="lead-form-cmd-hint hidden md:inline">
+              {step < TOTAL_STEPS ? 'ENTER → NEXT' : 'SUBMIT → SEND'}
+            </span>
+            <div className="lead-form-cmdbar-actions">
+              {step > 1 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={goBack}
+                  disabled={isSubmitting}
+                  className="lead-form-cmd-btn lead-form-cmd-btn--back border-[#5A0E23]/25 bg-white/70 font-mono-tech text-xs tracking-wide text-[#111111] hover:border-[#5A0E23]/45 hover:bg-[#5A0E23]/5"
+                >
+                  <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                  הקודם
+                </Button>
+              ) : null}
 
-            {step < TOTAL_STEPS ? (
-              <Button
-                type="button"
-                onClick={goNext}
-                className="lead-form-cmd-btn bg-[#5A0E23] font-mono-tech text-xs tracking-wide text-white hover:bg-[#5A0E23]/90"
-              >
-                המשך
-                <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                className="lead-form-cmd-btn lead-form-cmd-btn--submit whitespace-normal bg-[#5A0E23] font-mono-tech text-xs leading-snug tracking-wide text-white hover:bg-[#5A0E23]/90 sm:whitespace-nowrap"
-              >
-                שליחה והמשך ל-WhatsApp 🚀
-              </Button>
-            )}
+              {step < TOTAL_STEPS ? (
+                <Button
+                  type="button"
+                  onClick={goNext}
+                  disabled={isSubmitting}
+                  className="lead-form-cmd-btn bg-[#5A0E23] font-mono-tech text-xs tracking-wide text-white hover:bg-[#5A0E23]/90"
+                >
+                  המשך
+                  <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => void submitForm()}
+                  disabled={isSubmitting}
+                  className="lead-form-cmd-btn bg-[#5A0E23] font-mono-tech text-xs tracking-wide text-white hover:bg-[#5A0E23]/90"
+                >
+                  {isSubmitting ? 'שולח...' : 'שליחת פרטים'}
+                  <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {/* Status bar */}
         <div className="lead-form-statusbar relative z-[1]">
@@ -644,5 +651,3 @@ export function LeadQualificationForm({
 
   return monitor3d
 }
-
-export { WHATSAPP_PHONE, formatWhatsAppMessage }

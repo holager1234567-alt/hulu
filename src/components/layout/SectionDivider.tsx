@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { EASE, viewportOnceTight } from '@/lib/motion'
 
-export type SectionDividerVariant = 'wave' | 'diagonal' | 'gradient-line' | 'fade'
+export type SectionDividerVariant = 'wave' | 'diagonal' | 'gradient-line' | 'fade' | 'blend'
 
 export type SectionDividerTone =
   | 'default'
@@ -11,9 +11,20 @@ export type SectionDividerTone =
   | 'from-burgundy'
   | 'to-process'
 
+export type SectionBlendColor =
+  | 'hero'
+  | 'surface'
+  | 'process-top'
+  | 'process-bottom'
+  | 'portfolio'
+  | 'bridge'
+  | 'burgundy'
+
 type SectionDividerProps = {
   variant?: SectionDividerVariant
   tone?: SectionDividerTone
+  from?: SectionBlendColor
+  to?: SectionBlendColor
   /** Flip diagonal direction */
   flip?: boolean
   className?: string
@@ -22,12 +33,26 @@ type SectionDividerProps = {
 export function SectionDivider({
   variant = 'wave',
   tone = 'default',
+  from = 'surface',
+  to = 'surface',
   flip = false,
   className = '',
 }: SectionDividerProps) {
   const ref = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
   const inView = useInView(ref, viewportOnceTight)
+
+  if (variant === 'blend') {
+    return (
+      <div
+        ref={ref}
+        className={`section-divider section-divider--blend ${className}`}
+        data-blend-from={from}
+        data-blend-to={to}
+        aria-hidden
+      />
+    )
+  }
 
   if (variant === 'gradient-line') {
     return (

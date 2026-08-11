@@ -7,7 +7,14 @@ import {
   useTransform,
 } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import { EASE, viewportInView } from '@/lib/motion'
+import { EASE } from '@/lib/motion'
+
+/** Triggers slightly before the section enters — cross-section continuity */
+const viewportFlowReveal = {
+  once: true,
+  amount: 0.06 as const,
+  margin: '0px 0px -14% 0px' as const,
+}
 
 type SectionWrapperProps = {
   children: ReactNode
@@ -54,17 +61,18 @@ export function SectionWrapper({
   const wrapRef = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
   const isMobile = useIsMobile()
-  const inView = useInView(wrapRef, viewportInView)
+  const inView = useInView(wrapRef, viewportFlowReveal)
   const [revealFallback, setRevealFallback] = useState(false)
 
   useEffect(() => {
     if (reduced || !reveal) return
-    const timer = window.setTimeout(() => setRevealFallback(true), 1200)
+    const timer = window.setTimeout(() => setRevealFallback(true), 900)
     return () => window.clearTimeout(timer)
   }, [reduced, reveal])
 
-  const shouldReveal = !reveal || reduced || inView || revealFallback
+  const shouldShow = !reveal || reduced || inView || revealFallback
   const enableParallax = parallax && !isMobile && !reduced
+  const revealY = isMobile ? 14 : 22
 
   return (
     <div
@@ -74,8 +82,16 @@ export function SectionWrapper({
       {enableParallax && <SectionParallaxBg wrapRef={wrapRef} />}
       <motion.div
         className="section-wrapper-inner"
-        initial={reveal && !reduced ? { opacity: 0 } : false}
-        animate={shouldReveal ? { opacity: 1 } : { opacity: 0 }}
+        initial={
+          reveal && !reduced
+            ? { opacity: 0, y: revealY, scale: 0.993 }
+            : false
+        }
+        animate={
+          shouldShow
+            ? { opacity: 1, y: 0, scale: 1 }
+            : { opacity: 0, y: revealY, scale: 0.993 }
+        }
         transition={{ duration: 0.75, ease: EASE }}
       >
         {children}

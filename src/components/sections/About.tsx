@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import {
+  AnimatePresence,
   motion,
   useInView,
   useReducedMotion,
@@ -9,6 +10,7 @@ import {
   useSpring,
   useMotionTemplate,
 } from 'framer-motion'
+import { ArrowLeft } from 'lucide-react'
 import huluProfile from '@/assets/hulu-portrait-v2.png'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import {
@@ -26,11 +28,19 @@ const stats = [
   { numeric: 100, suffix: '%', label: 'mobile' },
 ]
 
-const textLines = [
-  'ואני חיה ונושמת עיצוב כל חיי.',
+const headlineParts = ['אני לא מתחילה מעיצוב.', 'אני מתחילה מהעסק שלכם.']
+
+const understandingLines = [
+  'מי אתם.',
+  'למי אתם פונים.',
+  'מה אתם רוצים לשדר.',
+  'ומה צריך לקרות כדי שהאתר באמת יעבוד עבורכם.',
+]
+
+const personalLines = [
+  'אני הולו, ואני חיה ונושמת עיצוב כל חיי.',
   'אני מאמינה שאין דבר כזה "עוד סתם אתר" ושכל עסק מביא איתו סיפור ייחודי, ולכל סיפור מגיע במה שתעשה וואו אמיתי.',
   'אני מתמחה בחיבור המדויק שבין עיצוב אסתטי עוצר נשימה, קופירייטינג שנוגע בנקודות הנכונות, ופיתוח טכנולוגי מתקדם.',
-  'יחד, נבנה לך אתר שלא רק נראה כמו יצירת אמנות, אלא כזה שעובד בשבילך ומביא תוצאות עסקיות אמיתיות.',
 ]
 
 const niceWords = ['NICE', 'TO', 'MEET', 'U']
@@ -212,6 +222,7 @@ export function About() {
   const headerRef = useRef<HTMLDivElement>(null)
   const headlineInView = useInView(headerRef, viewportOnce)
   const [headlineFallback, setHeadlineFallback] = useState(false)
+  const [showPersonal, setShowPersonal] = useState(false)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -235,7 +246,7 @@ export function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="about-section section-pad relative overflow-hidden bg-section-surface"
+      className="about-section section-pad relative overflow-x-clip bg-section-surface"
     >
       <SectionLuxuryBg variant="surface" />
       <div className="about-accent-glow" aria-hidden />
@@ -286,22 +297,33 @@ export function About() {
               ))}
             </p>
 
-            <h2 className="mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-primary md:mt-4 md:text-4xl lg:text-[2.75rem] dark:text-white">
-              <span className="block overflow-hidden py-0.5">
-                <motion.span
-                  className="block"
-                  initial={reduced ? { y: 0, opacity: 1 } : { y: '110%', opacity: 0 }}
-                  animate={
-                    showHeadline
-                      ? { y: 0, opacity: 1 }
-                      : { y: '110%', opacity: 0 }
-                  }
-                  transition={{ duration: 0.75, ease: EASE, delay: 0.32 }}
-                >
-                  אני{' '}
-                  <span className="text-burgundy">הולו</span>
-                </motion.span>
-              </span>
+            <h2 className="mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-primary md:mt-4 md:text-4xl lg:text-[2.5rem] dark:text-white">
+              {headlineParts.map((part, i) => (
+                <span key={part} className="block overflow-hidden py-0.5">
+                  <motion.span
+                    className="block"
+                    initial={
+                      reduced ? { y: 0, opacity: 1 } : { y: '110%', opacity: 0 }
+                    }
+                    animate={
+                      showHeadline
+                        ? { y: 0, opacity: 1 }
+                        : { y: '110%', opacity: 0 }
+                    }
+                    transition={{
+                      duration: 0.75,
+                      ease: EASE,
+                      delay: 0.32 + i * 0.12,
+                    }}
+                  >
+                    {i === 1 ? (
+                      <span className="text-burgundy">{part}</span>
+                    ) : (
+                      part
+                    )}
+                  </motion.span>
+                </span>
+              ))}
             </h2>
             <hr className="tech-divider about-header-divider mx-auto mt-5 max-w-xs lg:mx-0 lg:max-w-sm" />
           </motion.div>
@@ -310,18 +332,37 @@ export function About() {
             variants={staggerItem}
             className="about-body text-center text-base leading-relaxed text-primary/85 md:text-lg lg:text-start dark:text-white/80"
           >
-            {textLines.map((line, i) => (
-              <motion.p
-                key={i}
-                initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={viewportOnceTight}
-                transition={{ duration: 0.55, delay: i * 0.08, ease: EASE }}
-                className={i > 0 ? 'mt-3' : undefined}
-              >
-                {line}
-              </motion.p>
-            ))}
+            <motion.p
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewportOnceTight}
+              transition={{ duration: 0.55, ease: EASE }}
+            >
+              לפני שאני פותחת את תוכנת העיצוב, אני רוצה להבין את העסק שלכם.
+            </motion.p>
+
+            <motion.ul
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewportOnceTight}
+              transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
+              className="about-understanding mt-4"
+            >
+              {understandingLines.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </motion.ul>
+
+            <motion.p
+              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewportOnceTight}
+              transition={{ duration: 0.55, delay: 0.16, ease: EASE }}
+              className="about-belief mt-5"
+            >
+              כי אתר טוב לא מתחיל בצבעים.{' '}
+              <span className="text-burgundy">הוא מתחיל בהבנה.</span>
+            </motion.p>
           </motion.div>
 
           <motion.div
@@ -337,6 +378,47 @@ export function About() {
                 index={i}
               />
             ))}
+          </motion.div>
+
+          <motion.div
+            variants={staggerItem}
+            className="mt-7 text-center lg:text-start"
+          >
+            <button
+              type="button"
+              onClick={() => setShowPersonal((value) => !value)}
+              aria-expanded={showPersonal}
+              aria-controls="about-personal-story"
+              className="about-personal-toggle group"
+            >
+              קצת עליי
+              <ArrowLeft
+                className={`size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${showPersonal ? '-rotate-90' : 'group-hover:-translate-x-1'}`}
+                aria-hidden
+              />
+            </button>
+
+            <AnimatePresence initial={false}>
+              {showPersonal && (
+                <motion.div
+                  key="about-personal-story"
+                  id="about-personal-story"
+                  initial={reduced ? false : { height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={reduced ? undefined : { height: 0, opacity: 0 }}
+                  transition={{ duration: 0.45, ease: EASE }}
+                  className="overflow-hidden"
+                >
+                  <div className="about-personal-story text-center text-sm leading-relaxed text-primary/75 md:text-base lg:text-start dark:text-white/70">
+                    {personalLines.map((line, i) => (
+                      <p key={i} className={i > 0 ? 'mt-2.5' : undefined}>
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <motion.div

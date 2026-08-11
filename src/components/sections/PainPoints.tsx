@@ -1,178 +1,87 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import {
   motion,
   useInView,
+  useMotionValueEvent,
   useReducedMotion,
+  useScroll,
+  useTransform,
 } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
-import { EASE, fadeUpScale, viewportPainPoints } from '@/lib/motion'
+import { HeroLuxuryBackdrop } from '@/components/layout/HeroLuxuryBackdrop'
+import { useIsMobile } from '@/hooks/useIsMobile'
+import { EASE, viewportOnce } from '@/lib/motion'
+import { LEAD_FLOW_ANCHOR } from '@/lib/waveForms'
 
-const pains: {
-  title: string
-  text: string
-}[] = [
+const STORY_LEAD_CTA = 'קבלו הצצה לאתר שעובד'
+
+const STEPS = [
   {
-    title: 'תסמונת "האתר המביך"',
-    text: 'יש לך אתר, אבל אתה לא באמת שולח את הקישור. כי משהו שם פשוט לא מרגיש נכון, ואתה לא רוצה שאנשים יחשבו שזה מה שאתה מייצג.',
+    id: '01',
+    title: 'להבין',
+    description: 'מי אתם, מה אתם מציעים ולמי.',
   },
   {
-    title: 'חור בכיס בלי תוצאות',
-    text: 'שילמת על אתר, אולי אפילו יותר מפעם. אבל הוא לא מביא פניות, לא סוגר עסקאות, ולא מרגיש כמו השקעה. יותר כמו הוצאה שאתה מנסה לא לחשוב עליה.',
+    id: '02',
+    title: 'להתחבר',
+    description: 'להרגיש את הערך, האישיות והייחוד של העסק.',
   },
   {
-    title: 'עיוות התדמית',
-    text: 'עסק רציני עם אתר שנראה כמו בלוג חובבני משנת 2014. הלקוחות שופטים תוך שניות, ואתה יודע שהם לא רואים את מה שאתה באמת מציע.',
+    id: '03',
+    title: 'לפעול',
+    description: 'לעבור מהתעניינות לצעד הבא.',
   },
-  {
-    title: 'תבנית שכולם מכירים',
-    text: 'אותו עיצוב, אותם פונטים, אותה תחושה של "ראיתי את זה כבר". ואתה יודע שאתה לא בולט. אתה פשוט עוד אחד ברשימה.',
-  },
-  {
-    title: 'איטי, תקוע, לא מותאם לנייד',
-    text: 'הלקוח נכנס מהטלפון, מחכה, מנסה לגלול, ועוזב. אתר שלא עובד במובייל בשנת 2026 זה כמו חנות עם שלט "סגור".',
-  },
-  {
-    title: 'כאב ראש של כתיבת תוכן',
-    text: 'אתה יודע מה אתה עושה. אבל כשמגיעים לכתוב את זה באתר, הכל נשמע גנרי, יבש, או פשוט לא מוכר. ואתה נשאר עם דף ריק ותחושת תסכול.',
-  },
-]
+] as const
 
-const headlineLines = [
-  'הגיע הזמן להפסיק להילחם באתר שלך,',
-  'ולהתחיל לתת לו לעבוד בשבילך',
-]
-
-type PainPointsHeaderProps = {
-  headerRef: React.RefObject<HTMLElement | null>
-  reduced: boolean
-  showHeadline: boolean
-}
-
-function PainPointsHeader({
-  headerRef,
-  reduced,
-  showHeadline,
-}: PainPointsHeaderProps) {
-  return (
-    <motion.header
-      ref={headerRef}
-      initial="hidden"
-      whileInView="visible"
-      viewport={viewportPainPoints}
-      variants={fadeUpScale}
-      className="pain-points-header mx-auto mb-10 max-w-3xl text-center md:mb-12"
-    >
-      <h2 className="text-3xl font-bold text-primary dark:text-white md:text-4xl">
-        {headlineLines.map((line, i) => (
-          <span key={line} className="block overflow-hidden py-0.5">
-            <motion.span
-              className="block"
-              initial={reduced ? { y: 0, opacity: 1 } : { y: '110%', opacity: 0 }}
-              animate={
-                showHeadline ? { y: 0, opacity: 1 } : { y: '110%', opacity: 0 }
-              }
-              transition={{
-                duration: 0.7,
-                ease: EASE,
-                delay: i * 0.12,
-              }}
-            >
-              {line}
-            </motion.span>
-          </span>
-        ))}
-      </h2>
-
-      <hr className="tech-divider mx-auto mt-6 max-w-xs md:mt-8 md:max-w-sm" />
-
-      <motion.p
-        initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={viewportPainPoints}
-        transition={{ duration: 0.6, ease: EASE, delay: 0.28 }}
-        className="mt-5 text-base leading-relaxed text-muted max-[480px]:text-[0.875rem] dark:text-white/65 md:mt-6 md:text-lg"
-      >
-        אני שומעת הרבה מבעלי עסקים את התסכול מאתר שלא עובד בשבילם,
-        <br className="hidden sm:block" />{' '}
-        הנה מה שאני שומעת שוב ושוב ואולי גם את/ה מזהה את עצמך כאן
-      </motion.p>
-    </motion.header>
-  )
-}
-
-function PainPointsCta({ className = '' }: { className?: string }) {
-  return (
-    <div
-      className={`pain-points-cta-wrap text-center glass-card tech-corners ${className}`}
-    >
-      <hr className="tech-divider mb-6" aria-hidden />
-
-      <p className="text-lg leading-relaxed text-primary dark:text-white/85">
-        אם משהו כאן נגע בך,
-        <br />
-        זה סימן שאתה מוכן ליותר מאתר.
-        <br />
-        אתה מוכן לנכס דיגיטלי
-        <br />
-        שאתה גאה לשתף, שעובד בשבילך,
-        <br />
-        ושמרגיש כמו העסק שלך באמת.
-      </p>
-      <p className="mt-4 text-muted dark:text-white/60">
-        בוא נדבר. בלי לחץ, בלי מכירה אגרסיבית. רק שיחה כנה על מה שאתה
-        צריך.
-      </p>
-
-      <Button
-        asChild
-        variant="burgundy"
-        size="lg"
-        className="btn-burgundy-glow mt-8 h-12 rounded-full px-8 shadow-soft"
-      >
-        <a href="#contact">רוצה לשנות את המצב? בוא נדבר</a>
-      </Button>
-    </div>
-  )
-}
-
-function PlayingCard({
-  pain,
+function StoryStepItem({
+  step,
   index,
+  activeIndex,
+  interactive,
   reduced,
 }: {
-  pain: (typeof pains)[number]
+  step: (typeof STEPS)[number]
   index: number
+  activeIndex: number
+  interactive: boolean
   reduced: boolean
 }) {
   const ref = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.3 })
-  const num = String(index + 1).padStart(2, '0')
+  const inView = useInView(ref, { once: true, amount: 0.45 })
+  const isActive = interactive && activeIndex === index
+  const isPast = interactive && activeIndex > index
+  const isVisible = reduced || !interactive || inView
 
   return (
     <motion.article
       ref={ref}
-      initial={reduced ? false : { opacity: 0, y: 32 }}
-      animate={reduced || inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-      transition={{ duration: 0.55, ease: EASE, delay: reduced ? 0 : 0.04 }}
-      className="pain-point-card pain-point-card--playing pain-point-card--scroll group relative overflow-hidden"
+      className={`story-step ${isActive ? 'story-step--active' : ''} ${isPast ? 'story-step--past' : ''} ${!interactive ? 'story-step--static' : ''}`}
+      aria-current={isActive ? 'step' : undefined}
+      initial={reduced || interactive ? false : { opacity: 0, y: 24 }}
+      animate={
+        reduced || interactive || isVisible
+          ? { opacity: 1, y: 0 }
+          : { opacity: 0, y: 24 }
+      }
+      transition={{ duration: 0.6, ease: EASE, delay: reduced ? 0 : index * 0.06 }}
     >
-      <span className="pain-point-card-index pain-point-card-index--tl" aria-hidden>
-        <span className="pain-point-card-index-letter font-en-display">H</span>
-        <span className="pain-point-card-index-suit">♥</span>
+      <span className="story-step-num font-mono-tech" aria-hidden>
+        {step.id}
       </span>
-      <span className="pain-point-card-index pain-point-card-index--br" aria-hidden>
-        <span className="pain-point-card-index-letter font-en-display">H</span>
-        <span className="pain-point-card-index-suit">♥</span>
-      </span>
-
-      <span className="pain-points-scroll-num font-mono-tech" aria-hidden>
-        {num}
-      </span>
-
-      <div className="pain-point-card-body pain-point-card-body--deck relative z-10">
-        <h3 className="font-bold text-burgundy">{pain.title}</h3>
-        <p className="text-primary dark:text-white/80">{pain.text}</p>
+      <span className="story-step-rule" aria-hidden />
+      <div className="story-step-copy">
+        <h3 className="story-step-title">{step.title}</h3>
+        <motion.p
+          className="story-step-desc"
+          initial={false}
+          animate={{
+            opacity: reduced || !interactive || isActive || isPast ? 1 : 0.42,
+            y: reduced || !interactive || isActive ? 0 : 6,
+          }}
+          transition={{ duration: 0.55, ease: EASE }}
+        >
+          {step.description}
+        </motion.p>
       </div>
     </motion.article>
   )
@@ -180,53 +89,204 @@ function PlayingCard({
 
 export function PainPoints() {
   const reduced = !!useReducedMotion()
-  const headerRef = useRef<HTMLElement>(null)
-  const headlineInView = useInView(headerRef, viewportPainPoints)
-  const [headlineFallback, setHeadlineFallback] = useState(false)
+  const isMobile = useIsMobile()
+  const sectionRef = useRef<HTMLElement>(null)
+  const scrollTrackRef = useRef<HTMLDivElement>(null)
+  const [activeStep, setActiveStep] = useState(0)
 
-  useEffect(() => {
-    if (reduced) return
-    const timer = window.setTimeout(() => setHeadlineFallback(true), 2000)
-    return () => window.clearTimeout(timer)
-  }, [reduced])
+  const useScrollExperience = !reduced && !isMobile
 
-  const showHeadline = reduced || headlineInView || headlineFallback
+  const { scrollYProgress } = useScroll({
+    target: scrollTrackRef,
+    offset: ['start start', 'end end'],
+  })
+
+  useMotionValueEvent(scrollYProgress, 'change', (value) => {
+    if (!useScrollExperience) return
+    if (value < 0.34) setActiveStep(0)
+    else if (value < 0.66) setActiveStep(1)
+    else setActiveStep(2)
+  })
+
+  const headlineOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.12],
+    reduced || isMobile ? [1, 1] : [0.35, 1],
+  )
+  const headlineY = useTransform(
+    scrollYProgress,
+    [0, 0.14],
+    reduced || isMobile ? [0, 0] : [32, 0],
+  )
+  const subOpacity = useTransform(
+    scrollYProgress,
+    [0.08, 0.2],
+    reduced || isMobile ? [1, 1] : [0, 1],
+  )
+  const lineProgress = useTransform(scrollYProgress, [0.22, 0.78], [0, 1])
+  const dotTop = useTransform(lineProgress, (v) => `${v * 100}%`)
+  const closingOpacity = useTransform(
+    scrollYProgress,
+    [0.78, 0.92],
+    reduced || isMobile ? [1, 1] : [0, 1],
+  )
+  const closingY = useTransform(
+    scrollYProgress,
+    [0.78, 0.92],
+    reduced || isMobile ? [0, 0] : [20, 0],
+  )
+
+  const headlineBlockAOpacity = useTransform(
+    scrollYProgress,
+    [0.15, 0.45, 0.55],
+    reduced || isMobile ? [1, 1, 1] : [1, 1, 0.55],
+  )
+  const headlineBlockBOpacity = useTransform(
+    scrollYProgress,
+    [0.45, 0.62, 0.78],
+    reduced || isMobile ? [1, 1, 1] : [0.45, 1, 1],
+  )
 
   return (
     <section
+      ref={sectionRef}
       id="pains"
-      className="pain-points-section section-pad relative overflow-x-clip bg-section-surface"
+      className="story-section hero-luxury relative overflow-x-clip"
+      aria-label="העסק שלכם צריך מקום שעובד עבורו"
     >
-      <SectionLuxuryBg variant="surface" />
+      <HeroLuxuryBackdrop variant="continuation" />
 
-      <div className="container-site relative z-10">
-        <PainPointsHeader
-          headerRef={headerRef}
-          reduced={reduced}
-          showHeadline={showHeadline}
-        />
+      <div
+        ref={scrollTrackRef}
+        className={
+          useScrollExperience
+            ? 'story-scroll-track story-scroll-track--desktop'
+            : 'story-scroll-track story-scroll-track--static'
+        }
+      >
+        <div className="story-sticky">
+          <div className="container-site story-shell relative z-10">
+            <div className="story-layout">
+              <motion.header
+                className="story-headline-col"
+                initial={
+                  useScrollExperience ? undefined : reduced ? false : { opacity: 0, y: 28 }
+                }
+                whileInView={
+                  useScrollExperience ? undefined : { opacity: 1, y: 0 }
+                }
+                viewport={viewportOnce}
+                transition={{ duration: 0.7, ease: EASE }}
+                style={
+                  useScrollExperience
+                    ? {
+                        opacity: headlineOpacity,
+                        y: headlineY,
+                        willChange: 'transform, opacity',
+                      }
+                    : undefined
+                }
+              >
+                <h2 className="story-headline">
+                  <motion.span
+                    className="story-headline-block"
+                    style={
+                      useScrollExperience
+                        ? { opacity: headlineBlockAOpacity }
+                        : undefined
+                    }
+                  >
+                    <span className="story-headline-line">העסק שלכם לא צריך עוד אתר.</span>
+                  </motion.span>
+                  <motion.span
+                    className="story-headline-block story-headline-block--accent"
+                    style={
+                      useScrollExperience
+                        ? { opacity: headlineBlockBOpacity }
+                        : undefined
+                    }
+                  >
+                    <span className="story-headline-line story-headline-emphasis">
+                      הוא צריך אתר שעובד עבורו.
+                    </span>
+                  </motion.span>
+                </h2>
 
-        <div className="pain-points-scroll relative mx-auto max-w-2xl">
-          {pains.map((pain, i) => (
-            <PlayingCard
-              key={pain.title}
-              pain={pain}
-              index={i}
-              reduced={reduced}
-            />
-          ))}
+                <motion.p
+                  className="story-subheadline"
+                  style={
+                    useScrollExperience ? { opacity: subOpacity } : undefined
+                  }
+                >
+                  אתר טוב לא רק נראה טוב.
+                  <span className="story-subheadline-break">
+                    {' '}
+                    הוא עוזר לאנשים להבין מי אתם, לסמוך עליכם ולדעת מה לעשות עכשיו.
+                  </span>
+                </motion.p>
+              </motion.header>
+
+              <div className="story-steps-col">
+                {useScrollExperience ? (
+                  <div className="story-rail" aria-hidden>
+                    <span className="story-rail-track" />
+                    <motion.span
+                      className="story-rail-fill"
+                      style={{ scaleY: lineProgress }}
+                    />
+                    <motion.span
+                      className="story-rail-dot"
+                      style={{ top: dotTop }}
+                    />
+                  </div>
+                ) : null}
+
+                <ol className="story-steps" aria-label="שלבי החוויה">
+                  {STEPS.map((step, index) => (
+                    <li key={step.id}>
+                      <StoryStepItem
+                        step={step}
+                        index={index}
+                        activeIndex={activeStep}
+                        interactive={useScrollExperience}
+                        reduced={reduced}
+                      />
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+
+            <motion.div
+              className="story-lead-cta-wrap"
+              initial={
+                useScrollExperience ? undefined : reduced ? false : { opacity: 0, y: 14 }
+              }
+              whileInView={
+                useScrollExperience ? undefined : { opacity: 1, y: 0 }
+              }
+              viewport={viewportOnce}
+              transition={{ duration: 0.6, ease: EASE, delay: reduced ? 0 : 0.12 }}
+              style={
+                useScrollExperience
+                  ? {
+                      opacity: closingOpacity,
+                      y: closingY,
+                      willChange: 'transform, opacity',
+                    }
+                  : undefined
+              }
+            >
+              <a href={LEAD_FLOW_ANCHOR} className="story-lead-cta group">
+                <span>{STORY_LEAD_CTA}</span>
+                <ArrowLeft
+                  className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1"
+                  aria-hidden
+                />
+              </a>
+            </motion.div>
+          </div>
         </div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportPainPoints}
-          variants={fadeUpScale}
-          transition={{ delay: 0.1 }}
-          className="mx-auto mt-12 max-w-2xl md:mt-16"
-        >
-          <PainPointsCta />
-        </motion.div>
       </div>
     </section>
   )
