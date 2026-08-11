@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import {
@@ -42,11 +42,6 @@ const headlineLines = [
   'לאתר שעובד',
   'בשביל העסק שלכם.',
 ]
-
-const DESIGN_PREVIEW = {
-  src: '/images/portfolio/cohen-law-hero.png',
-  alt: 'תצוגה מקדימה של עיצוב אתר, משרד עורכי דין כהן',
-}
 
 export function Process() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -199,7 +194,6 @@ export function Process() {
                 const isActive = activeStep === i
                 const isPast = !reduced && i < activeStep
                 const isFuture = !reduced && i > activeStep
-                const isDesignStep = i === 2
 
                 return (
                   <li
@@ -212,7 +206,6 @@ export function Process() {
                       isActive ? 'process-step--active' : '',
                       isPast ? 'process-step--past' : '',
                       isFuture ? 'process-step--future' : '',
-                      isDesignStep ? 'process-step--design' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
@@ -243,41 +236,6 @@ export function Process() {
                       >
                         {step.text}
                       </motion.p>
-
-                      {isDesignStep && (
-                        <AnimatePresence>
-                          {(reduced || isActive) && (
-                            <motion.div
-                              className="process-design-preview"
-                              initial={
-                                reduced
-                                  ? { opacity: 1, clipPath: 'inset(0 0 0 0)' }
-                                  : { opacity: 0, clipPath: 'inset(0 0 100% 0)' }
-                              }
-                              animate={{
-                                opacity: 1,
-                                clipPath: 'inset(0 0 0 0)',
-                              }}
-                              exit={
-                                reduced
-                                  ? undefined
-                                  : { opacity: 0, clipPath: 'inset(0 0 100% 0)' }
-                              }
-                              transition={{ duration: 0.85, ease: EASE }}
-                            >
-                              <img
-                                src={DESIGN_PREVIEW.src}
-                                alt={DESIGN_PREVIEW.alt}
-                                width={960}
-                                height={540}
-                                loading="lazy"
-                                decoding="async"
-                                className="process-design-preview-img"
-                              />
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      )}
                     </div>
                   </li>
                 )

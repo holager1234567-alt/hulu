@@ -19,7 +19,8 @@ import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
 const HERO_HEADLINE_LINE_1 = 'העסק שלכם כבר מדבר.'
 const HERO_HEADLINE_LINE_2 = 'הגיע הזמן שהאתר'
-const HERO_HEADLINE_EMPHASIS = 'יספר את הסיפור שלו'
+const HERO_EMPHASIS_LEAD = 'יספר את '
+const HERO_EMPHASIS_ACCENT = 'הסיפור שלו'
 const HERO_SUBHEADLINE_LEAD = 'אתר דמו בחינם + שיחת אפיון אישית'
 const HERO_SUBHEADLINE_DETAIL =
   'כדי להבין את העסק, הלקוחות והחזון שלכם לפני שמעצבים.'
@@ -150,26 +151,18 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                 >
                   {HERO_HEADLINE_LINE_2}
                   <span className="hero-luxury-emphasis">
-                    <span className="hero-luxury-emphasis-glow" aria-hidden />
                     <span className="hero-luxury-emphasis-text">
-                      <span className="hero-luxury-emphasis-words-wrap">
-                        <span className="hero-luxury-emphasis-words-glint" aria-hidden />
-                        <span className="hero-luxury-emphasis-words-rail" aria-hidden />
-                        <span
-                          className="hero-luxury-emphasis-words-corner hero-luxury-emphasis-words-corner--start"
-                          aria-hidden
-                        />
-                        <span
-                          className="hero-luxury-emphasis-words-corner hero-luxury-emphasis-words-corner--end"
-                          aria-hidden
-                        />
-                        <span className="hero-luxury-emphasis-words">{HERO_HEADLINE_EMPHASIS}</span>
+                      <span className="hero-luxury-emphasis-words">
+                        <span className="hero-luxury-emphasis-lead">{HERO_EMPHASIS_LEAD}</span>
+                        <span className="hero-luxury-emphasis-accent">
+                          {HERO_EMPHASIS_ACCENT}
+                          <span className="hero-luxury-emphasis-mark" aria-hidden />
+                        </span>
                       </span>
                       <span className="hero-luxury-emphasis-dot" aria-hidden>
                         .
                       </span>
                     </span>
-                    <span className="hero-luxury-emphasis-shadow" aria-hidden />
                   </span>
                 </motion.span>
               </span>
