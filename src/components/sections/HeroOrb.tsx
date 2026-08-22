@@ -60,7 +60,7 @@ function ShowcaseCursor3D() {
               dx="0"
               dy="3"
               stdDeviation="2.5"
-              floodColor="#5a0e23"
+              floodColor="#942839"
               floodOpacity="0.28"
             />
           </filter>
@@ -74,7 +74,7 @@ function ShowcaseCursor3D() {
         <path
           d="M5 3 L5 33 L13.5 24.5 L19.5 38 L24 35.5 L18 22.5 L29.5 22.5 Z"
           fill="url(#showcase-cursor-face)"
-          stroke="#5a0e23"
+          stroke="#942839"
           strokeWidth="1.35"
           strokeLinejoin="round"
           filter="url(#showcase-cursor-soft-shadow)"

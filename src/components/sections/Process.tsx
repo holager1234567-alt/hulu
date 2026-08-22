@@ -131,10 +131,6 @@ export function Process() {
               viewport={viewportOnce}
               variants={headlineStagger}
             >
-              <p className="process-kicker font-mono-tech mb-5 text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:mb-6 md:text-xs">
-                the process
-              </p>
-
               <h2
                 id="process-heading"
                 className="process-headline font-display font-bold leading-[1.06] text-burgundy"

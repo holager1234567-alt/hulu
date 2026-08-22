@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/layout/Logo'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -7,13 +8,12 @@ import { useHeaderScrollState } from '@/hooks/useHeaderScrollState'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
-import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
+import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
 const links = [
   { href: '#about', label: 'אודות' },
   { href: '#process', label: 'תהליך' },
   { href: '#work', label: 'פרויקטים' },
-  { href: '#faq', label: 'שאלות ותשובות' },
   { href: '#contact', label: 'צור קשר' },
 ]
 
@@ -32,13 +32,13 @@ export function Header() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 px-4 pt-4 transition-transform duration-300 md:px-6',
+        'fixed inset-x-0 top-0 z-50 px-3 pt-2 transition-transform duration-300 md:px-6 md:pt-4',
         !visible && '-translate-y-[calc(100%+1rem)] pointer-events-none',
       )}
     >
       <div
         className={cn(
-          'container-site relative flex h-16 items-center justify-between rounded-lg border transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] header-glass',
+          'container-site relative flex h-11 items-center justify-between rounded-lg border transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] header-glass md:h-16',
           scrolled
             ? 'header-scrolled-line border-black/8 bg-white/88 shadow-soft dark:border-white/12 dark:bg-black/72'
             : 'border-transparent bg-white/45 dark:bg-black/35',
@@ -48,7 +48,7 @@ export function Header() {
           href="#top"
           className="logo-hover flex shrink-0 items-center text-primary dark:text-white"
         >
-          <Logo className="h-12 w-auto min-w-[130px] md:h-14 md:min-w-[160px]" />
+          <Logo className="h-8 w-auto min-w-[96px] md:h-14 md:min-w-[160px]" />
         </a>
 
         <nav className="hidden items-center gap-8 lg:flex">
@@ -74,7 +74,7 @@ export function Header() {
             <Icon className="h-4 w-4" strokeWidth={1.5} />
           </Button>
           <Button asChild variant="burgundy" size="sm" className="hidden rounded-full sm:inline-flex">
-            <a href={LEAD_FLOW_ANCHOR}>{LEAD_FLOW_CTA_LABEL}</a>
+            <LeadPopupTrigger>{LEAD_FLOW_CTA_LABEL}</LeadPopupTrigger>
           </Button>
           <Button
             variant="ghost"
@@ -106,9 +106,9 @@ export function Header() {
               </a>
             ))}
             <Button asChild variant="burgundy" className="mt-2">
-              <a href={LEAD_FLOW_ANCHOR} onClick={() => setOpen(false)}>
+              <LeadPopupTrigger onClick={() => setOpen(false)}>
                 {LEAD_FLOW_CTA_LABEL}
-              </a>
+              </LeadPopupTrigger>
             </Button>
           </nav>
         </div>

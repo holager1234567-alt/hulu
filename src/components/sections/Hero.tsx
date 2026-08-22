@@ -2,7 +2,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 import { ArrowLeft } from 'lucide-react'
 import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { HeroOrb } from '@/components/sections/HeroOrb'
+import { HeroCoverflow } from '@/components/sections/HeroCoverflow'
 import {
   EASE,
   headlineStagger,
@@ -15,16 +15,19 @@ import {
   lineRevealItemReduced,
 } from '@/lib/motion'
 
-import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
+import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 
-const HERO_HEADLINE_LINE_1 = 'העסק שלכם כבר מדבר.'
-const HERO_HEADLINE_LINE_2 = 'הגיע הזמן שהאתר'
-const HERO_EMPHASIS_LEAD = 'יספר את '
-const HERO_EMPHASIS_ACCENT = 'הסיפור שלו'
-const HERO_SUBHEADLINE_LEAD = 'אתר דמו בחינם + שיחת אפיון אישית'
-const HERO_SUBHEADLINE_DETAIL =
-  'כדי להבין את העסק, הלקוחות והחזון שלכם לפני שמעצבים.'
-const HERO_SECONDARY_CTA = 'לראות עבודות נבחרות'
+const HERO_HEADLINE_LINE_1_LEAD = 'יש לך בדיוק 3 שניות'
+const HERO_HEADLINE_LINE_1_ACCENT = 'להרשים'
+const HERO_HEADLINE_LINE_2_LEAD = 'בואי ניצור לך אתר עם נוכחות'
+const HERO_EMPHASIS_LEAD = 'שאי אפשר '
+const HERO_EMPHASIS_ACCENT = 'להתעלם ממנו'
+const HERO_SUBHEADLINE_DETAIL_OPEN = 'קבלי הצצה ראשונה'
+const HERO_SUBHEADLINE_DETAIL_REST = 'לאתר דמו מותאם אישית לעסק שלך '
+const HERO_SUBHEADLINE_DETAIL_ACCENT = 'בחינם'
+const HERO_DESKTOP_CTA = 'אני רוצה אתר דמו בחינם לעסק שלי'
+const HERO_PRIMARY_CTA = 'אני רוצה לראות את הדמו שלי'
+const HERO_SECONDARY_CTA = 'איך זה עובד?'
 const PORTFOLIO_ANCHOR = '#work'
 
 type HeroProps = {
@@ -78,7 +81,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
     <section
       ref={sectionRef}
       id="top"
-      className="hero-luxury relative overflow-x-clip pb-8 pt-24 md:pb-10 md:pt-28"
+      className="hero-luxury relative overflow-x-clip pb-8 pt-[3.75rem] md:pb-10 md:pt-28"
     >
       {useReveal ? (
         <motion.div
@@ -125,31 +128,36 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
         }
         animate={useReveal ? { opacity: 1, scale: 1, filter: 'none' } : undefined}
         transition={{ duration: 0.9, delay: 0.12, ease: EASE }}
-        className="container-site relative z-10 py-6 md:py-8 lg:py-10"
+        className="container-site relative z-10 py-1 md:py-8 lg:py-10"
       >
         <div className="hero-luxury-grid-layout w-full">
           <motion.div
-            className="hero-luxury-copy"
+            className="hero-luxury-copy hero-luxury-text"
             initial="hidden"
             animate="visible"
             variants={headlineVariants}
           >
             <h1 className="hero-luxury-headline">
-              <span className="block overflow-hidden py-0.5">
+              <span className="hero-headline-line hero-headline-line--clip block py-0.5">
                 <motion.span
                   variants={lineVariants}
                   className="hero-luxury-headline-bold block"
                 >
-                  {HERO_HEADLINE_LINE_1}
+                  <span className="hero-headline-lead">{HERO_HEADLINE_LINE_1_LEAD}</span>
+                  {' '}
+                  <span className="hero-headline-punch">
+                    {HERO_HEADLINE_LINE_1_ACCENT}
+                    <span className="hero-headline-punch-dot">.</span>
+                  </span>
                 </motion.span>
               </span>
 
-              <span className="hero-luxury-headline-line--story block overflow-visible py-0.5">
+              <span className="hero-luxury-headline-line--story hero-headline-line block overflow-visible py-0.5">
                 <motion.span
                   variants={lineVariants}
                   className="hero-luxury-headline-bold block"
                 >
-                  {HERO_HEADLINE_LINE_2}
+                  <span className="hero-headline-story-mobile">{HERO_HEADLINE_LINE_2_LEAD}</span>
                   <span className="hero-luxury-emphasis">
                     <span className="hero-luxury-emphasis-text">
                       <span className="hero-luxury-emphasis-words">
@@ -158,9 +166,6 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                           {HERO_EMPHASIS_ACCENT}
                           <span className="hero-luxury-emphasis-mark" aria-hidden />
                         </span>
-                      </span>
-                      <span className="hero-luxury-emphasis-dot" aria-hidden>
-                        .
                       </span>
                     </span>
                   </span>
@@ -172,42 +177,22 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               custom={0}
               initial="hidden"
               animate="visible"
-              variants={bodyVariants}
-              className="hero-luxury-subheadline mt-5 max-w-xl space-y-1 md:mt-6 md:max-w-2xl"
-            >
-              <p>{HERO_SUBHEADLINE_LEAD}</p>
-              <p>{HERO_SUBHEADLINE_DETAIL}</p>
-            </motion.div>
-
-            <motion.div
-              custom={1}
-              initial="hidden"
-              animate="visible"
               variants={ctaVariants}
-              className="hero-luxury-actions mt-7 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center md:mt-8"
+              className="hero-luxury-desktop-cta mx-auto mt-7 hidden max-w-xl md:mt-8 md:block md:max-w-2xl"
             >
-              <Button
-                asChild
-                variant="burgundy"
-                size="lg"
-                className="group btn-burgundy-glow hero-luxury-cta-primary luxury-interactive h-12 w-full rounded-full px-8 text-base font-semibold sm:w-auto md:h-[3.25rem] md:px-9 md:text-[1.05rem]"
-              >
-                <a href={LEAD_FLOW_ANCHOR}>
-                  {LEAD_FLOW_CTA_LABEL}
-                  <ArrowLeft
-                    className="size-4 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1.5"
-                    aria-hidden
-                  />
-                </a>
-              </Button>
-
               <Button
                 asChild
                 variant="outline"
-                size="lg"
-                className="hero-luxury-cta-secondary luxury-interactive luxury-interactive--glass h-12 w-full rounded-full border-white/50 bg-white/25 px-7 text-base font-medium text-[#121212]/85 sm:w-auto md:h-[3.25rem]"
+                size="sm"
+                className="group hero-desktop-cta-btn luxury-interactive rounded-full"
               >
-                <a href={PORTFOLIO_ANCHOR}>{HERO_SECONDARY_CTA}</a>
+                <LeadPopupTrigger>
+                  {HERO_DESKTOP_CTA}
+                  <ArrowLeft
+                    className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1"
+                    aria-hidden
+                  />
+                </LeadPopupTrigger>
               </Button>
             </motion.div>
           </motion.div>
@@ -215,10 +200,10 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
           <motion.div
             initial={
               useReveal
-                ? { opacity: 0, x: reduced ? 0 : -40, scale: 0.92 }
+                ? { opacity: 0, y: reduced ? 0 : 20, scale: 0.96 }
                 : { opacity: 0, y: 24 }
             }
-            animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{
               duration: 1,
               delay: useReveal ? 0.34 : 0.2,
@@ -226,7 +211,52 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
             }}
             className="hero-luxury-visual"
           >
-            <HeroOrb sectionRef={sectionRef} />
+            <HeroCoverflow />
+          </motion.div>
+
+          <motion.p
+            custom={0}
+            initial="hidden"
+            animate="visible"
+            variants={bodyVariants}
+            className="hero-luxury-subheadline-detail hero-luxury-subheadline-detail--mobile md:hidden"
+          >
+            {HERO_SUBHEADLINE_DETAIL_OPEN}
+            <br />
+            {HERO_SUBHEADLINE_DETAIL_REST}
+            <span className="hero-luxury-subheadline-accent">{HERO_SUBHEADLINE_DETAIL_ACCENT}</span>
+          </motion.p>
+
+          <motion.div
+            custom={1}
+            initial="hidden"
+            animate="visible"
+            variants={ctaVariants}
+            className="hero-luxury-actions mt-2 flex w-full flex-col items-center justify-center gap-2.5 sm:flex-row md:mt-0 md:hidden"
+          >
+            <Button
+              asChild
+              variant="burgundy"
+              size="lg"
+              className="group btn-burgundy-glow hero-luxury-cta hero-luxury-cta-primary luxury-interactive h-11 rounded-full px-5 text-sm font-semibold md:h-12 md:px-7 md:text-base"
+            >
+              <LeadPopupTrigger>
+                {HERO_PRIMARY_CTA}
+                <ArrowLeft
+                  className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1 md:size-4"
+                  aria-hidden
+                />
+              </LeadPopupTrigger>
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="hero-luxury-cta hero-luxury-cta-secondary luxury-interactive luxury-interactive--glass h-11 rounded-full px-5 text-sm font-medium md:h-12 md:px-6 md:text-base"
+            >
+              <a href={PORTFOLIO_ANCHOR}>{HERO_SECONDARY_CTA}</a>
+            </Button>
           </motion.div>
         </div>
       </motion.div>

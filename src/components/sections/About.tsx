@@ -43,8 +43,6 @@ const personalLines = [
   'אני מתמחה בחיבור המדויק שבין עיצוב אסתטי עוצר נשימה, קופירייטינג שנוגע בנקודות הנכונות, ופיתוח טכנולוגי מתקדם.',
 ]
 
-const niceWords = ['NICE', 'TO', 'MEET', 'U']
-
 function StatBadge({
   numeric,
   suffix,
@@ -267,36 +265,6 @@ export function About() {
             variants={staggerItem}
             className="about-header mb-6 flex flex-col items-center text-center lg:items-start lg:text-start"
           >
-            <p
-              className="about-kicker font-mono-tech text-[0.72rem] font-semibold tracking-[0.22em] text-burgundy/45 uppercase md:text-xs"
-              dir="ltr"
-            >
-              {niceWords.map((word, i) => (
-                <motion.span
-                  key={word}
-                  className="inline-block"
-                  initial={
-                    reduced
-                      ? { opacity: 1, letterSpacing: '0.16em' }
-                      : { opacity: 0, letterSpacing: '0.42em', y: 8 }
-                  }
-                  animate={
-                    showHeadline
-                      ? { opacity: 1, letterSpacing: '0.16em', y: 0 }
-                      : { opacity: 0, letterSpacing: '0.42em', y: 8 }
-                  }
-                  transition={{
-                    duration: 0.65,
-                    ease: EASE,
-                    delay: i * 0.09,
-                  }}
-                >
-                  {word}
-                  {i < niceWords.length - 1 ? '\u00A0' : ''}
-                </motion.span>
-              ))}
-            </p>
-
             <h2 className="mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-primary md:mt-4 md:text-4xl lg:text-[2.5rem] dark:text-white">
               {headlineParts.map((part, i) => (
                 <span key={part} className="block overflow-hidden py-0.5">

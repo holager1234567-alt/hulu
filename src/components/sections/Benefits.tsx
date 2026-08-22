@@ -1,12 +1,6 @@
-import { useLayoutEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
-import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
-import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 import {
-  EASE,
   headlineStagger,
   lineRevealItem,
   lineRevealItemReduced,
@@ -14,8 +8,6 @@ import {
   staggerItem,
   viewportOnce,
 } from '@/lib/motion'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const headlineLines = ['ראית איך זה יכול להיראות.', 'עכשיו בואי נבנה את האתר של העסק שלך.']
 
@@ -25,42 +17,9 @@ const readySignals = [
   'אתם מוכנים לעבור מהתעניינות לצעד הבא.',
 ] as const
 
-const finalLines: string[] = []
-
 export function Benefits() {
   const reduced = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
-  const transitionRef = useRef<HTMLDivElement>(null)
-  const fillRef = useRef<HTMLDivElement>(null)
-
-  useLayoutEffect(() => {
-    if (reduced) return
-
-    const section = sectionRef.current
-    const transition = transitionRef.current
-    const fill = fillRef.current
-    if (!section || !transition || !fill) return
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        fill,
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: transition,
-            start: 'top 75%',
-            end: 'bottom 35%',
-            scrub: 0.55,
-          },
-        },
-      )
-    }, section)
-
-    scheduleScrollTriggerRefresh(120)
-    return () => ctx.revert()
-  }, [reduced])
 
   const lineVariants = reduced ? lineRevealItemReduced : lineRevealItem
 
@@ -71,8 +30,6 @@ export function Benefits() {
       className="bridge-section section-pad relative overflow-x-clip"
       aria-labelledby="bridge-heading"
     >
-      <SectionLuxuryBg variant="benefits" />
-
       <div className="container-site relative z-10">
         <div className="bridge-layout">
           <motion.header
@@ -82,10 +39,6 @@ export function Benefits() {
             viewport={viewportOnce}
             variants={headlineStagger}
           >
-            <p className="bridge-eyebrow font-mono-tech text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:text-xs">
-              אחרי שראיתם
-            </p>
-
             <h2
               id="bridge-heading"
               className="bridge-headline font-display font-bold leading-[1.04] text-burgundy"
@@ -159,59 +112,7 @@ export function Benefits() {
                 </ul>
               </motion.article>
             </div>
-
-            <div ref={transitionRef} className="bridge-transition" aria-hidden>
-              <div className="bridge-transition-track">
-                <div ref={fillRef} className="bridge-transition-fill" />
-              </div>
-            </div>
           </div>
-
-          <motion.div
-            className="bridge-moment"
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.85, ease: EASE, delay: reduced ? 0 : 0.08 }}
-          >
-            <p className="bridge-moment-line font-display font-bold text-burgundy">
-              <span className="block">הגיע הזמן</span>
-              <span className="bridge-moment-emphasis block">לתת לעסק שלך</span>
-            </p>
-            <p className="bridge-moment-line bridge-moment-line--second font-display font-bold text-burgundy">
-              <span className="bridge-moment-emphasis block">אתר שעובד.</span>
-            </p>
-          </motion.div>
-
-          {finalLines.length > 0 ? (
-            <motion.div
-              className="bridge-final"
-              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={viewportOnce}
-              transition={{ duration: 0.7, ease: EASE, delay: reduced ? 0 : 0.12 }}
-            >
-              {finalLines.map((line) => (
-                <p key={line} className="bridge-final-line">
-                  {line}
-                </p>
-              ))}
-            </motion.div>
-          ) : null}
-
-          <motion.div
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : 0.16 }}
-          >
-            <a href={LEAD_FLOW_ANCHOR} className="bridge-cta group">
-              <span>{LEAD_FLOW_CTA_LABEL}</span>
-              <span className="bridge-cta-arrow" aria-hidden>
-                →
-              </span>
-            </a>
-          </motion.div>
         </div>
       </div>
     </section>

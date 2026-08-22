@@ -1,292 +1,243 @@
-import { useRef, useState } from 'react'
-import { ArrowLeft } from 'lucide-react'
+import { useRef } from 'react'
+import { Check, X, ArrowLeft } from 'lucide-react'
 import {
   motion,
   useInView,
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
 } from 'framer-motion'
 import { HeroLuxuryBackdrop } from '@/components/layout/HeroLuxuryBackdrop'
-import { useIsMobile } from '@/hooks/useIsMobile'
+import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
+import { Button } from '@/components/ui/button'
 import { EASE, viewportOnce } from '@/lib/motion'
-import { LEAD_FLOW_ANCHOR } from '@/lib/waveForms'
+import { cn } from '@/lib/utils'
 
-const STORY_LEAD_CTA = 'קבלו הצצה לאתר שעובד'
-
-const STEPS = [
-  {
-    id: '01',
-    title: 'להבין',
-    description: 'מי אתם, מה אתם מציעים ולמי.',
-  },
-  {
-    id: '02',
-    title: 'להתחבר',
-    description: 'להרגיש את הערך, האישיות והייחוד של העסק.',
-  },
-  {
-    id: '03',
-    title: 'לפעול',
-    description: 'לעבור מהתעניינות לצעד הבא.',
-  },
+const REGULAR_POINTS = [
+  'עיצוב גנרי שנראה בדיוק כמו כל המתחרות שלך',
+  'עומס טקסטים שמבלבל את הגולשת וגורם לה לנטוש',
+  'חוסר מיקוד שמקשה להבין מה את באמת מציעה',
+  'אין מסלול ברור שמוביל את הגולשת ליצירת קשר',
 ] as const
 
-function StoryStepItem({
-  step,
-  index,
-  activeIndex,
-  interactive,
-  reduced,
-}: {
-  step: (typeof STEPS)[number]
-  index: number
-  activeIndex: number
-  interactive: boolean
-  reduced: boolean
-}) {
-  const ref = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.45 })
-  const isActive = interactive && activeIndex === index
-  const isPast = interactive && activeIndex > index
-  const isVisible = reduced || !interactive || inView
+const PREMIUM_POINTS = [
+  'נראות יוקרתית שמבססת סמכות ומצדיקה מחירים גבוהים',
+  'מסר מדויק שנוגע ישירות בצורך של קהל היעד',
+  'חוויית משתמש חלקה שמניעה לפעולה בביטחון',
+  'מנגנון לקביעת פגישות ואיסוף לידים מסביב לשעון',
+] as const
+
+function CompareMockup({ variant }: { variant: 'regular' | 'premium' }) {
+  const isPremium = variant === 'premium'
 
   return (
-    <motion.article
-      ref={ref}
-      className={`story-step ${isActive ? 'story-step--active' : ''} ${isPast ? 'story-step--past' : ''} ${!interactive ? 'story-step--static' : ''}`}
-      aria-current={isActive ? 'step' : undefined}
-      initial={reduced || interactive ? false : { opacity: 0, y: 24 }}
-      animate={
-        reduced || interactive || isVisible
-          ? { opacity: 1, y: 0 }
-          : { opacity: 0, y: 24 }
-      }
-      transition={{ duration: 0.6, ease: EASE, delay: reduced ? 0 : index * 0.06 }}
+    <div
+      className={cn('compare-mockup', isPremium && 'compare-mockup--premium')}
+      aria-hidden
     >
-      <span className="story-step-num font-mono-tech" aria-hidden>
-        {step.id}
-      </span>
-      <span className="story-step-rule" aria-hidden />
-      <div className="story-step-copy">
-        <h3 className="story-step-title">{step.title}</h3>
-        <motion.p
-          className="story-step-desc"
-          initial={false}
-          animate={{
-            opacity: reduced || !interactive || isActive || isPast ? 1 : 0.42,
-            y: reduced || !interactive || isActive ? 0 : 6,
-          }}
-          transition={{ duration: 0.55, ease: EASE }}
-        >
-          {step.description}
-        </motion.p>
+      <div className="compare-mockup-chrome">
+        <span className="compare-mockup-dot compare-mockup-dot--close" />
+        <span className="compare-mockup-dot compare-mockup-dot--min" />
+        <span className="compare-mockup-dot compare-mockup-dot--max" />
+        <span className="compare-mockup-url">
+          {isPremium ? 'yourbrand.studio' : 'template-site.com'}
+        </span>
       </div>
-    </motion.article>
+      <div className="compare-mockup-screen">
+        <span className={cn('compare-mockup-hero', isPremium && 'compare-mockup-hero--premium')} />
+        <div className="compare-mockup-rows">
+          <span className="compare-mockup-row compare-mockup-row--wide" />
+          <span className="compare-mockup-row" />
+          <span className="compare-mockup-row compare-mockup-row--short" />
+        </div>
+        <span
+          className={cn('compare-mockup-cta', isPremium && 'compare-mockup-cta--premium')}
+        />
+        {isPremium ? <span className="compare-mockup-shine" /> : null}
+      </div>
+    </div>
+  )
+}
+
+function ComparePoint({
+  children,
+  index,
+  variant,
+  reduced,
+}: {
+  children: string
+  index: number
+  variant: 'regular' | 'premium'
+  reduced: boolean | null
+}) {
+  const isPremium = variant === 'premium'
+  return (
+    <motion.li
+      className="compare-point"
+      initial={reduced ? false : { opacity: 0, x: isPremium ? 14 : -14 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ duration: 0.5, ease: EASE, delay: reduced ? 0 : index * 0.07 }}
+    >
+      <span
+        className={cn(
+          'compare-point-icon',
+          isPremium ? 'compare-point-icon--check' : 'compare-point-icon--cross',
+        )}
+        aria-hidden
+      >
+        {isPremium ? (
+          <Check className="size-3.5" strokeWidth={2.25} />
+        ) : (
+          <X className="size-3.5" strokeWidth={2} />
+        )}
+      </span>
+      <span className="compare-point-text">{children}</span>
+    </motion.li>
   )
 }
 
 export function PainPoints() {
-  const reduced = !!useReducedMotion()
-  const isMobile = useIsMobile()
+  const reduced = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
-  const scrollTrackRef = useRef<HTMLDivElement>(null)
-  const [activeStep, setActiveStep] = useState(0)
-
-  const useScrollExperience = !reduced && !isMobile
+  const stageRef = useRef<HTMLDivElement>(null)
+  const stageInView = useInView(stageRef, { once: true, amount: 0.25 })
 
   const { scrollYProgress } = useScroll({
-    target: scrollTrackRef,
-    offset: ['start start', 'end end'],
+    target: sectionRef,
+    offset: ['start end', 'end start'],
   })
 
-  useMotionValueEvent(scrollYProgress, 'change', (value) => {
-    if (!useScrollExperience) return
-    if (value < 0.34) setActiveStep(0)
-    else if (value < 0.66) setActiveStep(1)
-    else setActiveStep(2)
-  })
-
-  const headlineOpacity = useTransform(
+  const ambientY = useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [24, -24])
+  const premiumLift = useTransform(
     scrollYProgress,
-    [0, 0.12],
-    reduced || isMobile ? [1, 1] : [0.35, 1],
-  )
-  const headlineY = useTransform(
-    scrollYProgress,
-    [0, 0.14],
-    reduced || isMobile ? [0, 0] : [32, 0],
-  )
-  const subOpacity = useTransform(
-    scrollYProgress,
-    [0.08, 0.2],
-    reduced || isMobile ? [1, 1] : [0, 1],
-  )
-  const lineProgress = useTransform(scrollYProgress, [0.22, 0.78], [0, 1])
-  const dotTop = useTransform(lineProgress, (v) => `${v * 100}%`)
-  const closingOpacity = useTransform(
-    scrollYProgress,
-    [0.78, 0.92],
-    reduced || isMobile ? [1, 1] : [0, 1],
-  )
-  const closingY = useTransform(
-    scrollYProgress,
-    [0.78, 0.92],
-    reduced || isMobile ? [0, 0] : [20, 0],
-  )
-
-  const headlineBlockAOpacity = useTransform(
-    scrollYProgress,
-    [0.15, 0.45, 0.55],
-    reduced || isMobile ? [1, 1, 1] : [1, 1, 0.55],
-  )
-  const headlineBlockBOpacity = useTransform(
-    scrollYProgress,
-    [0.45, 0.62, 0.78],
-    reduced || isMobile ? [1, 1, 1] : [0.45, 1, 1],
+    [0.15, 0.45],
+    reduced ? [0, 0] : [8, 0],
   )
 
   return (
     <section
       ref={sectionRef}
       id="pains"
-      className="story-section hero-luxury relative overflow-x-clip"
-      aria-label="העסק שלכם צריך מקום שעובד עבורו"
+      className="compare-section compare-section--lux hero-luxury relative overflow-x-clip section-pad"
+      aria-labelledby="compare-heading"
     >
       <HeroLuxuryBackdrop variant="continuation" />
 
-      <div
-        ref={scrollTrackRef}
-        className={
-          useScrollExperience
-            ? 'story-scroll-track story-scroll-track--desktop'
-            : 'story-scroll-track story-scroll-track--static'
-        }
-      >
-        <div className="story-sticky">
-          <div className="container-site story-shell relative z-10">
-            <div className="story-layout">
-              <motion.header
-                className="story-headline-col"
-                initial={
-                  useScrollExperience ? undefined : reduced ? false : { opacity: 0, y: 28 }
-                }
-                whileInView={
-                  useScrollExperience ? undefined : { opacity: 1, y: 0 }
-                }
-                viewport={viewportOnce}
-                transition={{ duration: 0.7, ease: EASE }}
-                style={
-                  useScrollExperience
-                    ? {
-                        opacity: headlineOpacity,
-                        y: headlineY,
-                        willChange: 'transform, opacity',
-                      }
-                    : undefined
-                }
-              >
-                <h2 className="story-headline">
-                  <motion.span
-                    className="story-headline-block"
-                    style={
-                      useScrollExperience
-                        ? { opacity: headlineBlockAOpacity }
-                        : undefined
-                    }
-                  >
-                    <span className="story-headline-line">העסק שלכם לא צריך עוד אתר.</span>
-                  </motion.span>
-                  <motion.span
-                    className="story-headline-block story-headline-block--accent"
-                    style={
-                      useScrollExperience
-                        ? { opacity: headlineBlockBOpacity }
-                        : undefined
-                    }
-                  >
-                    <span className="story-headline-line story-headline-emphasis">
-                      הוא צריך אתר שעובד עבורו.
-                    </span>
-                  </motion.span>
-                </h2>
+      <motion.div
+        className="compare-ambient compare-ambient--left"
+        style={{ y: ambientY }}
+        aria-hidden
+      />
+      <motion.div
+        className="compare-ambient compare-ambient--right"
+        style={{ y: ambientY }}
+        aria-hidden
+      />
 
-                <motion.p
-                  className="story-subheadline"
-                  style={
-                    useScrollExperience ? { opacity: subOpacity } : undefined
-                  }
-                >
-                  אתר טוב לא רק נראה טוב.
-                  <span className="story-subheadline-break">
-                    {' '}
-                    הוא עוזר לאנשים להבין מי אתם, לסמוך עליכם ולדעת מה לעשות עכשיו.
-                  </span>
-                </motion.p>
-              </motion.header>
+      <div className="container-site relative z-10">
+        <motion.header
+          className="compare-header"
+          initial={reduced ? false : { opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.7, ease: EASE }}
+        >
+          <h2 id="compare-heading" className="compare-headline">
+            <span className="compare-headline-line">להפוך לקוחה מתעניינת</span>
+            <span className="compare-headline-line compare-headline-accent">ללקוחה משלמת</span>
+          </h2>
+          <p className="compare-subheadline">
+            ההבדל בין אתר סטנדרטי שלא מייצר תוצאות לבין אתר שמביא עבודה אמיתית
+          </p>
+          <hr className="compare-header-rule" aria-hidden />
+        </motion.header>
 
-              <div className="story-steps-col">
-                {useScrollExperience ? (
-                  <div className="story-rail" aria-hidden>
-                    <span className="story-rail-track" />
-                    <motion.span
-                      className="story-rail-fill"
-                      style={{ scaleY: lineProgress }}
-                    />
-                    <motion.span
-                      className="story-rail-dot"
-                      style={{ top: dotTop }}
-                    />
-                  </div>
-                ) : null}
+        <div ref={stageRef} className="compare-stage">
+          <motion.span
+            className="compare-vs font-mono-tech"
+            initial={reduced ? false : { opacity: 0, scale: 0.85 }}
+            animate={stageInView ? { opacity: 1, scale: 1 } : undefined}
+            transition={{ duration: 0.55, ease: EASE, delay: reduced ? 0 : 0.2 }}
+            aria-hidden
+          >
+            VS
+          </motion.span>
 
-                <ol className="story-steps" aria-label="שלבי החוויה">
-                  {STEPS.map((step, index) => (
-                    <li key={step.id}>
-                      <StoryStepItem
-                        step={step}
-                        index={index}
-                        activeIndex={activeStep}
-                        interactive={useScrollExperience}
-                        reduced={reduced}
-                      />
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-
-            <motion.div
-              className="story-lead-cta-wrap"
-              initial={
-                useScrollExperience ? undefined : reduced ? false : { opacity: 0, y: 14 }
-              }
-              whileInView={
-                useScrollExperience ? undefined : { opacity: 1, y: 0 }
-              }
+          <div className="compare-grid">
+            <motion.article
+              className="compare-card compare-card--regular"
+              initial={reduced ? false : { opacity: 0, y: 36, rotate: -0.6 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
               viewport={viewportOnce}
-              transition={{ duration: 0.6, ease: EASE, delay: reduced ? 0 : 0.12 }}
-              style={
-                useScrollExperience
-                  ? {
-                      opacity: closingOpacity,
-                      y: closingY,
-                      willChange: 'transform, opacity',
-                    }
-                  : undefined
-              }
+              transition={{ duration: 0.75, ease: EASE, delay: reduced ? 0 : 0.05 }}
             >
-              <a href={LEAD_FLOW_ANCHOR} className="story-lead-cta group">
-                <span>{STORY_LEAD_CTA}</span>
-                <ArrowLeft
-                  className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1"
-                  aria-hidden
-                />
-              </a>
-            </motion.div>
+              <CompareMockup variant="regular" />
+              <div className="compare-card-head compare-card-head--centered">
+                <p className="compare-card-eyebrow font-mono-tech">BEFORE</p>
+                <h3 className="compare-card-title">אתר תבניתי סטנדרטי</h3>
+              </div>
+              <ul className="compare-point-list">
+                {REGULAR_POINTS.map((point, index) => (
+                  <ComparePoint key={point} index={index} variant="regular" reduced={reduced}>
+                    {point}
+                  </ComparePoint>
+                ))}
+              </ul>
+            </motion.article>
+
+            <motion.article
+              className="compare-card compare-card--premium compare-card--head-centered"
+              style={{ y: premiumLift }}
+              initial={reduced ? false : { opacity: 0, y: 36, rotate: 0.6 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.75, ease: EASE, delay: reduced ? 0 : 0.14 }}
+            >
+              <span className="compare-card-glow" aria-hidden />
+              <span className="compare-card-badge">הסטנדרט החדש שלך</span>
+              <CompareMockup variant="premium" />
+              <div className="compare-card-head compare-card-head--centered">
+                <p className="compare-card-eyebrow compare-card-eyebrow--premium font-mono-tech">
+                  AFTER
+                </p>
+                <h3 className="compare-card-title compare-card-title--premium">
+                  אתר פרימיום שנבנה ביחד
+                </h3>
+              </div>
+              <ul className="compare-point-list">
+                {PREMIUM_POINTS.map((point, index) => (
+                  <ComparePoint key={point} index={index} variant="premium" reduced={reduced}>
+                    {point}
+                  </ComparePoint>
+                ))}
+              </ul>
+            </motion.article>
           </div>
         </div>
+
+        <motion.div
+          className="compare-cta-wrap"
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : 0.22 }}
+        >
+          <Button
+            asChild
+            variant="burgundy"
+            size="lg"
+            className="group btn-burgundy-glow compare-cta-btn h-14 rounded-full px-9 text-base font-semibold md:px-10 md:text-lg"
+          >
+            <LeadPopupTrigger>
+              <span>אני רוצה אתר ברמת פרימיום לעסק שלי</span>
+              <ArrowLeft
+                className="size-4 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1"
+                aria-hidden
+              />
+            </LeadPopupTrigger>
+          </Button>
+        </motion.div>
       </div>
     </section>
   )

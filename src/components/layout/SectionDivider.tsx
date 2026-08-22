@@ -13,6 +13,7 @@ export type SectionDividerTone =
 
 export type SectionBlendColor =
   | 'hero'
+  | 'compare'
   | 'surface'
   | 'process-top'
   | 'process-bottom'
@@ -43,14 +44,29 @@ export function SectionDivider({
   const inView = useInView(ref, viewportOnceTight)
 
   if (variant === 'blend') {
+    const sameTone = from === to
+
     return (
       <div
         ref={ref}
-        className={`section-divider section-divider--blend ${className}`}
+        className={`section-divider section-divider--blend${sameTone ? ' section-divider--blend-same' : ''} ${className}`}
         data-blend-from={from}
         data-blend-to={to}
         aria-hidden
-      />
+      >
+        <span className="section-flow-glow" />
+        <motion.span
+          className="section-flow-line"
+          initial={reduced ? { scaleX: 1, opacity: 1 } : { scaleX: 0.2, opacity: 0 }}
+          animate={
+            reduced || inView
+              ? { scaleX: 1, opacity: 1 }
+              : { scaleX: 0.2, opacity: 0 }
+          }
+          transition={{ duration: 1.05, ease: EASE }}
+          style={{ transformOrigin: 'center' }}
+        />
+      </div>
     )
   }
 

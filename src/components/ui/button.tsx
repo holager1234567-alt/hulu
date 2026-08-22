@@ -13,7 +13,7 @@ const buttonVariants = cva(
         burgundy:
           'btn-burgundy-glow bg-burgundy text-white shadow-soft hover:bg-burgundy/90',
         outline:
-          'border border-primary/20 bg-white/30 text-primary backdrop-blur-md hover:scale-[1.02] hover:border-burgundy/35 hover:bg-white/50 hover:text-burgundy hover:shadow-[0_16px_40px_-16px_rgb(90_14_35_/_0.18)] dark:border-white/20 dark:text-white dark:hover:bg-white/10',
+          'border border-primary/20 bg-white/30 text-primary backdrop-blur-md hover:scale-[1.02] hover:border-burgundy/35 hover:bg-white/50 hover:text-burgundy hover:shadow-[0_16px_40px_-16px_rgb(148_40_57_/_0.18)] dark:border-white/20 dark:text-white dark:hover:bg-white/10',
         ghost:
           'bg-transparent text-primary hover:bg-primary/5 dark:text-white dark:hover:bg-white/10',
         gold: 'bg-gold text-primary hover:scale-[1.02] hover:bg-gold/90',

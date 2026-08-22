@@ -7,9 +7,10 @@ import {
   useTransform,
 } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
+import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { Button } from '@/components/ui/button'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
-import { LEAD_FLOW_ANCHOR, LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
+import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion'
 
 type Project = {
@@ -333,9 +334,6 @@ export function Portfolio() {
           variants={fadeUpScale}
           className="mx-auto mb-10 max-w-3xl text-center md:mb-12"
         >
-          <p className="portfolio-kicker font-mono-tech mb-4 text-[0.68rem] font-semibold tracking-[0.22em] text-burgundy/50 uppercase md:text-xs">
-            selected work
-          </p>
           <h2 className="text-3xl font-bold leading-tight text-burgundy md:text-4xl lg:text-[2.75rem]">
             {headlineLines.map((line, i) => (
               <span key={line} className="block overflow-hidden py-0.5">
@@ -404,7 +402,7 @@ export function Portfolio() {
               size="lg"
               className="btn-burgundy-glow mt-8 h-12 rounded-full px-8 shadow-soft"
             >
-              <a href={LEAD_FLOW_ANCHOR}>{LEAD_FLOW_CTA_LABEL}</a>
+              <LeadPopupTrigger>{LEAD_FLOW_CTA_LABEL}</LeadPopupTrigger>
             </Button>
           </div>
         </motion.div>
