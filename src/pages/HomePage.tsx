@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 
 import { LeadPopupProvider } from '@/components/forms/LeadPopup'
 import { Header } from '@/components/layout/Header'
@@ -8,15 +8,28 @@ import { SectionDivider } from '@/components/layout/SectionDivider'
 import { SectionWrapper } from '@/components/layout/SectionWrapper'
 import { ScrollProgress } from '@/components/ui/ScrollProgress'
 import { Hero } from '@/components/sections/Hero'
-import { PainPoints } from '@/components/sections/PainPoints'
-import { Benefits } from '@/components/sections/Benefits'
-import { About } from '@/components/sections/About'
-import { Portfolio } from '@/components/sections/Portfolio'
-import { Process } from '@/components/sections/Process'
-import { Contact } from '@/components/sections/Contact'
 import { useGsapScrollMode } from '@/hooks/useGsapScrollMode'
 import { useSmoothAnchorScroll } from '@/hooks/useSmoothAnchorScroll'
 import { scheduleScrollTriggerRefresh, cancelScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
+
+const PainPoints = lazy(() =>
+  import('@/components/sections/PainPoints').then((module) => ({ default: module.PainPoints })),
+)
+const About = lazy(() =>
+  import('@/components/sections/About').then((module) => ({ default: module.About })),
+)
+const Process = lazy(() =>
+  import('@/components/sections/Process').then((module) => ({ default: module.Process })),
+)
+const Portfolio = lazy(() =>
+  import('@/components/sections/Portfolio').then((module) => ({ default: module.Portfolio })),
+)
+const Benefits = lazy(() =>
+  import('@/components/sections/Benefits').then((module) => ({ default: module.Benefits })),
+)
+const Contact = lazy(() =>
+  import('@/components/sections/Contact').then((module) => ({ default: module.Contact })),
+)
 
 export default function HomePage() {
   useSmoothAnchorScroll(true)
@@ -45,26 +58,36 @@ export default function HomePage() {
           <div className="site-flow-intro">
             <Hero />
             <SectionDivider variant="blend" from="hero" to="compare" />
-            <PainPoints />
+            <Suspense fallback={null}>
+              <PainPoints />
+            </Suspense>
           </div>
           <SectionDivider variant="blend" from="compare" to="surface" />
-          <SectionWrapper reveal parallax className="flow-bridge-about">
-            <About />
-          </SectionWrapper>
+          <Suspense fallback={null}>
+            <SectionWrapper reveal parallax className="flow-bridge-about">
+              <About />
+            </SectionWrapper>
+          </Suspense>
           <SectionDivider variant="blend" from="surface" to="process-top" />
-          <SectionWrapper reveal className="flow-bridge-process">
-            <Process />
-          </SectionWrapper>
+          <Suspense fallback={null}>
+            <SectionWrapper reveal className="flow-bridge-process">
+              <Process />
+            </SectionWrapper>
+          </Suspense>
           <SectionDivider variant="blend" from="process-bottom" to="portfolio" />
-          <SectionWrapper reveal className="flow-bridge-portfolio">
-            <Portfolio />
-          </SectionWrapper>
+          <Suspense fallback={null}>
+            <SectionWrapper reveal className="flow-bridge-portfolio">
+              <Portfolio />
+            </SectionWrapper>
+          </Suspense>
           <SectionDivider variant="blend" from="portfolio" to="bridge" />
           <div className="readiness-finale-flow">
-            <SectionWrapper reveal className="flow-bridge-readiness">
-              <Benefits />
-              <Contact />
-            </SectionWrapper>
+            <Suspense fallback={null}>
+              <SectionWrapper reveal className="flow-bridge-readiness">
+                <Benefits />
+                <Contact />
+              </SectionWrapper>
+            </Suspense>
             <Footer variant="finale" />
           </div>
         </main>

@@ -1,8 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { useRef } from 'react'
+import { lazy, Suspense, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { HeroCoverflow } from '@/components/sections/HeroCoverflow'
 import {
   EASE,
   headlineStagger,
@@ -11,11 +10,21 @@ import {
   heroFirstRevealLine,
   heroFirstRevealSimpleFade,
   heroFirstRevealStagger,
-  lineRevealItem,
   lineRevealItemReduced,
 } from '@/lib/motion'
 
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
+
+const HeroCoverflow = lazy(() =>
+  import('@/components/sections/HeroCoverflow').then((module) => ({
+    default: module.HeroCoverflow,
+  })),
+)
+
+const instantVisible = {
+  hidden: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0 },
+}
 
 const HERO_HEADLINE_LINE_1_LEAD = 'יש לך בדיוק 3 שניות'
 const HERO_HEADLINE_LINE_1_ACCENT = 'להרשים'
@@ -32,21 +41,6 @@ const PORTFOLIO_ANCHOR = '#work'
 
 type HeroProps = {
   isFirstReveal?: boolean
-}
-
-function fadeUpVariants(reduced: boolean | null) {
-  return {
-    hidden: { opacity: 0, y: 22 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.65,
-        delay: (reduced ? 0 : 0.38) + i * 0.1,
-        ease: EASE,
-      },
-    }),
-  }
 }
 
 export function Hero({ isFirstReveal = false }: HeroProps) {
@@ -71,11 +65,9 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
     ? heroFirstRevealSimpleFade
     : useReveal
       ? heroFirstRevealLine
-      : reduced
-        ? lineRevealItemReduced
-        : lineRevealItem
-  const bodyVariants = useReveal ? heroFirstRevealFadeUp : fadeUpVariants(!!reduced)
-  const ctaVariants = useReveal ? heroFirstRevealCta : fadeUpVariants(!!reduced)
+      : lineRevealItemReduced
+  const bodyVariants = useReveal ? heroFirstRevealFadeUp : instantVisible
+  const ctaVariants = useReveal ? heroFirstRevealCta : instantVisible
 
   return (
     <section
@@ -133,7 +125,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
         <div className="hero-luxury-grid-layout w-full">
           <motion.div
             className="hero-luxury-copy hero-luxury-text"
-            initial="hidden"
+            initial={useReveal ? 'hidden' : false}
             animate="visible"
             variants={headlineVariants}
           >
@@ -175,7 +167,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
 
             <motion.div
               custom={0}
-              initial="hidden"
+              initial={useReveal ? 'hidden' : false}
               animate="visible"
               variants={ctaVariants}
               className="hero-luxury-desktop-cta mx-auto mt-7 hidden max-w-xl md:mt-8 md:block md:max-w-2xl"
@@ -198,25 +190,23 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
           </motion.div>
 
           <motion.div
-            initial={
-              useReveal
-                ? { opacity: 0, y: reduced ? 0 : 20, scale: 0.96 }
-                : { opacity: 0, y: 24 }
-            }
+            initial={useReveal ? { opacity: 0, y: reduced ? 0 : 20, scale: 0.96 } : false}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{
-              duration: 1,
-              delay: useReveal ? 0.34 : 0.2,
+              duration: useReveal ? 1 : 0.45,
+              delay: useReveal ? 0.34 : 0,
               ease: EASE,
             }}
             className="hero-luxury-visual"
           >
-            <HeroCoverflow />
+            <Suspense fallback={<div className="hero-coverflow hero-coverflow--placeholder" aria-hidden />}>
+              <HeroCoverflow />
+            </Suspense>
           </motion.div>
 
           <motion.p
             custom={0}
-            initial="hidden"
+            initial={useReveal ? 'hidden' : false}
             animate="visible"
             variants={bodyVariants}
             className="hero-luxury-subheadline-detail hero-luxury-subheadline-detail--mobile md:hidden"
@@ -229,7 +219,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
 
           <motion.div
             custom={1}
-            initial="hidden"
+            initial={useReveal ? 'hidden' : false}
             animate="visible"
             variants={ctaVariants}
             className="hero-luxury-actions mt-2 flex w-full flex-col items-center justify-center gap-2.5 sm:flex-row md:mt-0 md:hidden"

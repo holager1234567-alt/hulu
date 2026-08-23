@@ -70,11 +70,31 @@ export function HeroCoverflow({
   }, [reduced, paused, count, goNext])
 
   useEffect(() => {
-    projects.forEach((project) => {
-      const preload = new Image()
-      preload.src = project.img
+    const preloadIndexes = new Set<number>([
+      active,
+      (active - 1 + count) % count,
+      (active + 1) % count,
+    ])
+
+    const preload = (index: number) => {
+      const img = projects[index]?.img
+      if (!img) return
+      const image = new Image()
+      image.src = img
+    }
+
+    preloadIndexes.forEach(preload)
+
+    const idle = window.requestIdleCallback ?? ((cb: IdleRequestCallback) => window.setTimeout(cb, 1))
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout
+    const idleId = idle(() => {
+      projects.forEach((_, index) => {
+        if (!preloadIndexes.has(index)) preload(index)
+      })
     })
-  }, [projects])
+
+    return () => cancel(idleId)
+  }, [active, count, projects])
 
   return (
     <div
