@@ -561,6 +561,7 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
                           <div className="lead-popup-field">
                             <Label htmlFor="lead-profileLink" className="lead-popup-label">
                               קישור לפרופיל ברשתות או לאתר קיים
+                              <span className="lead-popup-optional"> (רשות)</span>
                             </Label>
                             <Input
                               id="lead-profileLink"
