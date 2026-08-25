@@ -3117,8 +3117,8 @@
     }
 
     .hero-luxury-headline-primary .hero-headline-accent {
-      font-size: clamp(1.65rem, 7.8vw, 2.2rem);
-      line-height: 1.14;
+      font-size: clamp(2rem, 10vw, 2.85rem);
+      line-height: 1.12;
     }
 
     .hero-luxury-subheadline-detail {
