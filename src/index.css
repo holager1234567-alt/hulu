@@ -10195,6 +10195,23 @@
     color: var(--color-gold) !important;
   }
 
+  .compare-kicker,
+  .portfolio-field,
+  .portfolio-insight,
+  .about-body,
+  .about-personal-story {
+    color: var(--color-muted) !important;
+  }
+
+  .about-section h2,
+  .portfolio-section h2 {
+    color: var(--color-primary) !important;
+  }
+
+  .about-stat-number {
+    color: var(--color-gold) !important;
+  }
+
   .hero-luxury-cta-secondary,
   .hero-desktop-cta-btn[class*='outline'] {
     border-color: rgb(255 255 255 / 0.22) !important;
