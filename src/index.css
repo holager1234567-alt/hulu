@@ -20,7 +20,7 @@
   --color-burgundy-dark: #7a2030;
   --color-burgundy-light: #b84858;
   --color-gold: #d4af37;
-  --color-surface: #fdfbf7;
+  --color-surface: #ffffff;
   --color-muted: #555555;
   --color-border: #e5e5e5;
   --color-card: #ffffff;
@@ -151,6 +151,7 @@
   /* ── Before vs After comparison section (luxury) ── */
   .compare-section {
     isolation: isolate;
+    background-color: #ffffff;
   }
 
   .compare-section--lux {
@@ -2170,7 +2171,7 @@
         rgb(148 40 57 / 0.04),
         transparent 70%
       ),
-      linear-gradient(180deg, #ffffff 0%, #faf8f5 55%, #f5f0ea 100%);
+      linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
   }
 
   .hero-luxury {
@@ -4438,7 +4439,7 @@
   }
 
   .section-divider--blend[data-blend-from='surface'] {
-    --blend-from: #fdfbf7;
+    --blend-from: #ffffff;
   }
 
   .section-divider--blend[data-blend-from='process-top'] {
@@ -4446,7 +4447,7 @@
   }
 
   .section-divider--blend[data-blend-from='process-bottom'] {
-    --blend-from: #faf7f2;
+    --blend-from: #ffffff;
   }
 
   .section-divider--blend[data-blend-from='portfolio'] {
@@ -4454,7 +4455,7 @@
   }
 
   .section-divider--blend[data-blend-from='bridge'] {
-    --blend-from: #fdfbf7;
+    --blend-from: #ffffff;
   }
 
   .section-divider--blend[data-blend-from='burgundy'] {
@@ -4470,7 +4471,7 @@
   }
 
   .section-divider--blend[data-blend-to='surface'] {
-    --blend-to: #fdfbf7;
+    --blend-to: #ffffff;
   }
 
   .section-divider--blend[data-blend-to='process-top'] {
@@ -4478,7 +4479,7 @@
   }
 
   .section-divider--blend[data-blend-to='process-bottom'] {
-    --blend-to: #faf7f2;
+    --blend-to: #ffffff;
   }
 
   .section-divider--blend[data-blend-to='portfolio'] {
@@ -4486,7 +4487,7 @@
   }
 
   .section-divider--blend[data-blend-to='bridge'] {
-    --blend-to: #fdfbf7;
+    --blend-to: #ffffff;
   }
 
   .section-divider--blend[data-blend-to='burgundy'] {
@@ -5837,7 +5838,7 @@
   }
 
   .bg-section-surface {
-    background-color: #fdfbf7;
+    background-color: #ffffff;
     color: #121212;
   }
 
@@ -5855,7 +5856,7 @@
   }
 
   .bg-section-process {
-    background: linear-gradient(180deg, #ffffff 0%, #fdfbf7 52%, #faf7f2 100%);
+    background: #ffffff;
     color: #121212;
   }
 
@@ -5886,19 +5887,11 @@
     opacity: 0.028;
   }
 
-  .section-luxury-bg--surface {
-    background:
-      radial-gradient(
-        ellipse 72% 58% at 78% 12%,
-        rgb(255 255 255 / 0.96),
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 56% 46% at 12% 88%,
-        rgb(255 252 247 / 0.82),
-        transparent 66%
-      ),
-      linear-gradient(180deg, #ffffff 0%, #fdfbf7 48%, #faf7f2 100%);
+  .section-luxury-bg--surface,
+  .section-luxury-bg--process,
+  .section-luxury-bg--benefits,
+  .section-luxury-bg--portfolio {
+    background: #ffffff;
   }
 
   .section-luxury-bg--burgundy {
@@ -5916,52 +5909,7 @@
       linear-gradient(155deg, #5a1024 0%, #6E2233 38%, #3a0a18 100%);
   }
 
-  .section-luxury-bg--process {
-    background:
-      radial-gradient(
-        ellipse 64% 50% at 22% 78%,
-        rgb(148 40 57 / 0.04),
-        transparent 62%
-      ),
-      radial-gradient(
-        ellipse 58% 48% at 84% 16%,
-        rgb(255 255 255 / 0.88),
-        transparent 58%
-      ),
-      linear-gradient(180deg, #ffffff 0%, #fdfbf7 55%, #f9f5ef 100%);
-  }
-
-  .section-luxury-bg--benefits {
-    background:
-      radial-gradient(
-        ellipse 70% 56% at 50% 0%,
-        rgb(255 255 255 / 0.92),
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 48% 40% at 88% 72%,
-        rgb(148 40 57 / 0.04),
-        transparent 66%
-      ),
-      linear-gradient(
-        180deg,
-        #ffffff 0%,
-        #fdfbf7 42%,
-        #faf7f2 100%
-      );
-  }
-
-  .section-luxury-bg--portfolio {
-    background:
-      radial-gradient(
-        ellipse 68% 48% at 50% 0%,
-        rgb(148 40 57 / 0.03),
-        transparent 58%
-      ),
-      linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
-  }
-
-  .section-luxury-mesh--portfolio {
+  .section-luxury-bg--burgundy {
     opacity: 0.35;
     background: repeating-linear-gradient(
       118deg,
@@ -7559,11 +7507,11 @@
 
   /* GSAP pin spacers inherit section backgrounds to avoid white scroll gaps */
   .pin-spacer:has(.benefits-section) {
-    background-color: #fdfbf7;
+    background-color: #ffffff;
   }
 
   .pin-spacer:has(.pain-points-deck-pin) {
-    background-color: #fdfbf7;
+    background-color: #ffffff;
   }
 
   .dark .pin-spacer:has(.benefits-section),
@@ -7575,7 +7523,7 @@
   .benefits-section {
     isolation: isolate;
     touch-action: pan-y;
-    background-color: #fdfbf7;
+    background-color: #ffffff;
   }
 
   .benefits-section--scroll {
@@ -7841,27 +7789,12 @@
     position: relative;
     overflow-x: clip;
     isolation: isolate;
-    background-color: #fdfbf7;
+    background-color: #ffffff;
     color: #121212;
   }
 
   .readiness-finale-flow::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        ellipse 90% 55% at 50% 8%,
-        rgb(255 255 255 / 0.55),
-        transparent 68%
-      ),
-      radial-gradient(
-        ellipse 55% 45% at 88% 92%,
-        rgb(148 40 57 / 0.025),
-        transparent 70%
-      );
+    content: none;
   }
 
   .dark .readiness-finale-flow {
@@ -7929,7 +7862,7 @@
   }
 
   .bridge-section {
-    background-color: transparent;
+    background-color: #ffffff;
     color: inherit;
   }
 
