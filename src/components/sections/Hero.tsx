@@ -68,7 +68,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
     <section
       ref={sectionRef}
       id="top"
-      className="hero-luxury relative overflow-x-clip pb-8 pt-[3.75rem] md:pb-10 md:pt-28"
+      className="hero-luxury relative overflow-x-clip pb-8 pt-[4.5rem] md:pb-10 md:pt-32"
     >
       {useReveal ? (
         <motion.div
