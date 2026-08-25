@@ -149,7 +149,7 @@ export function PainPoints() {
             <span className="compare-headline-line compare-headline-accent">ללקוחה משלמת</span>
           </h2>
           <p className="compare-subheadline">
-            ההבדל בין אתר סטנדרטי שלא מייצר תוצאות לבין אתר שמביא עבודה אמיתית
+            ההבדל בין דף נחיתה סטנדרטי שלא מייצר תוצאות לבין דף נחיתה שמביא עבודה אמיתית
           </p>
           <hr className="compare-header-rule" aria-hidden />
         </motion.header>
@@ -176,7 +176,7 @@ export function PainPoints() {
               <CompareMockup variant="regular" />
               <div className="compare-card-head compare-card-head--centered">
                 <p className="compare-card-eyebrow font-mono-tech">BEFORE</p>
-                <h3 className="compare-card-title">אתר תבניתי סטנדרטי</h3>
+                <h3 className="compare-card-title">דף נחיתה תבניתי סטנדרטי</h3>
               </div>
               <ul className="compare-point-list">
                 {REGULAR_POINTS.map((point, index) => (
@@ -203,7 +203,7 @@ export function PainPoints() {
                   AFTER
                 </p>
                 <h3 className="compare-card-title compare-card-title--premium">
-                  אתר פרימיום שנבנה ביחד
+                  דף נחיתה פרימיום שנבנה ביחד
                 </h3>
               </div>
               <ul className="compare-point-list">
