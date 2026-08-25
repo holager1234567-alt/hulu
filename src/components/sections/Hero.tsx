@@ -27,10 +27,10 @@ const instantVisible = {
   visible: { opacity: 1, y: 0 },
 }
 
-const HERO_LINE_PRIMARY = 'אתר פרימיום לבעלות עסקים'
-const HERO_LINE_SECONDARY = 'שחוסך זמן בשירות ומביא לקוחות משלמות'
+const HERO_HEADLINE_LEAD = 'להפוך את העסק שלך'
+const HERO_HEADLINE_ACCENT = 'למותג שלא מתעלמים ממנו.'
 const HERO_SUBHEADLINE =
-  'עיצוב, מסר וחוויית משתמש — בנויים להפוך מתעניינות לעסקאות.'
+  'עיצוב ובניית נכסים דיגיטליים ודפי נחיתה שחוסכים לך זמן יקר וממירים מתעניינות ללקוחות משלמות.'
 const HERO_SECONDARY_CTA = 'איך זה עובד?'
 const PORTFOLIO_ANCHOR = '#work'
 
@@ -125,23 +125,13 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
             variants={headlineVariants}
           >
             <h1 className="hero-luxury-headline">
-              <span className="hero-headline-line block py-0.5">
-                <motion.span
-                  variants={lineVariants}
-                  className="hero-luxury-headline-primary"
-                >
-                  {HERO_LINE_PRIMARY}
-                </motion.span>
-              </span>
-
-              <span className="hero-headline-line block py-0.5">
-                <motion.span
-                  variants={lineVariants}
-                  className="hero-luxury-headline-secondary"
-                >
-                  {HERO_LINE_SECONDARY}
-                </motion.span>
-              </span>
+              <motion.span
+                variants={lineVariants}
+                className="hero-luxury-headline-primary"
+              >
+                <span className="hero-headline-lead">{HERO_HEADLINE_LEAD}</span>
+                <span className="hero-headline-accent">{HERO_HEADLINE_ACCENT}</span>
+              </motion.span>
             </h1>
 
             <motion.p
