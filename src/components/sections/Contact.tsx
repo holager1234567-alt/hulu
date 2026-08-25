@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { Button } from '@/components/ui/button'
 import { EASE, viewportOnce } from '@/lib/motion'
+import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
 import { WHATSAPP_FLOAT_MESSAGE, whatsAppUrl } from '@/lib/whatsapp'
 
@@ -9,7 +10,6 @@ const JOURNEY_FINALE_PRELINE = 'אני חושבת שאת יודעת....'
 const JOURNEY_FINALE_HEADLINE = 'שהגיע הזמן לתת לעסק שלך אתר שעובד.'
 const JOURNEY_FINALE_BODY =
   'עני על כמה שאלות קצרות, ואבין איפה העסק שלך נמצא היום ומה האתר שלך צריך כדי להתחיל לעבוד בשבילך.'
-const JOURNEY_FINALE_CTA = 'בואי נבנה את האתר שלי'
 const JOURNEY_FINALE_WHATSAPP_CTA = 'אפשר לדבר גם בווצאפ'
 
 export function Contact() {
@@ -48,7 +48,7 @@ export function Contact() {
               size="lg"
               className="group btn-burgundy-glow contact-journey-cta h-14 rounded-full px-9 text-base font-semibold md:px-10 md:text-lg"
             >
-              <LeadPopupTrigger>{JOURNEY_FINALE_CTA}</LeadPopupTrigger>
+              <LeadPopupTrigger>{LEAD_FLOW_CTA_LABEL}</LeadPopupTrigger>
             </Button>
 
             <Button

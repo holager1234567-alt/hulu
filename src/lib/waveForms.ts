@@ -36,6 +36,6 @@ export function getWaveFormsWebhookUrl(): string | undefined {
   return typeof url === 'string' && url.trim().length > 0 ? url.trim() : undefined
 }
 
-export const LEAD_FLOW_CTA_LABEL = 'קבלי דמו בזום'
+export const LEAD_FLOW_CTA_LABEL = 'לתיאום שיחת אפיון ובדיקת התאמה'
 
 export const LEAD_FLOW_ANCHOR = '#contact'

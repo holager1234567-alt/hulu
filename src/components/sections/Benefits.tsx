@@ -12,9 +12,9 @@ import {
 const headlineLines = ['ראית איך זה יכול להיראות.', 'עכשיו בואי נבנה את האתר של העסק שלך.']
 
 const readySignals = [
-  'יש לכם עסק פעיל ולקוחות.',
-  'אתם רוצים שהאתר ירגיש כמו העסק שלכם.',
-  'אתם מוכנים לעבור מהתעניינות לצעד הבא.',
+  'יש לך עסק פעיל ולקוחות.',
+  'את רוצה שהאתר ירגיש כמו העסק שלך.',
+  'את מוכנה לעבור מהתעניינות לצעד הבא.',
 ] as const
 
 export function Benefits() {
@@ -55,7 +55,7 @@ export function Benefits() {
             <motion.div className="bridge-subhead" variants={lineVariants}>
               <p className="bridge-subhead-line">לא עוד אתר שנראה טוב.</p>
               <p className="bridge-subhead-line">
-                אתר שמרגיש כמו העסק שלך ועובד כמוהו.
+                אתר שמרגיש כמו העסק שלך ועובד כמוך.
               </p>
             </motion.div>
           </motion.header>
@@ -70,12 +70,12 @@ export function Benefits() {
                 variants={staggerContainer}
               >
                 <motion.h3 className="bridge-path-title" variants={staggerItem}>
-                  אם אתם עדיין בונים את העסק
+                  אם את עדיין בונה את העסק
                 </motion.h3>
                 <motion.p className="bridge-path-text" variants={staggerItem}>
-                  אתם עדיין בודקים מה עובד,
+                  את עדיין בודקת מה עובד,
                   <br />
-                  למי אתם פונים ומה בדיוק אתם מציעים.
+                  למי את פונה ומה בדיוק את מציעה.
                 </motion.p>
                 <motion.p
                   className="bridge-path-emphasis font-display"

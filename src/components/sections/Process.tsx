@@ -16,31 +16,23 @@ gsap.registerPlugin(ScrollTrigger)
 
 const steps = [
   {
-    title: 'מכירים את העסק',
-    text: 'מבינים מי אתם, למי אתם מדברים ומה אתם רוצים להשיג.',
+    title: 'שיחת אסטרטגיה בזום',
+    text: '45 דקות שבהן מבינים את העסק, הקהל והיעדים — ומגדירים מה האתר צריך להשיג.',
   },
   {
-    title: 'בונים כיוון',
-    text: 'מגדירים את המסר, המבנה והחוויה.',
+    title: 'עיצוב ופיתוח מותאם',
+    text: 'עיצוב פרימיום, סבבי תיקונים מובנים ומסירה מקצועית — עד שהאתר מרגיש בדיוק כמו העסק שלך.',
   },
   {
-    title: 'מעצבים',
-    text: 'הופכים את הכיוון לשפה ויזואלית מדויקת.',
-  },
-  {
-    title: 'בונים',
-    text: 'הופכים את העיצוב לאתר אמיתי שעובד.',
-  },
-  {
-    title: 'עולים לאוויר',
-    text: 'בודקים, מלטשים ומשחררים את האתר לעולם.',
+    title: 'עליה לאוויר ואינטגרציות',
+    text: 'השקה, חיבור לקביעת פגישות, איסוף לידים וכל מה שצריך כדי שהאתר יתחיל לעבוד בשבילך.',
   },
 ] as const
 
 const headlineLines = [
-  'מרעיון',
-  'לאתר שעובד',
-  'בשביל העסק שלכם.',
+  'תהליך פרימיום',
+  'בשלושה שלבים',
+  'ברורים.',
 ]
 
 export function Process() {
@@ -148,8 +140,8 @@ export function Process() {
                 className="process-lead mt-5 max-w-md text-base leading-relaxed text-muted md:mt-6 md:text-lg dark:text-white/65"
                 variants={lineVariants}
               >
-                תהליך מדויק שמחבר בין אסטרטגיה, עיצוב וחוויה,
-                כדי שהאתר ירגיש בדיוק כמו העסק שלכם.
+                מותאם לבעלות עסקים שרוצות נוכחות דיגיטלית שחוסכת זמן בשירות
+                וממירה מתעניינות ללקוחות משלמות.
               </motion.p>
             </motion.div>
 
@@ -166,8 +158,8 @@ export function Process() {
                 אני מתחילה מהעסק.
               </p>
               <p className="process-diff-note mt-3 max-w-xs text-sm leading-relaxed text-muted dark:text-white/50">
-                לפני העיצוב, אני מבינה מה צריך לקרות באתר כדי שהלקוח הנכון ירגיש
-                שהוא הגיע למקום הנכון.
+                לפני העיצוב, אני מבינה מה צריך לקרות באתר כדי שהלקוחה הנכונה תרגיש
+                שהיא הגיעה למקום הנכון.
               </p>
             </motion.aside>
           </header>
@@ -249,7 +241,7 @@ export function Process() {
         >
           <p className="process-closing-text font-display font-bold leading-tight text-burgundy">
             <span className="block">ומכאן</span>
-            <span className="block">האתר מתחיל לעבוד בשבילכם.</span>
+            <span className="block">האתר מתחיל לעבוד בשבילך.</span>
           </p>
           <a href="#work" className="process-closing-link group">
             <span>לצפייה בפרויקטים</span>

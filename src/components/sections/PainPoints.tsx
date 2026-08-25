@@ -11,6 +11,7 @@ import { HeroLuxuryBackdrop } from '@/components/layout/HeroLuxuryBackdrop'
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { Button } from '@/components/ui/button'
 import { EASE, viewportOnce } from '@/lib/motion'
+import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 import { cn } from '@/lib/utils'
 
 const REGULAR_POINTS = [
@@ -230,7 +231,7 @@ export function PainPoints() {
             className="group btn-burgundy-glow compare-cta-btn h-14 rounded-full px-9 text-base font-semibold md:px-10 md:text-lg"
           >
             <LeadPopupTrigger>
-              <span>אני רוצה אתר ברמת פרימיום לעסק שלי</span>
+              <span>{LEAD_FLOW_CTA_LABEL}</span>
               <ArrowLeft
                 className="size-4 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1"
                 aria-hidden

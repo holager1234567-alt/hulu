@@ -46,7 +46,7 @@ const STEP_COPY: Record<number, StepCopy> = {
   1: {
     title: 'בואי נכיר',
     subtitle: 'מלאי את הפרטים הראשוניים',
-    subtitleExtra: 'ונתקדם שלב קדימה בבניית האתר דמו לעסק שלך !',
+    subtitleExtra: 'ונתקדם לשיחת האפיון ובדיקת ההתאמה לעסק שלך.',
   },
   2: {
     title: 'אל תצאי עדיין, אנחנו כמעט מסיימים',
@@ -61,8 +61,8 @@ const STEP_COPY: Record<number, StepCopy> = {
     subtitle: 'ספרי בקצרה על תחום הפעילות שלך',
   },
   5: {
-    title: 'אל תסגרי את העמוד, נשאר רק לשריין את שיחת הדמו',
-    subtitle: 'בחרי ביומן את המועד שהכי נוח לך לפגישת אפיון ממוקדת בזום ללא עלות',
+    title: 'נשאר רק לקבוע את שיחת האפיון',
+    subtitle: 'בחרי ביומן את המועד שהכי נוח לך לשיחת אפיון ובדיקת התאמה (45 דקות)',
   },
 }
 
@@ -598,7 +598,7 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
                         <div className="lead-popup-calendar-shell">
                           <WaveFormsEmbed
                             url={calendarEmbedUrl}
-                            title="קביעת פגישת דמו בזום"
+                            title="קביעת שיחת אפיון בזום"
                             className="lead-popup-calendar-embed"
                           />
                         </div>

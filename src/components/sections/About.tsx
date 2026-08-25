@@ -28,13 +28,13 @@ const stats = [
   { numeric: 100, suffix: '%', label: 'mobile' },
 ]
 
-const headlineParts = ['אני לא מתחילה מעיצוב.', 'אני מתחילה מהעסק שלכם.']
+const headlineParts = ['אני לא מתחילה מעיצוב.', 'אני מתחילה מהעסק שלך.']
 
 const understandingLines = [
-  'מי אתם.',
-  'למי אתם פונים.',
-  'מה אתם רוצים לשדר.',
-  'ומה צריך לקרות כדי שהאתר באמת יעבוד עבורכם.',
+  'מי את.',
+  'למי את פונה.',
+  'מה את רוצה לשדר.',
+  'ומה צריך לקרות כדי שהאתר באמת יעבוד עבורך.',
 ]
 
 const personalLines = [
@@ -306,7 +306,7 @@ export function About() {
               viewport={viewportOnceTight}
               transition={{ duration: 0.55, ease: EASE }}
             >
-              לפני שאני פותחת את תוכנת העיצוב, אני רוצה להבין את העסק שלכם.
+              לפני שאני פותחת את תוכנת העיצוב, אני רוצה להבין את העסק שלך.
             </motion.p>
 
             <motion.ul

@@ -9,7 +9,7 @@ type WaveFormsEmbedProps = {
 
 export function WaveFormsEmbed({
   url,
-  title = 'טופס קביעת דמו בזום',
+  title = 'קביעת שיחת אפיון בזום',
   className,
 }: WaveFormsEmbedProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)

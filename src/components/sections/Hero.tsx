@@ -12,6 +12,7 @@ import {
   heroFirstRevealStagger,
   lineRevealItemReduced,
 } from '@/lib/motion'
+import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 
@@ -26,16 +27,14 @@ const instantVisible = {
   visible: { opacity: 1, y: 0 },
 }
 
-const HERO_HEADLINE_LINE_1_LEAD = 'יש לך בדיוק 3 שניות'
-const HERO_HEADLINE_LINE_1_ACCENT = 'להרשים'
-const HERO_HEADLINE_LINE_2_LEAD = 'בואי ניצור לך אתר עם נוכחות'
-const HERO_EMPHASIS_LEAD = 'שאי אפשר '
-const HERO_EMPHASIS_ACCENT = 'להתעלם ממנו'
-const HERO_SUBHEADLINE_DETAIL_OPEN = 'קבלי הצצה ראשונה'
-const HERO_SUBHEADLINE_DETAIL_REST = 'לאתר דמו מותאם אישית לעסק שלך '
-const HERO_SUBHEADLINE_DETAIL_ACCENT = 'בחינם'
-const HERO_DESKTOP_CTA = 'אני רוצה אתר דמו בחינם לעסק שלי'
-const HERO_PRIMARY_CTA = 'אני רוצה לראות את הדמו שלי'
+const HERO_HEADLINE_LINE_1_LEAD = 'נוכחות דיגיטלית פרימיום'
+const HERO_HEADLINE_LINE_1_ACCENT = 'לבעלות עסקים'
+const HERO_HEADLINE_LINE_2_LEAD = 'אתרים ודפי נחיתה שחוסכים זמן בשירות'
+const HERO_EMPHASIS_LEAD = 'וממירים מתעניינות '
+const HERO_EMPHASIS_ACCENT = 'ללקוחות משלמות'
+const HERO_SUBHEADLINE_DETAIL_OPEN = 'עיצוב, מסר וחוויית משתמש'
+const HERO_SUBHEADLINE_DETAIL_REST = 'שעובדים יחד כדי שהאתר יביא עבודה אמיתית '
+const HERO_SUBHEADLINE_DETAIL_ACCENT = 'לעסק שלך'
 const HERO_SECONDARY_CTA = 'איך זה עובד?'
 const PORTFOLIO_ANCHOR = '#work'
 
@@ -174,14 +173,14 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
             >
               <Button
                 asChild
-                variant="outline"
-                size="sm"
-                className="group hero-desktop-cta-btn luxury-interactive rounded-full"
+                variant="burgundy"
+                size="lg"
+                className="group btn-burgundy-glow hero-desktop-cta-btn luxury-interactive h-12 rounded-full px-7 text-sm font-semibold md:h-14 md:px-9 md:text-base"
               >
                 <LeadPopupTrigger>
-                  {HERO_DESKTOP_CTA}
+                  {LEAD_FLOW_CTA_LABEL}
                   <ArrowLeft
-                    className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1"
+                    className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1 md:size-4"
                     aria-hidden
                   />
                 </LeadPopupTrigger>
@@ -231,7 +230,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               className="group btn-burgundy-glow hero-luxury-cta hero-luxury-cta-primary luxury-interactive h-11 rounded-full px-5 text-sm font-semibold md:h-12 md:px-7 md:text-base"
             >
               <LeadPopupTrigger>
-                {HERO_PRIMARY_CTA}
+                {LEAD_FLOW_CTA_LABEL}
                 <ArrowLeft
                   className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1 md:size-4"
                   aria-hidden
