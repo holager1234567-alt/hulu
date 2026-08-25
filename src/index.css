@@ -2584,18 +2584,18 @@
     }
 
     .hero-luxury-headline-primary {
-      max-width: min(100%, 46rem);
-      gap: 0.24em;
+      max-width: min(100%, 54rem);
+      gap: 0.26em;
     }
 
     .hero-luxury-headline-primary .hero-headline-lead {
-      font-size: clamp(1.9rem, 3.4vw, 2.75rem);
-      line-height: 1.16;
+      font-size: clamp(2.15rem, 4.2vw, 3.35rem);
+      line-height: 1.14;
     }
 
     .hero-luxury-headline-primary .hero-headline-accent {
-      font-size: clamp(2.35rem, 4.8vw, 3.65rem);
-      line-height: 1.08;
+      font-size: clamp(2.75rem, 6vw, 4.5rem);
+      line-height: 1.06;
     }
 
     .hero-luxury-subheadline-detail {
