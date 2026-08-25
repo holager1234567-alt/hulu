@@ -2583,6 +2583,24 @@
       margin-inline: auto;
     }
 
+    .hero-luxury-headline-primary {
+      font-size: clamp(2.15rem, 3.8vw, 3rem);
+      line-height: 1.1;
+    }
+
+    .hero-luxury-headline-secondary {
+      max-width: 36rem;
+      margin-top: 0.65rem;
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      line-height: 1.3;
+    }
+
+    .hero-luxury-subheadline-detail {
+      max-width: 32rem;
+      margin-top: 1.1rem;
+      font-size: 1rem;
+    }
+
     .hero-headline-line,
     .hero-headline-line--clip {
       display: flex;
@@ -2632,19 +2650,20 @@
 
     .hero-headline-line--clip .hero-luxury-headline-bold {
       display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
+      flex-direction: column;
+      flex-wrap: wrap;
       justify-content: center;
-      align-items: baseline;
-      gap: 0.28em;
-      white-space: nowrap;
+      align-items: center;
+      gap: 0.2em;
+      white-space: normal;
     }
 
     .hero-headline-line--clip .hero-headline-lead,
     .hero-headline-line--clip .hero-headline-punch {
-      display: inline;
+      display: block;
       margin-top: 0;
-      white-space: nowrap;
+      white-space: normal;
+      text-wrap: balance;
     }
 
     .hero-headline-story-mobile {
@@ -2668,9 +2687,9 @@
 
     .hero-luxury-headline .hero-luxury-emphasis-words {
       display: inline;
-      max-width: none;
-      white-space: nowrap;
-      text-wrap: nowrap;
+      max-width: 100%;
+      white-space: normal;
+      text-wrap: balance;
       font-family: var(--font-display);
       font-size: clamp(2.5rem, 4.2vw, 3.65rem);
       font-weight: 800;
@@ -2809,6 +2828,49 @@
     color: #121212;
   }
 
+  .hero-luxury-headline-primary {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5.2vw, 3.15rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+    color: #942839;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .hero-luxury-headline-secondary {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.45rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2.6vw, 1.65rem);
+    font-weight: 700;
+    line-height: 1.28;
+    letter-spacing: -0.02em;
+    color: #121212;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .hero-luxury-subheadline-detail {
+    width: 100%;
+    max-width: 34rem;
+    margin: 1rem auto 0;
+    padding-inline: 0.5rem;
+    color: rgb(74 74 74 / 0.92);
+    font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+    font-weight: 500;
+    line-height: 1.65;
+    letter-spacing: 0.005em;
+    text-align: center;
+    text-wrap: balance;
+  }
+
   .hero-luxury-emphasis-text {
     position: relative;
     z-index: 1;
@@ -2856,7 +2918,7 @@
   }
 
   .hero-headline-line--clip {
-    overflow: hidden;
+    overflow: visible;
   }
 
   @media (max-width: 767px) {
@@ -3034,6 +3096,24 @@
       text-wrap: balance;
       color: #000000;
       font-weight: 800;
+    }
+
+    .hero-luxury-headline-primary {
+      font-size: clamp(1.85rem, 7.5vw, 2.65rem);
+      line-height: 1.14;
+    }
+
+    .hero-luxury-headline-secondary {
+      margin-top: 0.55rem;
+      font-size: clamp(1.08rem, 4.8vw, 1.35rem);
+      line-height: 1.32;
+    }
+
+    .hero-luxury-subheadline-detail {
+      max-width: 22.5rem;
+      margin-top: 0.85rem;
+      font-size: 0.98rem;
+      line-height: 1.55;
     }
 
     .hero-luxury-subheadline-detail--mobile {

@@ -27,14 +27,10 @@ const instantVisible = {
   visible: { opacity: 1, y: 0 },
 }
 
-const HERO_HEADLINE_LINE_1_LEAD = 'נוכחות דיגיטלית פרימיום'
-const HERO_HEADLINE_LINE_1_ACCENT = 'לבעלות עסקים'
-const HERO_HEADLINE_LINE_2_LEAD = 'אתרים ודפי נחיתה שחוסכים זמן בשירות'
-const HERO_EMPHASIS_LEAD = 'וממירים מתעניינות '
-const HERO_EMPHASIS_ACCENT = 'ללקוחות משלמות'
-const HERO_SUBHEADLINE_DETAIL_OPEN = 'עיצוב, מסר וחוויית משתמש'
-const HERO_SUBHEADLINE_DETAIL_REST = 'שעובדים יחד כדי שהאתר יביא עבודה אמיתית '
-const HERO_SUBHEADLINE_DETAIL_ACCENT = 'לעסק שלך'
+const HERO_LINE_PRIMARY = 'אתר פרימיום לבעלות עסקים'
+const HERO_LINE_SECONDARY = 'שחוסך זמן בשירות ומביא לקוחות משלמות'
+const HERO_SUBHEADLINE =
+  'עיצוב, מסר וחוויית משתמש — בנויים להפוך מתעניינות לעסקאות.'
 const HERO_SECONDARY_CTA = 'איך זה עובד?'
 const PORTFOLIO_ANCHOR = '#work'
 
@@ -129,40 +125,34 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
             variants={headlineVariants}
           >
             <h1 className="hero-luxury-headline">
-              <span className="hero-headline-line hero-headline-line--clip block py-0.5">
+              <span className="hero-headline-line block py-0.5">
                 <motion.span
                   variants={lineVariants}
-                  className="hero-luxury-headline-bold block"
+                  className="hero-luxury-headline-primary"
                 >
-                  <span className="hero-headline-lead">{HERO_HEADLINE_LINE_1_LEAD}</span>
-                  {' '}
-                  <span className="hero-headline-punch">
-                    {HERO_HEADLINE_LINE_1_ACCENT}
-                    <span className="hero-headline-punch-dot">.</span>
-                  </span>
+                  {HERO_LINE_PRIMARY}
                 </motion.span>
               </span>
 
-              <span className="hero-luxury-headline-line--story hero-headline-line block overflow-visible py-0.5">
+              <span className="hero-headline-line block py-0.5">
                 <motion.span
                   variants={lineVariants}
-                  className="hero-luxury-headline-bold block"
+                  className="hero-luxury-headline-secondary"
                 >
-                  <span className="hero-headline-story-mobile">{HERO_HEADLINE_LINE_2_LEAD}</span>
-                  <span className="hero-luxury-emphasis">
-                    <span className="hero-luxury-emphasis-text">
-                      <span className="hero-luxury-emphasis-words">
-                        <span className="hero-luxury-emphasis-lead">{HERO_EMPHASIS_LEAD}</span>
-                        <span className="hero-luxury-emphasis-accent">
-                          {HERO_EMPHASIS_ACCENT}
-                          <span className="hero-luxury-emphasis-mark" aria-hidden />
-                        </span>
-                      </span>
-                    </span>
-                  </span>
+                  {HERO_LINE_SECONDARY}
                 </motion.span>
               </span>
             </h1>
+
+            <motion.p
+              custom={0}
+              initial={useReveal ? 'hidden' : false}
+              animate="visible"
+              variants={bodyVariants}
+              className="hero-luxury-subheadline-detail"
+            >
+              {HERO_SUBHEADLINE}
+            </motion.p>
 
             <motion.div
               custom={0}
@@ -202,19 +192,6 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               <HeroCoverflow />
             </Suspense>
           </motion.div>
-
-          <motion.p
-            custom={0}
-            initial={useReveal ? 'hidden' : false}
-            animate="visible"
-            variants={bodyVariants}
-            className="hero-luxury-subheadline-detail hero-luxury-subheadline-detail--mobile md:hidden"
-          >
-            {HERO_SUBHEADLINE_DETAIL_OPEN}
-            <br />
-            {HERO_SUBHEADLINE_DETAIL_REST}
-            <span className="hero-luxury-subheadline-accent">{HERO_SUBHEADLINE_DETAIL_ACCENT}</span>
-          </motion.p>
 
           <motion.div
             custom={1}
