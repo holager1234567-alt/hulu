@@ -26,9 +26,8 @@
   --color-border: rgb(255 255 255 / 0.14);
   --color-card: rgb(255 255 255 / 0.08);
 
-  --galaxy-base: #0a0308;
-  --galaxy-mid: #1a0812;
-  --galaxy-blend: #140610;
+  --galaxy-base: #942839;
+  --galaxy-blend: #942839;
 
   --radius-lg: 16px;
   --radius-md: 12px;
@@ -48,55 +47,13 @@
     scroll-behavior: auto;
     scroll-padding-top: 6rem;
     overflow-x: clip;
-    background-color: var(--galaxy-base);
+    background-color: var(--color-burgundy);
     color: var(--color-primary);
   }
 
-  html::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse 90% 70% at 50% -15%, rgb(196 72 104 / 0.32), transparent 52%),
-      radial-gradient(ellipse 65% 50% at 8% 35%, rgb(148 40 57 / 0.38), transparent 58%),
-      radial-gradient(ellipse 60% 48% at 92% 28%, rgb(184 56 88 / 0.28), transparent 55%),
-      radial-gradient(ellipse 75% 55% at 50% 105%, rgb(90 14 35 / 0.55), transparent 58%),
-      radial-gradient(ellipse 42% 32% at 68% 58%, rgb(212 175 55 / 0.07), transparent 50%),
-      linear-gradient(165deg, #060208 0%, #120610 22%, #240818 48%, #180510 78%, #0a0308 100%);
-  }
-
+  html::before,
   html::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    opacity: 0.58;
-    background-image:
-      radial-gradient(1.5px 1.5px at 12% 22%, rgb(255 255 255 / 0.95), transparent),
-      radial-gradient(1px 1px at 38% 12%, rgb(255 255 255 / 0.55), transparent),
-      radial-gradient(1.5px 1.5px at 72% 28%, rgb(255 230 238 / 0.8), transparent),
-      radial-gradient(1px 1px at 22% 68%, rgb(255 255 255 / 0.45), transparent),
-      radial-gradient(2px 2px at 88% 62%, rgb(240 190 205 / 0.65), transparent),
-      radial-gradient(1px 1px at 52% 82%, rgb(255 255 255 / 0.5), transparent),
-      radial-gradient(1px 1px at 6% 90%, rgb(255 255 255 / 0.35), transparent),
-      radial-gradient(1.5px 1.5px at 94% 18%, rgb(255 255 255 / 0.7), transparent),
-      radial-gradient(ellipse 130% 45% at 50% 42%, rgb(196 72 104 / 0.1), transparent);
-    animation: galaxy-shimmer 20s ease-in-out infinite alternate;
-  }
-
-  @keyframes galaxy-shimmer {
-    0% {
-      opacity: 0.46;
-      transform: scale(1);
-    }
-
-    100% {
-      opacity: 0.64;
-      transform: scale(1.015);
-    }
+    content: none;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -111,7 +68,7 @@
 
   body {
     @apply overflow-x-clip font-sans text-primary antialiased;
-    background: transparent;
+    background-color: var(--color-burgundy);
     color: var(--color-primary);
     font-feature-settings: 'kern' 1;
   }
@@ -9948,7 +9905,7 @@
   }
 }
 
-/* ── Galaxy burgundy site theme ── */
+/* ── Burgundy site theme ── */
 @layer utilities {
   .site-flow-intro,
   .hero-luxury,
@@ -9964,37 +9921,28 @@
   }
 
   .readiness-finale-flow::before {
-    background:
-      radial-gradient(
-        ellipse 80% 50% at 50% 0%,
-        rgb(196 72 104 / 0.12),
-        transparent 68%
-      ),
-      radial-gradient(
-        ellipse 50% 40% at 90% 100%,
-        rgb(148 40 57 / 0.1),
-        transparent 70%
-      ) !important;
+    content: none;
   }
 
   .hero-luxury-bg {
-    opacity: 0.35;
-    background:
-      radial-gradient(
-        ellipse 70% 55% at 50% 20%,
-        rgb(196 72 104 / 0.22),
-        transparent 62%
-      ),
-      radial-gradient(
-        ellipse 50% 40% at 80% 70%,
-        rgb(212 175 55 / 0.06),
-        transparent 65%
-      ) !important;
+    display: none;
+  }
+
+  .hero-luxury-mesh,
+  .hero-luxury-perspective-grid,
+  .hero-luxury-horizon,
+  .hero-luxury-texture,
+  .hero-luxury-spotlight,
+  .hero-luxury-ambient,
+  .hero-luxury-grid,
+  .hero-luxury-scanlines,
+  .hero-luxury-nodes {
+    opacity: 0.08;
   }
 
   .hero-luxury-texture,
   .hero-luxury-spotlight {
-    opacity: 0.18;
+    opacity: 0;
   }
 
   .section-luxury-bg--surface,
@@ -10010,12 +9958,7 @@
 
   .section-luxury-bg--burgundy,
   .dark .section-luxury-bg--burgundy {
-    background:
-      radial-gradient(
-        ellipse 70% 50% at 50% 0%,
-        rgb(196 72 104 / 0.14),
-        transparent 65%
-      ) !important;
+    background: transparent !important;
   }
 
   .section-divider--blend,
@@ -10024,8 +9967,8 @@
   .dark .section-divider--blend,
   .dark .section-divider--blend[data-blend-from],
   .dark .section-divider--blend[data-blend-to] {
-    --blend-from: var(--galaxy-blend);
-    --blend-to: var(--galaxy-blend);
+    --blend-from: var(--color-burgundy);
+    --blend-to: var(--color-burgundy);
   }
 
   .text-burgundy {
@@ -10129,9 +10072,9 @@
 
   .header-glass,
   .header-glass.header-scrolled-line {
-    background: rgb(18 6 12 / 0.72) !important;
-    border-color: rgb(255 255 255 / 0.12) !important;
-    box-shadow: 0 12px 40px -16px rgb(0 0 0 / 0.45);
+    background: rgb(90 14 35 / 0.82) !important;
+    border-color: rgb(255 255 255 / 0.14) !important;
+    box-shadow: 0 12px 40px -16px rgb(0 0 0 / 0.25);
   }
 
   .header-glass .nav-link-underline,
@@ -10150,8 +10093,8 @@
   }
 
   .container-site.mt-2.rounded-lg.border {
-    background: rgb(18 6 12 / 0.92) !important;
-    border-color: rgb(255 255 255 / 0.12) !important;
+    background: rgb(90 14 35 / 0.95) !important;
+    border-color: rgb(255 255 255 / 0.14) !important;
   }
 
   .bridge-path,
