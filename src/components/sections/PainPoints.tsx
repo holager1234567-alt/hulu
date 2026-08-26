@@ -28,38 +28,6 @@ const PREMIUM_POINTS = [
   'מנגנון לקביעת פגישות ואיסוף לידים מסביב לשעון',
 ] as const
 
-function CompareMockup({ variant }: { variant: 'regular' | 'premium' }) {
-  const isPremium = variant === 'premium'
-
-  return (
-    <div
-      className={cn('compare-mockup', isPremium && 'compare-mockup--premium')}
-      aria-hidden
-    >
-      <div className="compare-mockup-chrome">
-        <span className="compare-mockup-dot compare-mockup-dot--close" />
-        <span className="compare-mockup-dot compare-mockup-dot--min" />
-        <span className="compare-mockup-dot compare-mockup-dot--max" />
-        <span className="compare-mockup-url">
-          {isPremium ? 'yourbrand.studio' : 'template-site.com'}
-        </span>
-      </div>
-      <div className="compare-mockup-screen">
-        <span className={cn('compare-mockup-hero', isPremium && 'compare-mockup-hero--premium')} />
-        <div className="compare-mockup-rows">
-          <span className="compare-mockup-row compare-mockup-row--wide" />
-          <span className="compare-mockup-row" />
-          <span className="compare-mockup-row compare-mockup-row--short" />
-        </div>
-        <span
-          className={cn('compare-mockup-cta', isPremium && 'compare-mockup-cta--premium')}
-        />
-        {isPremium ? <span className="compare-mockup-shine" /> : null}
-      </div>
-    </div>
-  )
-}
-
 function ComparePoint({
   children,
   index,
@@ -173,7 +141,6 @@ export function PainPoints() {
               viewport={viewportOnce}
               transition={{ duration: 0.75, ease: EASE, delay: reduced ? 0 : 0.05 }}
             >
-              <CompareMockup variant="regular" />
               <div className="compare-card-head compare-card-head--centered">
                 <p className="compare-card-eyebrow font-mono-tech">BEFORE</p>
                 <h3 className="compare-card-title">דף נחיתה תבניתי סטנדרטי</h3>
@@ -197,7 +164,6 @@ export function PainPoints() {
             >
               <span className="compare-card-glow" aria-hidden />
               <span className="compare-card-badge">הסטנדרט החדש שלך</span>
-              <CompareMockup variant="premium" />
               <div className="compare-card-head compare-card-head--centered">
                 <p className="compare-card-eyebrow compare-card-eyebrow--premium font-mono-tech">
                   AFTER
@@ -218,7 +184,7 @@ export function PainPoints() {
         </div>
 
         <motion.div
-          className="compare-cta-wrap"
+          className="compare-cta-wrap compare-cta-wrap--mobile-fit"
           initial={reduced ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
@@ -228,7 +194,7 @@ export function PainPoints() {
             asChild
             variant="burgundy"
             size="lg"
-            className="group btn-burgundy-glow compare-cta-btn h-14 rounded-full px-9 text-base font-semibold md:px-10 md:text-lg"
+            className="group btn-burgundy-glow compare-cta-btn h-auto min-h-14 w-full max-w-full rounded-full px-5 py-3 text-sm font-semibold whitespace-normal text-balance sm:h-14 sm:w-auto sm:px-9 sm:text-base sm:whitespace-nowrap md:px-10 md:text-lg"
           >
             <LeadPopupTrigger>
               <span>{LEAD_FLOW_CTA_LABEL}</span>

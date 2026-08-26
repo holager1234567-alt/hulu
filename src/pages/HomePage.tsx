@@ -3,7 +3,6 @@ import { lazy, Suspense, useEffect } from 'react'
 import { LeadPopupProvider } from '@/components/forms/LeadPopup'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { WhatsAppFloat } from '@/components/layout/WhatsAppFloat'
 import { SectionDivider } from '@/components/layout/SectionDivider'
 import { SectionWrapper } from '@/components/layout/SectionWrapper'
 import { ScrollProgress } from '@/components/ui/ScrollProgress'
@@ -91,8 +90,6 @@ export default function HomePage() {
             <Footer variant="finale" />
           </div>
         </main>
-
-        <WhatsAppFloat />
       </div>
     </LeadPopupProvider>
   )

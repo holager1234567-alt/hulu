@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/layout/Logo'
 
-const quickLinks = [  { href: '#top', label: 'בית' },
+const quickLinks = [
+  { href: '#top', label: 'בית' },
   { href: '#about', label: 'אודות' },
   { href: '#process', label: 'תהליך' },
   { href: '#work', label: 'פרויקטים' },
   { href: '#contact', label: 'צור קשר' },
 ]
-
-function openAccessibilityPanel() {  const fab = document.querySelector<HTMLButtonElement>('.hulu-a11y-fab')
-  fab?.click()
-}
 
 type FooterProps = {
   variant?: 'default' | 'finale'
@@ -61,13 +58,6 @@ export function Footer({ variant = 'default' }: FooterProps) {
             >
               מדיניות פרטיות
             </Link>
-            <button
-              type="button"
-              onClick={openAccessibilityPanel}
-              className="text-sm text-muted hover:underline dark:text-white/40"
-            >
-              נגישות
-            </button>
           </div>
           <p className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted/90 dark:text-white/35">
             <span>אתר זה נבנה על ידי</span>

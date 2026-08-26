@@ -24,7 +24,6 @@ import {
 
 const stats = [
   { numeric: 14, suffix: ' ימים', label: 'זמן מסירה' },
-  { numeric: 5, suffix: '+', label: 'פרויקטים' },
   { numeric: 100, suffix: '%', label: 'mobile' },
 ]
 

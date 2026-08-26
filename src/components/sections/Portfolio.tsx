@@ -396,14 +396,16 @@ export function Portfolio() {
               כאן תראו איך עסקים שונים קיבלו אתר שמתאים לשפה, לקהל ולרמה שלהם.
             </p>
 
-            <Button
-              asChild
-              variant="burgundy"
-              size="lg"
-              className="btn-burgundy-glow mt-8 h-12 rounded-full px-8 shadow-soft"
-            >
-              <LeadPopupTrigger>{LEAD_FLOW_CTA_LABEL}</LeadPopupTrigger>
-            </Button>
+            <div className="portfolio-cta-btn-wrap mt-8 flex w-full justify-center">
+              <Button
+                asChild
+                variant="burgundy"
+                size="lg"
+                className="btn-burgundy-glow portfolio-cta-btn h-auto min-h-12 w-full max-w-full rounded-full px-5 py-3 text-sm font-semibold whitespace-normal text-balance shadow-soft sm:h-12 sm:w-auto sm:px-8 sm:text-base sm:whitespace-nowrap"
+              >
+                <LeadPopupTrigger>{LEAD_FLOW_CTA_LABEL}</LeadPopupTrigger>
+              </Button>
+            </div>
           </div>
         </motion.div>
       </div>

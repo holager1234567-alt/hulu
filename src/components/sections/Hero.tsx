@@ -30,7 +30,7 @@ const instantVisible = {
 const HERO_HEADLINE_LEAD = 'להפוך את העסק שלך'
 const HERO_HEADLINE_ACCENT = 'למותג שלא מתעלמים ממנו.'
 const HERO_SUBHEADLINE =
-  'עיצוב ובניית נכסים דיגיטליים ודפי נחיתה שחוסכים לך זמן יקר וממירים מתעניינות ללקוחות משלמות.'
+  'עיצוב ובניית אתרים ודפי נחיתה שחוסכים לך זמן יקר וממירים מתעניינות ללקוחות משלמות.'
 
 type HeroProps = {
   isFirstReveal?: boolean
@@ -66,7 +66,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
     <section
       ref={sectionRef}
       id="top"
-      className="hero-luxury relative overflow-x-clip pb-8 pt-[5.5rem] md:pb-10 md:pt-36"
+      className="hero-luxury relative overflow-x-clip pb-8 pt-[6.5rem] md:pb-10 md:pt-40"
     >
       {useReveal ? (
         <motion.div
@@ -147,13 +147,13 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               initial={useReveal ? 'hidden' : false}
               animate="visible"
               variants={ctaVariants}
-              className="hero-luxury-desktop-cta mx-auto mt-7 hidden max-w-xl md:mt-8 md:block md:max-w-2xl"
+              className="hero-luxury-desktop-cta mx-auto mt-7 hidden max-w-xl md:mt-10 md:mb-4 md:block md:max-w-none"
             >
               <Button
                 asChild
-                variant="burgundy"
+                variant="outline"
                 size="lg"
-                className="group btn-burgundy-glow hero-desktop-cta-btn luxury-interactive h-12 rounded-full px-7 text-sm font-semibold md:h-14 md:px-9 md:text-base"
+                className="group hero-cta-btn hero-desktop-cta-btn luxury-interactive h-12 rounded-full px-7 text-xs font-semibold whitespace-nowrap md:h-14 md:px-9 md:text-sm"
               >
                 <LeadPopupTrigger>
                   {HERO_CTA_LABEL}
@@ -190,9 +190,9 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
           >
             <Button
               asChild
-              variant="burgundy"
+              variant="outline"
               size="lg"
-              className="group btn-burgundy-glow hero-luxury-cta hero-luxury-cta-primary luxury-interactive h-11 rounded-full px-5 text-sm font-semibold md:h-12 md:px-7 md:text-base"
+              className="group hero-cta-btn hero-luxury-cta hero-luxury-cta-primary luxury-interactive h-11 rounded-full px-5 text-[0.72rem] font-semibold whitespace-nowrap sm:text-xs md:h-12 md:px-7 md:text-sm"
             >
               <LeadPopupTrigger>
                 {HERO_CTA_LABEL}
