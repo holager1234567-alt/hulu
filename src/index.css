@@ -9702,6 +9702,32 @@
     border-radius: 1rem;
   }
 
+  .lead-popup-booking-success {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1.35rem 1.15rem;
+    border-radius: 1rem;
+    border: 1px solid rgb(148 40 57 / 0.35);
+    background: linear-gradient(180deg, rgb(148 40 57 / 0.18), rgb(148 40 57 / 0.08));
+    text-align: center;
+  }
+
+  .lead-popup-booking-success-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: rgb(247 242 238 / 0.96);
+  }
+
+  .lead-popup-booking-success-body {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgb(247 242 238 / 0.72);
+  }
+
   .lead-popup-calendar-placeholder {
     display: flex;
     min-height: 14rem;

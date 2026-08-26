@@ -12,7 +12,7 @@ import {
   heroFirstRevealStagger,
   lineRevealItemReduced,
 } from '@/lib/motion'
-import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
+import { HERO_CTA_LABEL } from '@/lib/waveForms'
 
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 
@@ -156,7 +156,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                 className="group btn-burgundy-glow hero-desktop-cta-btn luxury-interactive h-12 rounded-full px-7 text-sm font-semibold md:h-14 md:px-9 md:text-base"
               >
                 <LeadPopupTrigger>
-                  {LEAD_FLOW_CTA_LABEL}
+                  {HERO_CTA_LABEL}
                   <ArrowLeft
                     className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1 md:size-4"
                     aria-hidden

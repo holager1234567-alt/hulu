@@ -5,18 +5,37 @@ type WaveFormsEmbedProps = {
   url: string
   title?: string
   className?: string
+  onScheduled?: () => void
+}
+
+function isCalendlyOrigin(origin: string): boolean {
+  return /^https:\/\/(www\.)?calendly\.com$/i.test(origin)
 }
 
 export function WaveFormsEmbed({
   url,
   title = 'קביעת שיחת אפיון בזום',
   className,
+  onScheduled,
 }: WaveFormsEmbedProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [height, setHeight] = useState(640)
+  const scheduledRef = useRef(false)
+
+  useEffect(() => {
+    scheduledRef.current = false
+  }, [url])
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (onScheduled && isCalendlyOrigin(event.origin) && !scheduledRef.current) {
+        const data = event.data
+        if (data && typeof data === 'object' && data.event === 'calendly.event_scheduled') {
+          scheduledRef.current = true
+          onScheduled()
+        }
+      }
+
       const data = event.data
       if (!data || typeof data !== 'object') return
 
@@ -34,7 +53,7 @@ export function WaveFormsEmbed({
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [])
+  }, [onScheduled])
 
   return (
     <div className={cn('wave-forms-embed w-full overflow-hidden rounded-2xl', className)}>

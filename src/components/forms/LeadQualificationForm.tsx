@@ -62,8 +62,10 @@ type FormspreePayload = {
   name: string
   phone: string
   leadSessionId: string
-  leadStage: 'partial' | 'complete'
+  leadStage: 'partial' | 'complete' | 'booked'
   source: string
+  _subject?: string
+  message?: string
   existingSiteStatus?: string
   siteGoal?: string
   businessField?: string
@@ -108,6 +110,26 @@ export async function submitLeadToFormspree(
     leadSessionId,
     leadStage: 'complete',
     source: 'hulu-site',
+    _subject: `ליד חדש — ${data.fullName.trim()}`,
+    existingSiteStatus: data.existingSiteStatus,
+    siteGoal: data.siteGoal,
+    businessField: data.businessField.trim(),
+    profileLink: data.profileLink.trim() || undefined,
+  })
+}
+
+export async function submitBookingConfirmationToFormspree(
+  data: FormData,
+  leadSessionId: string,
+): Promise<boolean> {
+  return postToFormspree({
+    name: data.fullName.trim(),
+    phone: data.phone.trim(),
+    leadSessionId,
+    leadStage: 'booked',
+    source: 'hulu-site',
+    _subject: `נקבעה שיחת אפיון — ${data.fullName.trim()}`,
+    message: 'הלקוחה סיימה לקבוע שיחת אפיון בזום דרך Calendly.',
     existingSiteStatus: data.existingSiteStatus,
     siteGoal: data.siteGoal,
     businessField: data.businessField.trim(),

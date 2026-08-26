@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ChangeEvent,
@@ -14,6 +15,7 @@ import {
   SITE_GOAL_OPTIONS,
   canSavePartialLead,
   isValidPhone,
+  submitBookingConfirmationToFormspree,
   submitLeadToFormspree,
   submitPartialLeadToFormspree,
   type ExistingSiteStatusValue,
@@ -28,7 +30,7 @@ import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { EASE } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { getCalendarEmbedUrl, getWaveFormsEmbedUrl } from '@/lib/waveForms'
+import { buildCalendarEmbedUrl, getWaveFormsEmbedUrl } from '@/lib/waveForms'
 
 const RESET_DELAY = 420
 const AUTO_ADVANCE_MS = 250
@@ -142,7 +144,6 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
   const reducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const externalEmbedUrl = getWaveFormsEmbedUrl()
-  const calendarEmbedUrl = getCalendarEmbedUrl()
 
   const [step, setStep] = useState(1)
   const [direction, setDirection] = useState(1)
@@ -150,6 +151,16 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [bookingConfirmed, setBookingConfirmed] = useState(false)
+
+  const calendarEmbedUrl = useMemo(
+    () =>
+      buildCalendarEmbedUrl({
+        fullName: form.fullName,
+        phone: form.phone,
+      }),
+    [form.fullName, form.phone],
+  )
 
   const cardRef = useRef<HTMLDivElement>(null)
   const firstFieldRef = useRef<HTMLInputElement>(null)
@@ -191,6 +202,7 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
     setErrors({})
     setSubmitError(null)
     setIsSubmitting(false)
+    setBookingConfirmed(false)
     leadSessionIdRef.current = crypto.randomUUID()
     lastPartialPayloadRef.current = ''
   }, [])
@@ -325,6 +337,11 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
       setIsSubmitting(false)
     }
   }
+
+  const handleBookingScheduled = useCallback(() => {
+    setBookingConfirmed(true)
+    void submitBookingConfirmationToFormspree(form, leadSessionIdRef.current)
+  }, [form])
 
   const stepTransition = { duration: reducedMotion ? 0 : 0.36, ease: EASE }
 
@@ -595,13 +612,25 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
                       >
                         <StepHeader step={5} />
 
-                        <div className="lead-popup-calendar-shell">
-                          <WaveFormsEmbed
-                            url={calendarEmbedUrl}
-                            title="קביעת שיחת אפיון בזום"
-                            className="lead-popup-calendar-embed"
-                          />
-                        </div>
+                        {bookingConfirmed ? (
+                          <div className="lead-popup-booking-success" role="status">
+                            <p className="lead-popup-booking-success-title">
+                              השיחה נקבעה בהצלחה
+                            </p>
+                            <p className="lead-popup-booking-success-body">
+                              אישור עם פרטי הזום נשלח למייל שהזנת. נתראה בשיחה.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="lead-popup-calendar-shell">
+                            <WaveFormsEmbed
+                              url={calendarEmbedUrl}
+                              title="קביעת שיחת אפיון בזום"
+                              className="lead-popup-calendar-embed"
+                              onScheduled={handleBookingScheduled}
+                            />
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
