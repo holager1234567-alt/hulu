@@ -195,7 +195,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
               className="group btn-burgundy-glow hero-luxury-cta hero-luxury-cta-primary luxury-interactive h-11 rounded-full px-5 text-sm font-semibold md:h-12 md:px-7 md:text-base"
             >
               <LeadPopupTrigger>
-                {LEAD_FLOW_CTA_LABEL}
+                {HERO_CTA_LABEL}
                 <ArrowLeft
                   className="size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1 md:size-4"
                   aria-hidden
