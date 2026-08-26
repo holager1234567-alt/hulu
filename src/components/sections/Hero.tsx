@@ -31,8 +31,6 @@ const HERO_HEADLINE_LEAD = 'להפוך את העסק שלך'
 const HERO_HEADLINE_ACCENT = 'למותג שלא מתעלמים ממנו.'
 const HERO_SUBHEADLINE =
   'עיצוב ובניית נכסים דיגיטליים ודפי נחיתה שחוסכים לך זמן יקר וממירים מתעניינות ללקוחות משלמות.'
-const HERO_SECONDARY_CTA = 'איך זה עובד?'
-const PORTFOLIO_ANCHOR = '#work'
 
 type HeroProps = {
   isFirstReveal?: boolean
@@ -203,15 +201,6 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                   aria-hidden
                 />
               </LeadPopupTrigger>
-            </Button>
-
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="hero-luxury-cta hero-luxury-cta-secondary luxury-interactive luxury-interactive--glass h-11 rounded-full px-5 text-sm font-medium md:h-12 md:px-6 md:text-base"
-            >
-              <a href={PORTFOLIO_ANCHOR}>{HERO_SECONDARY_CTA}</a>
             </Button>
           </motion.div>
         </div>

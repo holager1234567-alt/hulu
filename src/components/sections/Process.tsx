@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { motion, useReducedMotion } from 'framer-motion'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
+import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import {
   EASE,
@@ -11,6 +12,7 @@ import {
   lineRevealItemReduced,
   viewportOnce,
 } from '@/lib/motion'
+import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -243,12 +245,12 @@ export function Process() {
             <span className="block">ומכאן</span>
             <span className="block">האתר מתחיל לעבוד בשבילך.</span>
           </p>
-          <a href="#work" className="process-closing-link group">
-            <span>לצפייה בפרויקטים</span>
+          <LeadPopupTrigger className="process-closing-link group">
+            <span>{LEAD_FLOW_CTA_LABEL}</span>
             <span className="process-closing-link-arrow" aria-hidden>
               →
             </span>
-          </a>
+          </LeadPopupTrigger>
         </motion.footer>
       </div>
     </section>
