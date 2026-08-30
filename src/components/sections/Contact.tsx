@@ -59,7 +59,6 @@ export function Contact() {
 
       if (preline) gsap.set(preline, { opacity: 0, y: 16 })
       if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
-      if (lines) gsap.set(lines, { yPercent: 112, opacity: 0 })
       if (accentBar) gsap.set(accentBar, { scaleX: 0, opacity: 0 })
       if (glow) gsap.set(glow, { opacity: 0, scale: 0.88 })
       if (body) gsap.set(body, { opacity: 0, y: 18 })
@@ -79,7 +78,7 @@ export function Contact() {
         tl.to(ornaments, { scaleX: 1, opacity: 1, duration: 0.8, stagger: 0.07 }, '-=0.35')
       }
       if (lines) {
-        tl.to(lines, { yPercent: 0, opacity: 1, duration: 0.88, stagger: 0.1 }, '-=0.45')
+        tl.from(lines, { y: 24, opacity: 0, duration: 0.85, stagger: 0.1 }, '-=0.45')
       }
       if (glow) {
         tl.to(glow, { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' }, '-=0.55')
@@ -114,18 +113,27 @@ export function Contact() {
 
               <h2 className="contact-journey-headline" aria-label={JOURNEY_FINALE_HEADLINE}>
                 <span className="contact-journey-headline-glow" aria-hidden />
-                {HEADLINE_LINES.map((line, index) => (
-                  <span
-                    key={line}
-                    className={cn(
-                      'contact-journey-headline-line',
-                      index === HEADLINE_LINES.length - 1 &&
-                        'contact-journey-headline-line--accent',
-                    )}
-                  >
-                    <span className="contact-journey-headline-inner">{line}</span>
-                  </span>
-                ))}
+                {HEADLINE_LINES.map((line, index) => {
+                  const isAccent = index === HEADLINE_LINES.length - 1
+                  return (
+                    <span
+                      key={line}
+                      className={cn(
+                        'contact-journey-headline-line',
+                        isAccent && 'contact-journey-headline-line--accent',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'contact-journey-headline-inner',
+                          isAccent && 'contact-journey-headline-inner--accent',
+                        )}
+                      >
+                        {line}
+                      </span>
+                    </span>
+                  )
+                })}
                 <span className="contact-journey-headline-accent-bar" aria-hidden />
               </h2>
             </div>

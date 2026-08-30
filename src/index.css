@@ -4877,26 +4877,28 @@
     position: relative;
     z-index: 1;
     display: block;
-    overflow: hidden;
-    padding-block: 0.06em 0.14em;
-    margin-block: -0.06em -0.14em;
+    overflow: visible;
+    padding-block: 0.06em 0.1em;
     font-size: clamp(2.15rem, 7.2vw, 3.85rem);
     color: #0f0f0f;
   }
 
   .contact-journey-headline-line--accent {
-    overflow: visible;
     margin-top: 0.08em;
     font-size: clamp(2.35rem, 8vw, 4.25rem);
+  }
+
+  .contact-journey-headline-inner {
+    display: block;
+    line-height: 1.12;
+  }
+
+  .contact-journey-headline-inner--accent {
     background: linear-gradient(118deg, #942839 0%, #b84858 45%, #7a2030 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-  }
-
-  .contact-journey-headline-inner {
-    display: block;
   }
 
   .contact-journey-headline-accent-bar {
@@ -4923,10 +4925,11 @@
     color: #fafafa;
   }
 
-  .dark .contact-journey-headline-line--accent {
+  .dark .contact-journey-headline-inner--accent {
     background: linear-gradient(118deg, #e8a0ab 0%, #f0c4ca 50%, #d88898 100%);
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
   }
 
