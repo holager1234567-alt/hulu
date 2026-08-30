@@ -150,7 +150,6 @@ export function PainPoints() {
 
       if (header) {
         if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
-        if (headlineLines) gsap.set(headlineLines, { yPercent: 115, opacity: 0 })
         if (accentLine) gsap.set(accentLine, { scaleX: 0 })
         if (subheadline) gsap.set(subheadline, { opacity: 0, y: 22 })
         if (rule) gsap.set(rule, { scaleX: 0, opacity: 0 })
@@ -169,9 +168,9 @@ export function PainPoints() {
           headerTl.to(ornaments, { scaleX: 1, opacity: 1, duration: 0.85, stagger: 0.08 }, 0)
         }
         if (headlineLines) {
-          headerTl.to(
+          headerTl.from(
             headlineLines,
-            { yPercent: 0, opacity: 1, duration: 0.95, stagger: 0.11 },
+            { y: 24, opacity: 0, duration: 0.85, stagger: 0.1 },
             0.08,
           )
         }
@@ -369,12 +368,16 @@ export function PainPoints() {
             <span />
           </div>
 
-          <h2 id="compare-heading" className="compare-headline">
+          <h2
+            id="compare-heading"
+            className="compare-headline"
+            aria-label="להפוך לקוחה מתעניינת ללקוחה משלמת"
+          >
             <span className="compare-headline-line">
               <span className="compare-headline-inner">להפוך לקוחה מתעניינת</span>
             </span>
-            <span className="compare-headline-line compare-headline-accent">
-              <span className="compare-headline-inner">ללקוחה משלמת</span>
+            <span className="compare-headline-line">
+              <span className="compare-headline-inner compare-headline-accent">ללקוחה משלמת</span>
             </span>
             <span className="compare-headline-accent-line" aria-hidden />
           </h2>

@@ -218,22 +218,22 @@
     font-size: clamp(2.45rem, 7.8vw, 4rem);
     font-weight: 800;
     letter-spacing: -0.035em;
-    line-height: 1.06;
+    line-height: 1.14;
     color: #0f0f0f;
   }
 
   .compare-headline-line {
     display: block;
-    overflow: hidden;
-    padding-block: 0.05em 0.14em;
-    margin-block: -0.05em -0.14em;
+    overflow: visible;
+    padding-block: 0.06em 0.1em;
   }
 
   .compare-headline-inner {
     display: block;
+    line-height: 1.16;
   }
 
-  .compare-headline-accent {
+  .compare-headline-inner.compare-headline-accent {
     background: linear-gradient(120deg, #942839 0%, #b84858 42%, #942839 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -266,10 +266,11 @@
     color: #fafafa;
   }
 
-  .dark .compare-headline-accent {
+  .dark .compare-headline-inner.compare-headline-accent {
     background: linear-gradient(120deg, #e8a0ab 0%, #f0c4ca 50%, #e8a0ab 100%);
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
   }
 
@@ -710,7 +711,8 @@
     }
 
     .compare-headline {
-      font-size: clamp(2.1rem, 9vw, 2.65rem);
+      font-size: clamp(1.95rem, 8.2vw, 2.55rem);
+      line-height: 1.18;
     }
   }
 
