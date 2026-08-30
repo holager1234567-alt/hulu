@@ -36,8 +36,7 @@ export function Benefits() {
   const lineVariants = reduced ? lineRevealItemReduced : lineRevealItem
 
   useEffect(() => {
-    scheduleScrollTriggerRefresh(0)
-    scheduleScrollTriggerRefresh(350)
+    scheduleScrollTriggerRefresh(80)
   }, [])
 
   useGSAP(

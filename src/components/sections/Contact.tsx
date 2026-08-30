@@ -30,8 +30,7 @@ export function Contact() {
 
   // Contact is lazy-loaded; refresh ScrollTrigger once the chunk mounts.
   useEffect(() => {
-    scheduleScrollTriggerRefresh(0)
-    scheduleScrollTriggerRefresh(350)
+    scheduleScrollTriggerRefresh(80)
   }, [])
 
   useGSAP(

@@ -48,8 +48,7 @@ export function Process() {
 
   useEffect(() => {
     mountedRef.current = true
-    scheduleScrollTriggerRefresh(0)
-    scheduleScrollTriggerRefresh(350)
+    scheduleScrollTriggerRefresh(80)
     return () => {
       mountedRef.current = false
     }
@@ -176,7 +175,7 @@ export function Process() {
             trigger: track,
             start: 'top 62%',
             end: 'bottom 38%',
-            scrub: 0.55,
+            scrub: 0.85,
           },
         },
       )
@@ -239,8 +238,6 @@ export function Process() {
         })
       })
     }, section)
-
-    scheduleScrollTriggerRefresh(120)
 
     return () => ctx.revert()
   }, [reduced])

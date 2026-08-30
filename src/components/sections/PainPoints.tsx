@@ -130,24 +130,6 @@ export function PainPoints() {
       const cleanups: Array<() => void> = []
       let cleanupTilt: (() => void) | undefined
 
-      const ambient = pick('.compare-ambient')
-      if (ambient && window.matchMedia('(min-width: 768px)').matches) {
-        gsap.fromTo(
-          ambient,
-          { y: 26 },
-          {
-            y: -26,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.8,
-            },
-          },
-        )
-      }
-
       if (header) {
         if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
         if (accentLine) gsap.set(accentLine, { scaleX: 0 })

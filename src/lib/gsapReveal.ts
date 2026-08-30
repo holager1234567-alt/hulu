@@ -1,6 +1,5 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 
 type RevealNodes = Element | Element[] | null | undefined
 
@@ -38,13 +37,10 @@ export function bindRevealTimeline(
   const viewportRatio = options?.viewportRatio ?? 0.94
 
   const syncIfVisible = () => {
-    scheduleScrollTriggerRefresh(0)
     requestAnimationFrame(() => {
       ScrollTrigger.refresh()
       const rect = triggerEl.getBoundingClientRect()
       if (rect.top < window.innerHeight * viewportRatio) {
-        // Already on screen when the chunk mounts — play the entrance instead of
-        // jumping to the end (which made GSAP upgrades feel invisible).
         if (timeline.progress() < 0.01) {
           timeline.play(0)
         }

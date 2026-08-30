@@ -78,7 +78,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
             trigger: section,
             start: 'top top',
             end: 'bottom 30%',
-            scrub: 0.6,
+            scrub: 1,
             invalidateOnRefresh: true,
           },
         },

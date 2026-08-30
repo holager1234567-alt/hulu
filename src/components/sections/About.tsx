@@ -185,8 +185,7 @@ export function About() {
   const [showPersonal, setShowPersonal] = useState(false)
 
   useEffect(() => {
-    scheduleScrollTriggerRefresh(0)
-    scheduleScrollTriggerRefresh(350)
+    scheduleScrollTriggerRefresh(80)
   }, [])
 
   useGSAP(

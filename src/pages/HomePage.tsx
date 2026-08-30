@@ -10,6 +10,7 @@ import { Hero } from '@/components/sections/Hero'
 import { PainPoints } from '@/components/sections/PainPoints'
 import { useGsapScrollMode } from '@/hooks/useGsapScrollMode'
 import { useSmoothAnchorScroll } from '@/hooks/useSmoothAnchorScroll'
+import { configureGsapScroll } from '@/lib/gsapScrollConfig'
 import { scheduleScrollTriggerRefresh, cancelScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 
 const ScrollProgress = lazy(() =>
@@ -39,10 +40,12 @@ export default function HomePage() {
   useGsapScrollMode(true)
 
   useEffect(() => {
+    configureGsapScroll()
     scheduleScrollTriggerRefresh(0)
     scheduleScrollTriggerRefresh(450)
+    scheduleScrollTriggerRefresh(1200)
 
-    const onLoad = () => scheduleScrollTriggerRefresh(0)
+    const onLoad = () => scheduleScrollTriggerRefresh(150)
     window.addEventListener('load', onLoad)
 
     return () => {

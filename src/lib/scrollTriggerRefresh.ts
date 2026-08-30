@@ -1,12 +1,27 @@
 /**
- * Refreshes are keyed by delay so an immediate refresh is not cancelled by a
- * later one scheduled for a longer delay.
+ * Coalesces ScrollTrigger.refresh calls so lazy sections mounting together
+ * do not trigger a refresh storm during scroll.
  */
 const pending = new Map<number, number>()
+let flushRaf = 0
 
 export function cancelScrollTriggerRefresh() {
   pending.forEach((timer) => window.clearTimeout(timer))
   pending.clear()
+  if (flushRaf) {
+    window.cancelAnimationFrame(flushRaf)
+    flushRaf = 0
+  }
+}
+
+function flushScrollTriggerRefresh() {
+  if (flushRaf) return
+  flushRaf = window.requestAnimationFrame(() => {
+    flushRaf = 0
+    void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      ScrollTrigger.refresh()
+    })
+  })
 }
 
 export function scheduleScrollTriggerRefresh(delayMs = 0) {
@@ -15,11 +30,7 @@ export function scheduleScrollTriggerRefresh(delayMs = 0) {
 
   const timer = window.setTimeout(() => {
     pending.delete(delayMs)
-
-    void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
-      const refresh = () => ScrollTrigger.refresh()
-      requestAnimationFrame(() => requestAnimationFrame(refresh))
-    })
+    flushScrollTriggerRefresh()
   }, delayMs)
 
   pending.set(delayMs, timer)

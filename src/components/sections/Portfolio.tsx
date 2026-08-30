@@ -7,7 +7,6 @@ import { ArrowLeft } from 'lucide-react'
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { Button } from '@/components/ui/button'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
-import { useIsMobile } from '@/hooks/useIsMobile'
 import { bindRevealTimeline, forceRevealVisible } from '@/lib/gsapReveal'
 import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
@@ -201,7 +200,6 @@ function ProjectCard({
 
 export function Portfolio() {
   const reduced = useReducedMotion()
-  const isMobile = useIsMobile()
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -209,8 +207,7 @@ export function Portfolio() {
   const railFillRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    scheduleScrollTriggerRefresh(0)
-    scheduleScrollTriggerRefresh(350)
+    scheduleScrollTriggerRefresh(80)
   }, [])
 
   useGSAP(
@@ -339,23 +336,6 @@ export function Portfolio() {
           }
 
           cleanups.push(bindRevealTimeline(cardTl, card))
-
-          if (!isMobile && showcase) {
-            gsap.fromTo(
-              showcase,
-              { y: 24 },
-              {
-                y: -24,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: card,
-                  start: 'top bottom',
-                  end: 'bottom top',
-                  scrub: 0.65,
-                },
-              },
-            )
-          }
         })
       }
 
@@ -367,7 +347,7 @@ export function Portfolio() {
             trigger: list,
             start: 'start 75%',
             end: 'end 25%',
-            scrub: 0.55,
+            scrub: 0.85,
             invalidateOnRefresh: true,
           },
         })
@@ -392,7 +372,7 @@ export function Portfolio() {
 
       return () => cleanups.forEach((cleanup) => cleanup())
     },
-    { scope: sectionRef, dependencies: [reduced, isMobile] },
+    { scope: sectionRef, dependencies: [reduced] },
   )
 
   return (

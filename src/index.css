@@ -57,6 +57,13 @@
     scroll-behavior: auto;
   }
 
+  @media (pointer: coarse) {
+    html.gsap-scroll-active {
+      scroll-behavior: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
   body {
     @apply overflow-x-clip font-sans text-primary antialiased;
     background: transparent;
@@ -3433,10 +3440,9 @@
     box-shadow: 0 0 6px rgb(148 40 57 / 0.35);
   }
 
-  /* Below-fold sections skip layout/paint until near the viewport. */
+  /* Below-fold lazy sections — avoid content-visibility; it breaks ScrollTrigger. */
   .section-deferred {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 720px;
+    contain: layout style;
   }
 
   @media (max-width: 767px) {
