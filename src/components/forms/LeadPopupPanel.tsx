@@ -32,6 +32,8 @@ import { EASE } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { buildCalendarEmbedUrl, getWaveFormsEmbedUrl } from '@/lib/waveForms'
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 const RESET_DELAY = 420
 const AUTO_ADVANCE_MS = 250
 const PARTIAL_SAVE_DEBOUNCE_MS = 700
@@ -165,7 +167,6 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const firstFieldRef = useRef<HTMLInputElement>(null)
   const resetTimer = useRef<number | null>(null)
-  const lastFocused = useRef<HTMLElement | null>(null)
   const autoAdvanceTimer = useRef<number | null>(null)
   const partialSaveTimer = useRef<number | null>(null)
   const leadSessionIdRef = useRef<string>(crypto.randomUUID())
@@ -186,14 +187,6 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
     [],
   )
 
-  useEffect(() => {
-    if (open) {
-      lastFocused.current =
-        document.activeElement instanceof HTMLElement ? document.activeElement : null
-      return
-    }
-    lastFocused.current?.focus()
-  }, [open])
 
   const resetFormState = useCallback(() => {
     setStep(1)
@@ -222,6 +215,40 @@ export function LeadPopupPanel({ open, onClose }: LeadPopupPanelProps) {
       if (event.key === 'Escape') {
         event.preventDefault()
         handleClose()
+        return
+      }
+
+      if (event.key !== 'Tab') return
+
+      const card = cardRef.current
+      if (!card) return
+
+      const focusable = Array.from(
+        card.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter((node) => node.offsetParent !== null || node === document.activeElement)
+
+      if (!focusable.length) {
+        event.preventDefault()
+        card.focus()
+        return
+      }
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const activeElement = document.activeElement
+
+      if (!card.contains(activeElement)) {
+        event.preventDefault()
+        first.focus()
+        return
+      }
+
+      if (event.shiftKey && activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && activeElement === last) {
+        event.preventDefault()
+        first.focus()
       }
     }
 

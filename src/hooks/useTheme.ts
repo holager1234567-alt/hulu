@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 
 export function useTheme() {
-  const [dark, setDark] = useState(false)
+  // Read synchronously: index.html already applied the class before first paint.
+  const [dark, setDark] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.localStorage.getItem('hulu-theme') === 'dark',
+  )
 
   useEffect(() => {
-    const stored = localStorage.getItem('hulu-theme')
-    const isDark = stored === 'dark'
-    setDark(isDark)
-    document.documentElement.classList.toggle('dark', isDark)
-  }, [])
+    document.documentElement.classList.toggle('dark', dark)
+  }, [dark])
 
   const toggle = () => {
     setDark((prev) => {

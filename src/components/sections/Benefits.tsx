@@ -1,5 +1,8 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import {
   headlineStagger,
   lineRevealItem,
@@ -8,8 +11,16 @@ import {
   staggerItem,
   viewportOnce,
 } from '@/lib/motion'
+import { bindRevealTimeline, forceRevealVisible } from '@/lib/gsapReveal'
+import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
+import { cn } from '@/lib/utils'
 
-const headlineLines = ['ראית איך זה יכול להיראות.', 'עכשיו בואי נבנה את האתר של העסק שלך.']
+gsap.registerPlugin(ScrollTrigger, useGSAP)
+
+const headlineLines = [
+  { text: 'ראית איך זה יכול להיראות.', accent: false },
+  { text: 'עכשיו בואי נבנה את האתר של העסק שלך.', accent: true },
+] as const
 
 const readySignals = [
   'יש לך עסק פעיל ולקוחות.',
@@ -20,8 +31,65 @@ const readySignals = [
 export function Benefits() {
   const reduced = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
+  const headlineRef = useRef<HTMLDivElement>(null)
 
   const lineVariants = reduced ? lineRevealItemReduced : lineRevealItem
+
+  useEffect(() => {
+    scheduleScrollTriggerRefresh(0)
+    scheduleScrollTriggerRefresh(350)
+  }, [])
+
+  useGSAP(
+    () => {
+      const headline = headlineRef.current
+      if (!headline) return
+
+      const q = gsap.utils.selector(headline)
+      const pick = (selector: string) => {
+        const nodes = q(selector)
+        return nodes.length ? nodes : null
+      }
+
+      const ornaments = pick('.bridge-header-ornament span')
+      const headlineInners = pick('.bridge-headline-inner')
+      const accentLine = pick('.bridge-headline-accent-line')
+
+      if (reduced) {
+        forceRevealVisible(ornaments, headlineInners, accentLine)
+        return
+      }
+
+      if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
+      if (headlineInners) gsap.set(headlineInners, { yPercent: 118, opacity: 0, rotateX: 14 })
+      if (accentLine) gsap.set(accentLine, { scaleX: 0, opacity: 0 })
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        scrollTrigger: {
+          trigger: headline,
+          start: 'top 88%',
+          once: true,
+          invalidateOnRefresh: true,
+        },
+      })
+
+      if (ornaments) tl.to(ornaments, { scaleX: 1, opacity: 1, duration: 0.85, stagger: 0.08 })
+      if (headlineInners) {
+        tl.to(
+          headlineInners,
+          { yPercent: 0, opacity: 1, rotateX: 0, duration: 0.95, stagger: 0.12, ease: 'power4.out' },
+          '-=0.55',
+        )
+      }
+      if (accentLine) {
+        tl.to(accentLine, { scaleX: 1, opacity: 1, duration: 0.75, ease: 'power2.inOut' }, '-=0.45')
+      }
+
+      return bindRevealTimeline(tl, headline)
+    },
+    { scope: sectionRef, dependencies: [reduced] },
+  )
 
   return (
     <section
@@ -32,33 +100,47 @@ export function Benefits() {
     >
       <div className="container-site relative z-10">
         <div className="bridge-layout">
-          <motion.header
-            className="bridge-intro"
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            variants={headlineStagger}
-          >
-            <h2
-              id="bridge-heading"
-              className="bridge-headline font-display font-bold leading-[1.04] text-burgundy"
-            >
-              {headlineLines.map((line) => (
-                <span key={line} className="bridge-headline-line block overflow-hidden py-0.5">
-                  <motion.span className="block" variants={lineVariants}>
-                    {line}
-                  </motion.span>
-                </span>
-              ))}
-            </h2>
+          <header className="bridge-intro bridge-intro--lux">
+            <div ref={headlineRef} className="bridge-headline-block">
+              <div className="bridge-header-ornament" aria-hidden>
+                <span />
+                <span />
+              </div>
 
-            <motion.div className="bridge-subhead" variants={lineVariants}>
-              <p className="bridge-subhead-line">לא עוד אתר שנראה טוב.</p>
-              <p className="bridge-subhead-line">
+              <h2
+                id="bridge-heading"
+                className="bridge-headline font-display font-bold leading-[1.04] text-burgundy"
+              >
+                {headlineLines.map((line) => (
+                  <span
+                    key={line.text}
+                    className={cn(
+                      'bridge-headline-line block overflow-hidden py-0.5',
+                      line.accent && 'bridge-headline-accent',
+                    )}
+                  >
+                    <span className="bridge-headline-inner block">{line.text}</span>
+                  </span>
+                ))}
+                <span className="bridge-headline-accent-line" aria-hidden />
+              </h2>
+            </div>
+
+            <motion.div
+              className="bridge-subhead"
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              variants={headlineStagger}
+            >
+              <motion.p className="bridge-subhead-line" variants={lineVariants}>
+                לא עוד אתר שנראה טוב.
+              </motion.p>
+              <motion.p className="bridge-subhead-line" variants={lineVariants}>
                 אתר שמרגיש כמו העסק שלך ועובד כמוך.
-              </p>
+              </motion.p>
             </motion.div>
-          </motion.header>
+          </header>
 
           <div className="bridge-paths-wrap">
             <div className="bridge-paths">
@@ -96,7 +178,10 @@ export function Benefits() {
                 viewport={viewportOnce}
                 variants={headlineStagger}
               >
-                <motion.h3 className="bridge-path-title bridge-path-title--accent" variants={lineVariants}>
+                <motion.h3
+                  className="bridge-path-title bridge-path-title--accent"
+                  variants={lineVariants}
+                >
                   אבל אם...
                 </motion.h3>
                 <ul className="bridge-ready-list">

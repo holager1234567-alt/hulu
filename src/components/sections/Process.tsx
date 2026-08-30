@@ -1,20 +1,17 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react'
-import { gsap } from 'gsap'
+import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
+import { bindRevealTimeline, forceRevealVisible } from '@/lib/gsapReveal'
 import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
-import {
-  EASE,
-  headlineStagger,
-  lineRevealItem,
-  lineRevealItemReduced,
-  viewportOnce,
-} from '@/lib/motion'
+import { EASE } from '@/lib/motion'
 import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
+import { cn } from '@/lib/utils'
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const steps = [
   {
@@ -32,13 +29,15 @@ const steps = [
 ] as const
 
 const headlineLines = [
-  'תהליך פרימיום',
-  'בשלושה שלבים',
-  'ברורים.',
+  { text: 'תהליך פרימיום', accent: false },
+  { text: 'בשלושה שלבים', accent: false },
+  { text: 'ברורים.', accent: true },
 ]
 
 export function Process() {
   const sectionRef = useRef<HTMLElement>(null)
+  const introRef = useRef<HTMLElement>(null)
+  const closingRef = useRef<HTMLElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const fillRef = useRef<HTMLDivElement>(null)
   const stepRefs = useRef<(HTMLElement | null)[]>([])
@@ -49,10 +48,114 @@ export function Process() {
 
   useEffect(() => {
     mountedRef.current = true
+    scheduleScrollTriggerRefresh(0)
+    scheduleScrollTriggerRefresh(350)
     return () => {
       mountedRef.current = false
     }
   }, [])
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current
+      const intro = introRef.current
+      const closing = closingRef.current
+      if (!section) return
+
+      const q = gsap.utils.selector(section)
+      const pick = (selector: string) => {
+        const nodes = q(selector)
+        return nodes.length ? nodes : null
+      }
+
+      const ornaments = pick('.process-header-ornament span')
+      const headlineInners = pick('.process-headline-inner')
+      const accentLine = pick('.process-headline-accent-line')
+      const lead = pick('.process-lead')
+      const diff = pick('.process-diff')
+      const diffGlow = pick('.process-diff-glow')
+      const closingText = pick('.process-closing-text')
+      const closingLink = pick('.process-closing-link')
+      const closingGlow = pick('.process-closing-glow')
+
+      if (reduced) {
+        forceRevealVisible(
+          ornaments,
+          headlineInners,
+          accentLine,
+          lead,
+          diff,
+          diffGlow,
+          closingText,
+          closingLink,
+          closingGlow,
+        )
+        return
+      }
+
+      const cleanups: Array<() => void> = []
+
+      if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
+      if (headlineInners) gsap.set(headlineInners, { yPercent: 118, opacity: 0, rotateX: 12 })
+      if (accentLine) gsap.set(accentLine, { scaleX: 0, opacity: 0 })
+      if (lead) gsap.set(lead, { opacity: 0, y: 20 })
+      if (diff) gsap.set(diff, { opacity: 0, y: 28, rotateY: -8 })
+      if (diffGlow) gsap.set(diffGlow, { opacity: 0, scale: 0.9 })
+      if (closingText) gsap.set(closingText, { opacity: 0, y: 28 })
+      if (closingLink) gsap.set(closingLink, { opacity: 0, y: 18 })
+      if (closingGlow) gsap.set(closingGlow, { opacity: 0, scale: 0.88 })
+
+      if (intro) {
+        const introTl = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          scrollTrigger: {
+            trigger: intro,
+            start: 'top 92%',
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        if (ornaments) introTl.to(ornaments, { scaleX: 1, opacity: 1, duration: 0.8, stagger: 0.08 })
+        if (headlineInners) {
+          introTl.to(
+            headlineInners,
+            { yPercent: 0, opacity: 1, rotateX: 0, duration: 0.92, stagger: 0.1, ease: 'power4.out' },
+            '-=0.5',
+          )
+        }
+        if (accentLine) {
+          introTl.to(accentLine, { scaleX: 1, opacity: 1, duration: 0.7, ease: 'power2.inOut' }, '-=0.42')
+        }
+        if (lead) introTl.to(lead, { opacity: 1, y: 0, duration: 0.65 }, '-=0.38')
+        if (diffGlow) introTl.to(diffGlow, { opacity: 1, scale: 1, duration: 0.75 }, '-=0.35')
+        if (diff) introTl.to(diff, { opacity: 1, y: 0, rotateY: 0, duration: 0.82 }, '-=0.55')
+
+        cleanups.push(bindRevealTimeline(introTl, intro))
+      }
+
+      if (closing) {
+        const closingTl = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          scrollTrigger: {
+            trigger: closing,
+            start: 'top 92%',
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        if (closingGlow) closingTl.to(closingGlow, { opacity: 1, scale: 1, duration: 0.8 }, 0)
+        if (closingText) closingTl.to(closingText, { opacity: 1, y: 0, duration: 0.78 }, '-=0.55')
+        if (closingLink) closingTl.to(closingLink, { opacity: 1, y: 0, duration: 0.62 }, '-=0.38')
+
+        cleanups.push(bindRevealTimeline(closingTl, closing))
+      }
+
+      return () => cleanups.forEach((cleanup) => cleanup())
+    },
+    { scope: sectionRef, dependencies: [reduced] },
+  )
 
   useLayoutEffect(() => {
     if (reduced) return
@@ -80,6 +183,49 @@ export function Process() {
 
       stepRefs.current.forEach((el, i) => {
         if (!el) return
+
+        const stepBody = el.querySelector('.process-step-body')
+        const stepNum = el.querySelector('.process-step-num')
+
+        if (stepBody) {
+          gsap.fromTo(
+            stepBody,
+            { opacity: 0, x: 36, y: 18 },
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              duration: 0.85,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top 84%',
+                once: true,
+                invalidateOnRefresh: true,
+              },
+            },
+          )
+        }
+
+        if (stepNum) {
+          gsap.fromTo(
+            stepNum,
+            { scale: 0.72, opacity: 0 },
+            {
+              scale: 1,
+              opacity: 1,
+              duration: 0.75,
+              ease: 'back.out(1.8)',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top 84%',
+                once: true,
+                invalidateOnRefresh: true,
+              },
+            },
+          )
+        }
+
         ScrollTrigger.create({
           trigger: el,
           start: 'top 58%',
@@ -99,14 +245,6 @@ export function Process() {
     return () => ctx.revert()
   }, [reduced])
 
-  useEffect(() => {
-    if (reduced) return
-    scheduleScrollTriggerRefresh(400)
-    scheduleScrollTriggerRefresh(1000)
-  }, [reduced])
-
-  const lineVariants = reduced ? lineRevealItemReduced : lineRevealItem
-
   return (
     <section
       ref={sectionRef}
@@ -118,42 +256,39 @@ export function Process() {
 
       <div className="container-site relative z-10">
         <div className="process-editorial">
-          <header className="process-intro">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-              variants={headlineStagger}
-            >
+          <header ref={introRef} className="process-intro process-intro--lux">
+            <div>
+              <div className="process-header-ornament" aria-hidden>
+                <span />
+                <span />
+              </div>
+
               <h2
                 id="process-heading"
                 className="process-headline font-display font-bold leading-[1.06] text-burgundy"
               >
                 {headlineLines.map((line) => (
-                  <span key={line} className="process-headline-line block overflow-hidden py-0.5">
-                    <motion.span className="block" variants={lineVariants}>
-                      {line}
-                    </motion.span>
+                  <span
+                    key={line.text}
+                    className={cn(
+                      'process-headline-line block overflow-hidden py-0.5',
+                      line.accent && 'process-headline-accent',
+                    )}
+                  >
+                    <span className="process-headline-inner block">{line.text}</span>
                   </span>
                 ))}
+                <span className="process-headline-accent-line" aria-hidden />
               </h2>
 
-              <motion.p
-                className="process-lead mt-5 max-w-md text-base leading-relaxed text-muted md:mt-6 md:text-lg dark:text-white/65"
-                variants={lineVariants}
-              >
+              <p className="process-lead mt-5 max-w-md text-base leading-relaxed text-muted md:mt-6 md:text-lg dark:text-white/65">
                 מותאם לבעלות עסקים שרוצות נוכחות דיגיטלית שחוסכת זמן בשירות
                 וממירה מתעניינות ללקוחות משלמות.
-              </motion.p>
-            </motion.div>
+              </p>
+            </div>
 
-            <motion.aside
-              className="process-diff"
-              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={viewportOnce}
-              transition={{ duration: 0.7, ease: EASE, delay: reduced ? 0 : 0.35 }}
-            >
+            <aside className="process-diff process-diff--lux">
+              <span className="process-diff-glow" aria-hidden />
               <p className="process-diff-lead font-display text-lg font-semibold leading-snug text-burgundy md:text-xl">
                 אני לא מתחילה מהמסך.
                 <br />
@@ -163,7 +298,7 @@ export function Process() {
                 לפני העיצוב, אני מבינה מה צריך לקרות באתר כדי שהלקוחה הנכונה תרגיש
                 שהיא הגיעה למקום הנכון.
               </p>
-            </motion.aside>
+            </aside>
           </header>
 
           <div ref={trackRef} className="process-timeline-wrap">
@@ -234,13 +369,8 @@ export function Process() {
           </div>
         </div>
 
-        <motion.footer
-          className="process-closing"
-          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.75, ease: EASE }}
-        >
+        <footer ref={closingRef} className="process-closing process-closing--lux">
+          <span className="process-closing-glow" aria-hidden />
           <p className="process-closing-text font-display font-bold leading-tight text-burgundy">
             <span className="block">ומכאן</span>
             <span className="block">האתר מתחיל לעבוד בשבילך.</span>
@@ -251,7 +381,7 @@ export function Process() {
               →
             </span>
           </LeadPopupTrigger>
-        </motion.footer>
+        </footer>
       </div>
     </section>
   )

@@ -19,13 +19,9 @@ export function useSmoothAnchorScroll(enabled = true) {
 
       event.preventDefault()
 
-      const useNativeSmooth =
-        !document.documentElement.classList.contains('gsap-scroll-active')
-
-      target.scrollIntoView({
-        behavior: useNativeSmooth ? 'smooth' : 'auto',
-        block: 'start',
-      })
+      // `gsap-scroll-active` keeps html scroll-behavior auto so ScrollTrigger's own
+      // scroll writes stay instant, but user-initiated jumps should still glide.
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
       window.history.pushState(null, '', hash)
     }
 

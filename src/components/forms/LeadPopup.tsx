@@ -5,6 +5,7 @@ import {
   Suspense,
   useCallback,
   useContext,
+  useRef,
   useState,
   type ButtonHTMLAttributes,
   type ReactNode,
@@ -24,14 +25,27 @@ const LeadPopupContext = createContext<LeadPopupContextValue | null>(null)
 
 export function LeadPopupProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
-  const openLeadPopup = useCallback(() => setOpen(true), [])
+  // Tracked here because the panel unmounts on close and cannot restore focus itself.
+  const lastFocused = useRef<HTMLElement | null>(null)
+
+  const openLeadPopup = useCallback(() => {
+    lastFocused.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
+    setOpen(true)
+  }, [])
+
+  const closeLeadPopup = useCallback(() => {
+    setOpen(false)
+    lastFocused.current?.focus()
+    lastFocused.current = null
+  }, [])
 
   return (
     <LeadPopupContext.Provider value={{ openLeadPopup }}>
       {children}
       {open ? (
         <Suspense fallback={null}>
-          <LazyLeadPopupPanel open={open} onClose={() => setOpen(false)} />
+          <LazyLeadPopupPanel open={open} onClose={closeLeadPopup} />
         </Suspense>
       ) : null}
     </LeadPopupContext.Provider>

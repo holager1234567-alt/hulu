@@ -1,17 +1,12 @@
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { Fragment, lazy, Suspense, useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { lazy, Suspense, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  EASE,
-  headlineStagger,
-  heroFirstRevealCta,
-  heroFirstRevealFadeUp,
-  heroFirstRevealLine,
-  heroFirstRevealSimpleFade,
-  heroFirstRevealStagger,
-  lineRevealItemReduced,
-} from '@/lib/motion'
+import { useIsMobile } from '@/hooks/useIsMobile'
+import { EASE } from '@/lib/motion'
 import { HERO_CTA_LABEL } from '@/lib/waveForms'
 
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
@@ -22,10 +17,7 @@ const HeroCoverflow = lazy(() =>
   })),
 )
 
-const instantVisible = {
-  hidden: { opacity: 1, y: 0 },
-  visible: { opacity: 1, y: 0 },
-}
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const HERO_HEADLINE_LEAD = 'להפוך את העסק שלך'
 const HERO_HEADLINE_ACCENT = 'למותג שלא מתעלמים ממנו.'
@@ -36,31 +28,118 @@ type HeroProps = {
   isFirstReveal?: boolean
 }
 
+/** Splits text into per-word, per-character spans so GSAP can stagger them. */
+function SplitChars({ text }: { text: string }) {
+  const words = text.split(' ')
+
+  return (
+    <>
+      {words.map((word, wordIndex) => (
+        <Fragment key={`${word}-${wordIndex}`}>
+          <span className="hero-split-word">
+            {Array.from(word).map((char, charIndex) => (
+              <span key={`${char}-${charIndex}`} className="hero-split-char">
+                {char}
+              </span>
+            ))}
+          </span>
+          {wordIndex < words.length - 1 ? ' ' : null}
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
 export function Hero({ isFirstReveal = false }: HeroProps) {
   const sectionRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const enterRef = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
+  const isMobile = useIsMobile()
   const useReveal = isFirstReveal && !reduced
-  const useSimpleFade = isFirstReveal && !!reduced
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end start'],
-  })
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : 36])
-  const contentOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.7],
-    [1, reduced ? 1 : 0.45],
+  useGSAP(
+    () => {
+      if (reduced || isMobile) return
+
+      const section = sectionRef.current
+      const content = contentRef.current
+      if (!section || !content) return
+
+      gsap.fromTo(
+        content,
+        { opacity: 1, scale: 1, y: 0 },
+        {
+          opacity: 0,
+          scale: 0.94,
+          y: 70,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: 'bottom 30%',
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+          },
+        },
+      )
+    },
+    { dependencies: [reduced, isMobile] },
   )
 
-  const headlineVariants = useReveal ? heroFirstRevealStagger : headlineStagger
-  const lineVariants = useSimpleFade
-    ? heroFirstRevealSimpleFade
-    : useReveal
-      ? heroFirstRevealLine
-      : lineRevealItemReduced
-  const bodyVariants = useReveal ? heroFirstRevealFadeUp : instantVisible
-  const ctaVariants = useReveal ? heroFirstRevealCta : instantVisible
+  useGSAP(
+    () => {
+      const root = enterRef.current
+      if (!root) return
+
+      const headline = root.querySelector('.hero-enter-headline')
+      const chars = Array.from(root.querySelectorAll('.hero-split-char'))
+      const subheadline = root.querySelector('.hero-enter-subheadline')
+      const ctas = Array.from(root.querySelectorAll('.hero-enter-cta'))
+
+      const blocks = [headline, subheadline, ...ctas].filter(
+        (node): node is Element => node !== null,
+      )
+      if (!blocks.length) return
+
+      // Anything we cannot animate must still end up visible, never stuck at opacity 0.
+      if (reduced || !chars.length) {
+        gsap.set(blocks, { opacity: 1, y: 0, willChange: 'auto' })
+        gsap.set(chars, { opacity: 1, yPercent: 0 })
+        return
+      }
+
+      gsap.set(chars, { opacity: 0, yPercent: 100 })
+      gsap.set(blocks, { opacity: 0, y: 22 })
+      if (headline) gsap.set(headline, { opacity: 1, y: 0 })
+
+      const timeline = gsap.timeline({
+        defaults: { ease: 'power2.out' },
+        // Drop the compositor layers once the intro is done.
+        onComplete: () => gsap.set(blocks, { willChange: 'auto' }),
+      })
+
+      timeline.to(chars, {
+        opacity: 1,
+        yPercent: 0,
+        duration: 0.6,
+        stagger: 0.03,
+      })
+
+      if (subheadline) {
+        timeline.to(subheadline, { opacity: 1, y: 0, duration: 0.65 }, '-=0.3')
+      }
+
+      if (ctas.length) {
+        timeline.to(
+          ctas,
+          { opacity: 1, y: 0, duration: 0.55, stagger: 0.12 },
+          '-=0.18',
+        )
+      }
+    },
+    { scope: enterRef, dependencies: [reduced] },
+  )
 
   return (
     <section
@@ -105,7 +184,8 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
       <div className="grain-overlay hero-luxury-grain" aria-hidden />
 
       <motion.div
-        style={{ y: contentY, opacity: contentOpacity, willChange: 'transform' }}
+        ref={contentRef}
+        style={{ willChange: 'transform, opacity' }}
         initial={
           useReveal
             ? { opacity: 0, scale: 0.97, filter: reduced ? 'none' : 'blur(8px)' }
@@ -115,40 +195,27 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
         transition={{ duration: 0.9, delay: 0.12, ease: EASE }}
         className="container-site relative z-10 py-1 md:py-8 lg:py-10"
       >
-        <div className="hero-luxury-grid-layout w-full">
-          <motion.div
-            className="hero-luxury-copy hero-luxury-text"
-            initial={useReveal ? 'hidden' : false}
-            animate="visible"
-            variants={headlineVariants}
-          >
-            <h1 className="hero-luxury-headline">
-              <motion.span
-                variants={lineVariants}
-                className="hero-luxury-headline-primary"
-              >
-                <span className="hero-headline-lead">{HERO_HEADLINE_LEAD}</span>
-                <span className="hero-headline-accent">{HERO_HEADLINE_ACCENT}</span>
-              </motion.span>
+        <div ref={enterRef} className="hero-luxury-grid-layout w-full">
+          <div className="hero-luxury-copy hero-luxury-text">
+            <h1
+              className="hero-luxury-headline"
+              aria-label={`${HERO_HEADLINE_LEAD} ${HERO_HEADLINE_ACCENT}`}
+            >
+              <span className="hero-luxury-headline-primary hero-enter-headline">
+                <span className="hero-headline-lead">
+                  <SplitChars text={HERO_HEADLINE_LEAD} />
+                </span>
+                <span className="hero-headline-accent">
+                  <SplitChars text={HERO_HEADLINE_ACCENT} />
+                </span>
+              </span>
             </h1>
 
-            <motion.p
-              custom={0}
-              initial={useReveal ? 'hidden' : false}
-              animate="visible"
-              variants={bodyVariants}
-              className="hero-luxury-subheadline-detail"
-            >
+            <p className="hero-luxury-subheadline-detail hero-enter-subheadline">
               {HERO_SUBHEADLINE}
-            </motion.p>
+            </p>
 
-            <motion.div
-              custom={0}
-              initial={useReveal ? 'hidden' : false}
-              animate="visible"
-              variants={ctaVariants}
-              className="hero-luxury-desktop-cta mx-auto mt-7 hidden max-w-xl md:mt-10 md:mb-4 md:block md:max-w-none"
-            >
+            <div className="hero-luxury-desktop-cta hero-enter-cta mx-auto mt-7 hidden max-w-xl md:mt-10 md:mb-4 md:block md:max-w-none">
               <Button
                 asChild
                 variant="outline"
@@ -163,8 +230,8 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                   />
                 </LeadPopupTrigger>
               </Button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           <motion.div
             initial={useReveal ? { opacity: 0, y: reduced ? 0 : 20, scale: 0.96 } : false}
@@ -181,13 +248,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
             </Suspense>
           </motion.div>
 
-          <motion.div
-            custom={1}
-            initial={useReveal ? 'hidden' : false}
-            animate="visible"
-            variants={ctaVariants}
-            className="hero-luxury-actions mt-2 flex w-full flex-col items-center justify-center gap-2.5 sm:flex-row md:mt-0 md:hidden"
-          >
+          <div className="hero-luxury-actions hero-enter-cta mt-6 flex w-full flex-col items-center justify-center gap-2.5 sm:flex-row md:mt-0 md:hidden">
             <Button
               asChild
               variant="outline"
@@ -202,7 +263,7 @@ export function Hero({ isFirstReveal = false }: HeroProps) {
                 />
               </LeadPopupTrigger>
             </Button>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
     </section>

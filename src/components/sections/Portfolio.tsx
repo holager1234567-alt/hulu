@@ -1,17 +1,18 @@
-import { useRef, useState, useEffect } from 'react'
-import {
-  motion,
-  useInView,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from 'framer-motion'
+import { useRef, useEffect } from 'react'
+import { useReducedMotion } from 'framer-motion'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { ArrowLeft } from 'lucide-react'
 import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
 import { Button } from '@/components/ui/button'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
+import { useIsMobile } from '@/hooks/useIsMobile'
+import { bindRevealTimeline, forceRevealVisible } from '@/lib/gsapReveal'
+import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
-import { EASE, fadeUpScale, viewportOnce, viewportOnceTight } from '@/lib/motion'
+
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 type Project = {
   title: string
@@ -149,82 +150,21 @@ function BrowserMockup({
 function ProjectCard({
   project,
   index,
-  reduced,
 }: {
   project: (typeof projects)[number]
   index: number
-  reduced: boolean
 }) {
-  const ref = useRef<HTMLElement>(null)
   const num = String(index + 1).padStart(2, '0')
   const flipped = index % 2 === 1
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start 0.92', 'end 0.2'],
-  })
-
-  const cardOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.22, 0.55, 0.88, 1],
-    reduced ? [1, 1, 1, 1, 1] : [0.2, 1, 1, 1, 0.35],
-  )
-  const cardScale = useTransform(
-    scrollYProgress,
-    [0, 0.28, 0.72, 1],
-    reduced ? [1, 1, 1, 1] : [0.94, 1, 1, 0.97],
-  )
-  const cardY = useTransform(
-    scrollYProgress,
-    [0, 0.32],
-    reduced ? [0, 0] : [40, 0],
-  )
-  const showcaseY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    reduced ? [0, 0] : [28, -28],
-  )
-  const metaX = useTransform(
-    scrollYProgress,
-    [0, 0.35],
-    reduced ? [0, 0] : flipped ? [20, 0] : [-20, 0],
-  )
-  const watermarkOpacity = useTransform(
-    scrollYProgress,
-    [0.15, 0.45, 0.85],
-    reduced ? [0.22, 0.22, 0.22] : [0, 0.22, 0.08],
-  )
-
   return (
-    <motion.article
-      ref={ref}
-      style={
-        reduced
-          ? undefined
-          : {
-              opacity: cardOpacity,
-              scale: cardScale,
-              y: cardY,
-              willChange: 'transform, opacity',
-            }
-      }
-      className={`portfolio-card group ${flipped ? 'portfolio-card--flipped' : ''}`}
-    >
-      <motion.span
-        className="portfolio-watermark font-mono-tech portfolio-watermark--scroll"
-        style={reduced ? undefined : { opacity: watermarkOpacity }}
-        aria-hidden
-      >
+    <article className={`portfolio-card group ${flipped ? 'portfolio-card--flipped' : ''}`}>
+      <span className="portfolio-watermark font-mono-tech portfolio-watermark--reveal" aria-hidden>
         {num}
-      </motion.span>
+      </span>
 
       <div className="portfolio-card-inner">
-        <motion.div
-          className="portfolio-showcase-col"
-          style={
-            reduced ? undefined : { y: showcaseY, willChange: 'transform' }
-          }
-        >
+        <div className="portfolio-showcase-col portfolio-showcase-col--reveal">
           <div className="portfolio-showcase">
             <BrowserMockup
               variant="secondary"
@@ -240,14 +180,9 @@ function ProjectCard({
               overlay={project}
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          style={
-            reduced ? undefined : { x: metaX, willChange: 'transform' }
-          }
-          className="portfolio-meta-col"
-        >
+        <div className="portfolio-meta-col portfolio-meta-col--reveal">
           <span className="portfolio-index font-mono-tech">{num}</span>
           <h3 className="portfolio-title text-xl font-bold text-burgundy md:text-2xl lg:text-[1.65rem]">
             {project.title}
@@ -258,49 +193,207 @@ function ProjectCard({
           <p className="portfolio-insight mt-2 text-sm leading-relaxed text-primary/80 md:text-base dark:text-white/75">
             {project.insight}
           </p>
-        </motion.div>
+        </div>
       </div>
-    </motion.article>
+    </article>
   )
 }
 
 export function Portfolio() {
   const reduced = useReducedMotion()
+  const isMobile = useIsMobile()
   const sectionRef = useRef<HTMLElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
-  const headlineInView = useInView(headerRef, viewportOnce)
-  const [headlineFallback, setHeadlineFallback] = useState(false)
-
-  const { scrollYProgress: sectionProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  })
-
-  const { scrollYProgress: listProgress } = useScroll({
-    target: listRef,
-    offset: ['start 0.75', 'end 0.25'],
-  })
-
-  const railFill = useTransform(listProgress, [0, 1], [0, 1])
-  const headerY = useTransform(
-    sectionProgress,
-    [0, 0.35],
-    reduced ? [0, 0] : [24, 0],
-  )
-  const headerOpacity = useTransform(
-    sectionProgress,
-    [0, 0.2],
-    reduced ? [1, 1] : [0.4, 1],
-  )
+  const listRef = useRef<HTMLDivElement>(null)
+  const ctaRef = useRef<HTMLDivElement>(null)
+  const railFillRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (reduced) return
-    const timer = window.setTimeout(() => setHeadlineFallback(true), 2000)
-    return () => window.clearTimeout(timer)
-  }, [reduced])
+    scheduleScrollTriggerRefresh(0)
+    scheduleScrollTriggerRefresh(350)
+  }, [])
 
-  const showHeadline = reduced || headlineInView || headlineFallback
+  useGSAP(
+    () => {
+      const section = sectionRef.current
+      const header = headerRef.current
+      const list = listRef.current
+      const cta = ctaRef.current
+      const railFill = railFillRef.current
+      if (!section) return
+
+      const q = gsap.utils.selector(section)
+      const pick = (selector: string) => {
+        const nodes = q(selector)
+        return nodes.length ? nodes : null
+      }
+
+      const ornaments = pick('.portfolio-header-ornament span')
+      const headlineInners = pick('.portfolio-headline-inner')
+      const accentLine = pick('.portfolio-headline-accent-line')
+      const subhead = pick('.portfolio-subhead')
+      const divider = pick('.portfolio-header-divider')
+      const cards = pick('.portfolio-card')
+      const showcases = pick('.portfolio-showcase-col--reveal')
+      const metas = pick('.portfolio-meta-col--reveal')
+      const watermarks = pick('.portfolio-watermark--reveal')
+      const ctaWrap = pick('.portfolio-cta-wrap')
+      const ctaGlow = pick('.portfolio-cta-glow')
+
+      if (reduced) {
+        forceRevealVisible(
+          ornaments,
+          headlineInners,
+          accentLine,
+          subhead,
+          divider,
+          cards,
+          showcases,
+          metas,
+          watermarks,
+          ctaWrap,
+          ctaGlow,
+        )
+        if (railFill) gsap.set(railFill, { scaleY: 1 })
+        return
+      }
+
+      const cleanups: Array<() => void> = []
+
+      if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
+      if (headlineInners) gsap.set(headlineInners, { yPercent: 118, opacity: 0, rotateX: 12 })
+      if (accentLine) gsap.set(accentLine, { scaleX: 0, opacity: 0 })
+      if (subhead) gsap.set(subhead, { opacity: 0, y: 20 })
+      if (divider) gsap.set(divider, { scaleX: 0, opacity: 0 })
+      if (cards) gsap.set(cards, { opacity: 1 })
+      if (showcases) gsap.set(showcases, { opacity: 0, y: 56 })
+      if (metas) gsap.set(metas, { opacity: 0, x: 28 })
+      if (watermarks) gsap.set(watermarks, { opacity: 0, scale: 0.8 })
+      if (ctaWrap) gsap.set(ctaWrap, { opacity: 0, y: 32 })
+      if (ctaGlow) gsap.set(ctaGlow, { opacity: 0, scale: 0.88 })
+      if (railFill) gsap.set(railFill, { scaleY: 0 })
+
+      if (header) {
+        const headerTl = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          scrollTrigger: {
+            trigger: header,
+            start: 'top 88%',
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        if (ornaments) headerTl.to(ornaments, { scaleX: 1, opacity: 1, duration: 0.8, stagger: 0.08 })
+        if (headlineInners) {
+          headerTl.to(
+            headlineInners,
+            { yPercent: 0, opacity: 1, rotateX: 0, duration: 0.92, stagger: 0.1, ease: 'power4.out' },
+            '-=0.5',
+          )
+        }
+        if (accentLine) {
+          headerTl.to(accentLine, { scaleX: 1, opacity: 1, duration: 0.7, ease: 'power2.inOut' }, '-=0.4')
+        }
+        if (subhead) headerTl.to(subhead, { opacity: 1, y: 0, duration: 0.65 }, '-=0.35')
+        if (divider) {
+          headerTl.to(divider, { scaleX: 1, opacity: 1, duration: 0.6, ease: 'power2.inOut' }, '-=0.3')
+        }
+
+        cleanups.push(bindRevealTimeline(headerTl, header))
+      }
+
+      if (cards) {
+        cards.forEach((card, i) => {
+          const showcase = card.querySelector('.portfolio-showcase-col--reveal')
+          const meta = card.querySelector('.portfolio-meta-col--reveal')
+          const watermark = card.querySelector('.portfolio-watermark--reveal')
+          const flipped = i % 2 === 1
+
+          if (showcase) {
+            gsap.set(showcase, { rotateY: flipped ? -8 : 8 })
+          }
+
+          const cardTl = gsap.timeline({
+            defaults: { ease: 'power3.out' },
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 86%',
+              once: true,
+              invalidateOnRefresh: true,
+            },
+          })
+
+          if (watermark) {
+            cardTl.to(watermark, { opacity: 0.22, scale: 1, duration: 0.75, ease: 'power2.out' })
+          }
+          if (showcase) {
+            cardTl.to(
+              showcase,
+              { opacity: 1, y: 0, rotateY: 0, duration: 0.95, ease: 'power4.out' },
+              '-=0.55',
+            )
+          }
+          if (meta) {
+            cardTl.to(meta, { opacity: 1, x: 0, duration: 0.75 }, '-=0.55')
+          }
+
+          cleanups.push(bindRevealTimeline(cardTl, card))
+
+          if (!isMobile && showcase) {
+            gsap.fromTo(
+              showcase,
+              { y: 24 },
+              {
+                y: -24,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: card,
+                  start: 'top bottom',
+                  end: 'bottom top',
+                  scrub: 0.65,
+                },
+              },
+            )
+          }
+        })
+      }
+
+      if (list && railFill) {
+        gsap.to(railFill, {
+          scaleY: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: list,
+            start: 'start 75%',
+            end: 'end 25%',
+            scrub: 0.55,
+            invalidateOnRefresh: true,
+          },
+        })
+      }
+
+      if (cta) {
+        const ctaTl = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          scrollTrigger: {
+            trigger: cta,
+            start: 'top 92%',
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        if (ctaGlow) ctaTl.to(ctaGlow, { opacity: 1, scale: 1, duration: 0.8 }, 0)
+        if (ctaWrap) ctaTl.to(ctaWrap, { opacity: 1, y: 0, duration: 0.75 }, '-=0.55')
+
+        cleanups.push(bindRevealTimeline(ctaTl, cta))
+      }
+
+      return () => cleanups.forEach((cleanup) => cleanup())
+    },
+    { scope: sectionRef, dependencies: [reduced, isMobile] },
+  )
 
   return (
     <section
@@ -313,82 +406,44 @@ export function Portfolio() {
       {!reduced ? (
         <div className="portfolio-scroll-rail" aria-hidden>
           <div className="portfolio-scroll-rail-track" />
-          <motion.div
-            className="portfolio-scroll-rail-fill"
-            style={{ scaleY: railFill }}
-          />
+          <div ref={railFillRef} className="portfolio-scroll-rail-fill" />
         </div>
       ) : null}
 
       <div className="container-site relative z-10">
-        <motion.header
+        <header
           ref={headerRef}
-          style={
-            reduced
-              ? undefined
-              : { y: headerY, opacity: headerOpacity, willChange: 'transform' }
-          }
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={fadeUpScale}
-          className="mx-auto mb-10 max-w-3xl text-center md:mb-12"
+          className="portfolio-header--lux mx-auto mb-10 max-w-3xl text-center md:mb-12"
         >
+          <div className="portfolio-header-ornament" aria-hidden>
+            <span />
+            <span />
+          </div>
+
           <h2 className="text-3xl font-bold leading-tight text-burgundy md:text-4xl lg:text-[2.75rem]">
-            {headlineLines.map((line, i) => (
+            {headlineLines.map((line) => (
               <span key={line} className="block overflow-hidden py-0.5">
-                <motion.span
-                  className="block"
-                  initial={reduced ? { y: 0, opacity: 1 } : { y: '110%', opacity: 0 }}
-                  animate={
-                    showHeadline
-                      ? { y: 0, opacity: 1 }
-                      : { y: '110%', opacity: 0 }
-                  }
-                  transition={{
-                    duration: 0.7,
-                    ease: EASE,
-                    delay: i * 0.12,
-                  }}
-                >
-                  {line}
-                </motion.span>
+                <span className="portfolio-headline-inner block">{line}</span>
               </span>
             ))}
+            <span className="portfolio-headline-accent-line" aria-hidden />
           </h2>
 
-          <motion.p
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.6, ease: EASE, delay: 0.24 }}
-            className="mt-5 text-base leading-relaxed text-muted dark:text-white/65 md:text-lg"
-          >
+          <p className="portfolio-subhead mt-5 text-base leading-relaxed text-muted dark:text-white/65 md:text-lg">
             כל פרויקט נבנה סביב העסק שמאחוריו, כדי להרגיש מדויק, ייחודי ונכון לקהל שלו.
-          </motion.p>
+          </p>
 
-          <hr className="tech-divider mx-auto mt-6 max-w-xs md:mt-8 md:max-w-sm" />
-        </motion.header>
+          <hr className="tech-divider portfolio-header-divider mx-auto mt-6 max-w-xs origin-center md:mt-8 md:max-w-sm" />
+        </header>
 
         <div ref={listRef} className="portfolio-list mx-auto max-w-5xl">
           {projects.map((project, i) => (
-            <ProjectCard
-              key={project.title}
-              project={project}
-              index={i}
-              reduced={!!reduced}
-            />
+            <ProjectCard key={project.title} project={project} index={i} />
           ))}
         </div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnceTight}
-          variants={fadeUpScale}
-          transition={{ delay: 0.15 }}
-          className="mx-auto mt-12 max-w-2xl md:mt-14"
-        >
+        <div ref={ctaRef} className="mx-auto mt-12 max-w-2xl md:mt-14">
+          <span className="portfolio-cta-glow" aria-hidden />
           <div className="portfolio-cta-wrap glass-card tech-corners text-center">
             <hr className="tech-divider mb-6" aria-hidden />
 
@@ -407,7 +462,7 @@ export function Portfolio() {
               </Button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

@@ -145,9 +145,13 @@ export function HeroCoverflow({
               <button
                 type="button"
                 className={`hero-coverflow-card${offset === 0 ? ' hero-coverflow-card--active' : ''}`}
-                tabIndex={offset === 0 ? -1 : visible ? 0 : -1}
-                aria-hidden={offset !== 0}
-                aria-label={`הצגת ${project.alt ?? `פרויקט ${project.id}`}`}
+                tabIndex={visible && offset !== 0 ? 0 : -1}
+                aria-hidden={visible ? undefined : true}
+                aria-label={
+                  offset === 0
+                    ? undefined
+                    : `הצגת ${project.alt ?? `פרויקט ${project.id}`}`
+                }
                 onClick={() => {
                   if (offset !== 0) goTo(index)
                 }}

@@ -67,7 +67,7 @@ export function getWaveFormsWebhookUrl(): string | undefined {
   return typeof url === 'string' && url.trim().length > 0 ? url.trim() : undefined
 }
 
-export const LEAD_FLOW_CTA_LABEL = 'לדף נחיתה דמו בחינם ולתיאום שיחת אפיון'
+export const LEAD_FLOW_CTA_LABEL = 'לבניית הפרויקט שלך ותיאום שיחת אפיון'
 
 /** Hero-only CTA (replaces legacy demo copy). */
 export const HERO_CTA_LABEL = LEAD_FLOW_CTA_LABEL

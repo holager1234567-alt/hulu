@@ -10,22 +10,18 @@ import {
   useSpring,
   useMotionTemplate,
 } from 'framer-motion'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { ArrowLeft } from 'lucide-react'
 import huluProfile from '@/assets/hulu-portrait-v2.png'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
-import {
-  EASE,
-  staggerContainer,
-  staggerItem,
-  useCountUp,
-  viewportOnce,
-  viewportOnceTight,
-} from '@/lib/motion'
+import { useIsMobile } from '@/hooks/useIsMobile'
+import { bindRevealTimeline, forceRevealVisible } from '@/lib/gsapReveal'
+import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
+import { EASE, viewportOnce } from '@/lib/motion'
 
-const stats = [
-  { numeric: 14, suffix: ' ימים', label: 'זמן מסירה' },
-  { numeric: 100, suffix: '%', label: 'mobile' },
-]
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const headlineParts = ['אני לא מתחילה מעיצוב.', 'אני מתחילה מהעסק שלך.']
 
@@ -42,45 +38,13 @@ const personalLines = [
   'אני מתמחה בחיבור המדויק שבין עיצוב אסתטי עוצר נשימה, קופירייטינג שנוגע בנקודות הנכונות, ופיתוח טכנולוגי מתקדם.',
 ]
 
-function StatBadge({
-  numeric,
-  suffix,
-  label,
-  index,
-}: {
-  numeric: number
-  suffix: string
-  label: string
-  index: number
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, viewportOnceTight)
-  const count = useCountUp(numeric, inView)
-  const done = inView && count >= numeric
-
-  return (
-    <motion.div
-      ref={ref}
-      variants={staggerItem}
-      className={`about-stat-pill rounded-full px-4 py-2 text-center ${inView ? 'about-stat-pill--glow' : ''}`}
-      transition={{ delay: index * 0.1 }}
-    >
-      <span
-        className={`font-mono-tech about-stat-number block text-sm font-bold text-burgundy md:text-base ${done ? 'about-stat-number--pulse' : ''}`}
-      >
-        {count}
-        {suffix}
-      </span>
-      <span className="text-xs text-muted dark:text-white/60">{label}</span>
-    </motion.div>
-  )
-}
-
 function AboutPortrait({
   reduced,
+  isMobile,
   sectionRef,
 }: {
   reduced: boolean
+  isMobile: boolean
   sectionRef: React.RefObject<HTMLElement | null>
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
@@ -107,7 +71,7 @@ function AboutPortrait({
   const imageY = useTransform(
     scrollYProgress,
     [0, 1],
-    reduced ? [0, 0] : [32, -32],
+    reduced || isMobile ? [0, 0] : [32, -32],
   )
 
   const handleMouseMove = useCallback(
@@ -215,29 +179,100 @@ function AboutPortrait({
 
 export function About() {
   const reduced = useReducedMotion()
+  const isMobile = useIsMobile()
   const sectionRef = useRef<HTMLElement>(null)
-  const headerRef = useRef<HTMLDivElement>(null)
-  const headlineInView = useInView(headerRef, viewportOnce)
-  const [headlineFallback, setHeadlineFallback] = useState(false)
+  const copyRef = useRef<HTMLDivElement>(null)
   const [showPersonal, setShowPersonal] = useState(false)
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  })
-  const contentY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    reduced ? [0, 0] : [-16, 16],
-  )
-
   useEffect(() => {
-    if (reduced) return
-    const timer = window.setTimeout(() => setHeadlineFallback(true), 2000)
-    return () => window.clearTimeout(timer)
-  }, [reduced])
+    scheduleScrollTriggerRefresh(0)
+    scheduleScrollTriggerRefresh(350)
+  }, [])
 
-  const showHeadline = reduced || headlineInView || headlineFallback
+  useGSAP(
+    () => {
+      const copy = copyRef.current
+      if (!copy) return
+
+      const q = gsap.utils.selector(copy)
+      const pick = (selector: string) => {
+        const nodes = q(selector)
+        return nodes.length ? nodes : null
+      }
+
+      const ornaments = pick('.about-header-ornament span')
+      const headlineInners = pick('.about-headline-inner')
+      const accentLine = pick('.about-headline-accent-line')
+      const headlineGlow = pick('.about-headline-glow')
+      const divider = pick('.about-header-divider')
+      const intro = pick('.about-intro-line')
+      const understandingItems = pick('.about-understanding li')
+      const belief = pick('.about-belief')
+      const footerLine = pick('.about-footer-line')
+
+      if (reduced) {
+        forceRevealVisible(
+          ornaments,
+          headlineInners,
+          accentLine,
+          headlineGlow,
+          divider,
+          intro,
+          understandingItems,
+          belief,
+          footerLine,
+        )
+        return
+      }
+
+      if (ornaments) gsap.set(ornaments, { scaleX: 0, opacity: 0 })
+      if (headlineInners) gsap.set(headlineInners, { yPercent: 118, opacity: 0, rotateX: 10 })
+      if (accentLine) gsap.set(accentLine, { scaleX: 0, opacity: 0 })
+      if (headlineGlow) gsap.set(headlineGlow, { opacity: 0, scale: 0.88 })
+      if (divider) gsap.set(divider, { scaleX: 0, opacity: 0 })
+      if (intro) gsap.set(intro, { opacity: 0, y: 16 })
+      if (understandingItems) gsap.set(understandingItems, { opacity: 0, x: 20 })
+      if (belief) gsap.set(belief, { opacity: 0, y: 16 })
+      if (footerLine) gsap.set(footerLine, { scaleX: 0, opacity: 0 })
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        scrollTrigger: {
+          trigger: copy,
+          start: 'top 88%',
+          once: true,
+          invalidateOnRefresh: true,
+        },
+      })
+
+      if (ornaments) tl.to(ornaments, { scaleX: 1, opacity: 1, duration: 0.8, stagger: 0.08 })
+      if (headlineGlow) tl.to(headlineGlow, { opacity: 1, scale: 1, duration: 0.85 }, '-=0.45')
+      if (headlineInners) {
+        tl.to(
+          headlineInners,
+          { yPercent: 0, opacity: 1, rotateX: 0, duration: 0.9, stagger: 0.11, ease: 'power4.out' },
+          '-=0.55',
+        )
+      }
+      if (accentLine) {
+        tl.to(accentLine, { scaleX: 1, opacity: 1, duration: 0.65, ease: 'power2.inOut' }, '-=0.4')
+      }
+      if (divider) {
+        tl.to(divider, { scaleX: 1, opacity: 1, duration: 0.65, ease: 'power2.inOut' }, '-=0.35')
+      }
+      if (intro) tl.to(intro, { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
+      if (understandingItems) {
+        tl.to(understandingItems, { opacity: 1, x: 0, duration: 0.52, stagger: 0.08 }, '-=0.35')
+      }
+      if (belief) tl.to(belief, { opacity: 1, y: 0, duration: 0.6 }, '-=0.25')
+      if (footerLine) {
+        tl.to(footerLine, { scaleX: 1, opacity: 1, duration: 0.55, ease: 'power2.inOut' }, '-=0.2')
+      }
+
+      return bindRevealTimeline(tl, copy)
+    },
+    { scope: sectionRef, dependencies: [reduced] },
+  )
 
   return (
     <section
@@ -249,108 +284,53 @@ export function About() {
       <div className="about-accent-glow" aria-hidden />
 
       <div className="container-site relative z-10 grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
-        <AboutPortrait reduced={!!reduced} sectionRef={sectionRef} />
+        <AboutPortrait reduced={!!reduced} isMobile={isMobile} sectionRef={sectionRef} />
 
-        <motion.div
-          style={{ y: contentY, willChange: 'transform' }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={staggerContainer}
-          className="about-copy lg:col-span-8"
-        >
-          <motion.div
-            ref={headerRef}
-            variants={staggerItem}
-            className="about-header mb-6 flex flex-col items-center text-center lg:items-start lg:text-start"
-          >
-            <h2 className="mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-primary md:mt-4 md:text-4xl lg:text-[2.5rem] dark:text-white">
-              {headlineParts.map((part, i) => (
-                <span key={part} className="block overflow-hidden py-0.5">
-                  <motion.span
-                    className="block"
-                    initial={
-                      reduced ? { y: 0, opacity: 1 } : { y: '110%', opacity: 0 }
-                    }
-                    animate={
-                      showHeadline
-                        ? { y: 0, opacity: 1 }
-                        : { y: '110%', opacity: 0 }
-                    }
-                    transition={{
-                      duration: 0.75,
-                      ease: EASE,
-                      delay: 0.32 + i * 0.12,
-                    }}
-                  >
-                    {i === 1 ? (
-                      <span className="text-burgundy">{part}</span>
-                    ) : (
-                      part
-                    )}
-                  </motion.span>
-                </span>
-              ))}
-            </h2>
-            <hr className="tech-divider about-header-divider mx-auto mt-5 max-w-xs lg:mx-0 lg:max-w-sm" />
-          </motion.div>
+        <div ref={copyRef} className="about-copy lg:col-span-8">
+          <div className="about-header mb-6 flex flex-col items-center text-center lg:items-start lg:text-start">
+            <div className="about-headline-wrap relative">
+              <span className="about-headline-glow" aria-hidden />
 
-          <motion.div
-            variants={staggerItem}
-            className="about-body text-center text-base leading-relaxed text-primary/85 md:text-lg lg:text-start dark:text-white/80"
-          >
-            <motion.p
-              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={viewportOnceTight}
-              transition={{ duration: 0.55, ease: EASE }}
-            >
+              <div className="about-header-ornament" aria-hidden>
+                <span />
+                <span />
+              </div>
+
+              <h2 className="about-headline mt-3 overflow-hidden font-display text-3xl leading-tight font-bold text-primary md:mt-4 md:text-4xl lg:text-[2.5rem] dark:text-white">
+                {headlineParts.map((part, i) => (
+                  <span key={part} className="block overflow-hidden py-0.5">
+                    <span
+                      className={`about-headline-inner block ${i === 1 ? 'about-headline-accent' : ''}`}
+                    >
+                      {part}
+                    </span>
+                  </span>
+                ))}
+                <span className="about-headline-accent-line" aria-hidden />
+              </h2>
+            </div>
+
+            <hr className="tech-divider about-header-divider mx-auto mt-5 max-w-xs origin-center lg:mx-0 lg:max-w-sm lg:origin-right" />
+          </div>
+
+          <div className="about-body text-center text-base leading-relaxed text-primary/85 md:text-lg lg:text-start dark:text-white/80">
+            <p className="about-intro-line">
               לפני שאני פותחת את תוכנת העיצוב, אני רוצה להבין את העסק שלך.
-            </motion.p>
+            </p>
 
-            <motion.ul
-              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={viewportOnceTight}
-              transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
-              className="about-understanding mt-4"
-            >
+            <ul className="about-understanding mt-4">
               {understandingLines.map((line) => (
                 <li key={line}>{line}</li>
               ))}
-            </motion.ul>
+            </ul>
 
-            <motion.p
-              initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={viewportOnceTight}
-              transition={{ duration: 0.55, delay: 0.16, ease: EASE }}
-              className="about-belief mt-5"
-            >
+            <p className="about-belief mt-5">
               כי אתר טוב לא מתחיל בצבעים.{' '}
               <span className="text-burgundy">הוא מתחיל בהבנה.</span>
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
 
-          <motion.div
-            variants={staggerContainer}
-            className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
-          >
-            {stats.map((stat, i) => (
-              <StatBadge
-                key={stat.label}
-                numeric={stat.numeric}
-                suffix={stat.suffix}
-                label={stat.label}
-                index={i}
-              />
-            ))}
-          </motion.div>
-
-          <motion.div
-            variants={staggerItem}
-            className="mt-7 text-center lg:text-start"
-          >
+          <div className="mt-7 text-center lg:text-start">
             <button
               type="button"
               onClick={() => setShowPersonal((value) => !value)}
@@ -386,17 +366,10 @@ export function About() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={staggerItem}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
-            className="mx-auto mt-8 h-px w-24 origin-center bg-burgundy/25 lg:mx-0 lg:origin-right"
-          />
-        </motion.div>
+          <div className="about-footer-line mx-auto mt-8 h-px w-24 origin-center bg-burgundy/25 lg:mx-0 lg:origin-right" />
+        </div>
       </div>
     </section>
   )
