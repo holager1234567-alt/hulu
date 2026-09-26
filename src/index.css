@@ -3,17 +3,41 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-  font-family: 'Attraction';
-  src: url('/fonts/attraction.ttf') format('truetype');
+  font-family: 'Heebo';
+  src: url('/fonts/Heebo-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Assistant';
+  src: url('/fonts/Assistant-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Amatic SC';
+  src: url('/fonts/AmaticSC-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Amatic SC';
+  src: url('/fonts/AmaticSC-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: 'Heebo', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Rubik', 'Heebo', ui-sans-serif, system-ui, sans-serif;
-  --font-attraction: 'Attraction', cursive;
+  --font-sans: 'Assistant', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Heebo', ui-sans-serif, system-ui, sans-serif;
+  --font-attraction: 'Amatic SC', cursive;
 
   --color-primary: #111111;
   --color-burgundy: #942839;
@@ -88,6 +112,15 @@
   .dark body,
   body:where(.dark *) {
     color: #f5f5f5;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
   }
 
   h1 {
