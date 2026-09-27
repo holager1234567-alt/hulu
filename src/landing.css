@@ -1,0 +1,691 @@
+/* Landing globals kept outside Tailwind utilities: splash, intro keyframes, and the Method / Works / Philosophy sections. */
+
+:root {
+  --lp-ink: var(--color-espresso);
+  --lp-wine: var(--color-wine);
+  --lp-wine-2: var(--color-wine-light);
+  --lp-wine-3: var(--color-wine-deep);
+  --lp-cream: var(--color-cream);
+  --lp-alabaster: var(--color-alabaster);
+  --lp-ivory: var(--color-ivory);
+  --lp-champagne: var(--color-champagne);
+  --lp-rose: var(--color-rosegold);
+  --lp-rose-ink: var(--color-rose-ink);
+  --lp-line: rgb(184 138 120 / 0.28);
+  --lp-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --lp-font: var(--font-assistant);
+  --lp-serif: var(--font-lux);
+}
+
+html:has(.lp-page) {
+  background: var(--lp-cream);
+}
+
+html:has(.theme-brutal) {
+  background: var(--color-burgundy-deep);
+}
+
+/* Ambient depth — soft orbs, grain, vignette (fixed to page shell). */
+.theme-brutal .brutal-ambient-backdrop {
+  background: var(--color-burgundy-deep);
+}
+
+.theme-brutal .brutal-ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(56px);
+  opacity: 0.88;
+  will-change: transform;
+  animation: brutal-ambient-drift 22s ease-in-out infinite;
+}
+
+.theme-brutal .brutal-ambient-orb--a {
+  top: -12%;
+  right: -8%;
+  width: min(88vw, 44rem);
+  height: min(88vw, 44rem);
+  background: radial-gradient(circle at 40% 40%, rgb(210 90 110 / 0.95), rgb(139 30 45 / 0.35) 45%, rgb(71 5 19 / 0) 72%);
+  animation-duration: 24s;
+}
+
+.theme-brutal .brutal-ambient-orb--b {
+  bottom: 4%;
+  left: -18%;
+  width: min(95vw, 48rem);
+  height: min(95vw, 48rem);
+  background: radial-gradient(circle at 55% 55%, rgb(217 195 165 / 0.55), rgb(184 138 120 / 0.2) 50%, rgb(71 5 19 / 0) 70%);
+  animation-delay: -9s;
+  animation-duration: 28s;
+}
+
+.theme-brutal .brutal-ambient-orb--c {
+  top: 38%;
+  left: 32%;
+  width: min(70vw, 34rem);
+  height: min(70vw, 34rem);
+  background: radial-gradient(circle, rgb(200 120 130 / 0.45), rgb(71 5 19 / 0) 68%);
+  animation-delay: -14s;
+  animation-duration: 20s;
+}
+
+.theme-brutal .brutal-ambient-sheen {
+  position: absolute;
+  inset: -40% -20%;
+  opacity: 0.16;
+  background: conic-gradient(
+    from 210deg at 50% 50%,
+    transparent 0deg,
+    rgb(217 195 165 / 0.9) 48deg,
+    transparent 96deg,
+    rgb(184 72 88 / 0.75) 160deg,
+    transparent 220deg,
+    rgb(217 195 165 / 0.5) 300deg,
+    transparent 360deg
+  );
+  animation: brutal-ambient-sheen-spin 120s linear infinite;
+}
+
+.theme-brutal .brutal-ambient-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.theme-brutal .brutal-ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 52%, rgb(25 2 8 / 0.65) 100%);
+  pointer-events: none;
+}
+
+@keyframes brutal-ambient-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(-4%, 5%, 0) scale(1.1);
+  }
+  66% {
+    transform: translate3d(3.5%, -3.5%, 0) scale(0.94);
+  }
+}
+
+@keyframes brutal-ambient-sheen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-brutal .brutal-ambient-orb,
+  .theme-brutal .brutal-ambient-sheen {
+    animation: none;
+  }
+}
+
+/* Brutal landing: Amatic SC for all semantic headings; body stays Heebo (font-sans). */
+.theme-brutal :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-amatic);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.theme-brutal #brutal-hero-title {
+  line-height: 1;
+  margin-block-start: 0;
+}
+
+/* Hero cutout — long soft mask only (no overlay band). */
+.theme-brutal .hero-cloud-cutout {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 38%, rgb(0 0 0 / 0.92) 58%, rgb(0 0 0 / 0.5) 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 38%, rgb(0 0 0 / 0.92) 58%, rgb(0 0 0 / 0.5) 78%, transparent 100%);
+}
+
+.theme-brutal .hero-section::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: clamp(5rem, 18vh, 10rem);
+  pointer-events: none;
+  background: linear-gradient(to top, var(--color-burgundy-deep) 0%, rgb(71 5 19 / 0.65) 42%, transparent 100%);
+}
+
+.theme-brutal #brutal-hero-title .hero-title-lead {
+  font-family: var(--font-assistant);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.theme-brutal #brutal-hero-title .hero-title-tail {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+/* Hero tail gradient + tall Amatic numerals (services, pillars). */
+.theme-brutal .brutal-hero-gradient-text {
+  background-image: linear-gradient(to left, var(--color-burgundy-light), var(--color-champagne), var(--color-rosegold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.theme-brutal .brutal-accent-numeral {
+  font-family: var(--font-amatic);
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: 0.04em;
+  transform: scaleY(1.12);
+  transform-origin: center;
+}
+
+@media (min-width: 640px) {
+  .theme-brutal #brutal-hero-title .hero-title-lead,
+  .theme-brutal #brutal-hero-title .hero-title-tail {
+    letter-spacing: -0.03em;
+  }
+}
+
+/* Pinned pillars: oversized cuts read better with tighter tracking than the default heading rule. */
+.theme-brutal .brutal-pillars :is(h2, h3) {
+  letter-spacing: -0.02em;
+}
+
+/* Mobile scrub: Amatic is too tall for small screens; keep editorial sans for readability. */
+.theme-brutal .brutal-pillars-mobile :is(h2, h3) {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.theme-brutal .work-portfolio-monitor {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 10px 22px rgb(0 0 0 / 0.45));
+}
+
+html:has(.theme-night) {
+  background: var(--color-night);
+  color-scheme: dark;
+}
+
+.lp-page {
+  min-height: 100svh;
+  background: var(--lp-cream);
+  color: var(--lp-ink);
+  font-family: var(--lp-font);
+  overflow-x: clip;
+}
+
+.lp-page .scroll-progress {
+  background: linear-gradient(270deg, var(--lp-champagne), var(--lp-wine));
+}
+
+.lp-container {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+/* Splash */
+.lp-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 50% at 50% 45%, rgb(84 18 30 / 0.9), transparent 70%),
+    var(--lp-wine-3);
+  color: var(--lp-cream);
+  transition:
+    opacity 0.65s var(--lp-ease),
+    visibility 0.65s;
+}
+
+.lp-splash.is-leaving {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.lp-splash-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.65s var(--lp-ease);
+}
+
+.lp-splash.is-leaving .lp-splash-inner {
+  transform: translateY(-14px);
+}
+
+.lp-splash-mark {
+  margin: 0;
+  padding-left: 0.34em;
+  font-family: var(--lp-serif);
+  font-weight: 600;
+  font-size: clamp(3.5rem, 11vw, 7rem);
+  letter-spacing: 0.34em;
+  line-height: 1;
+}
+
+.lp-splash-mark span {
+  display: inline-block;
+  animation: lp-letter 0.9s var(--lp-ease) both;
+}
+
+.lp-splash-sub {
+  margin: 0;
+  font-size: clamp(0.72rem, 2.2vw, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--lp-champagne);
+  animation: lp-fade 0.8s 0.35s var(--lp-ease) both;
+}
+
+.lp-splash-progress {
+  display: block;
+  width: 9rem;
+  height: 1px;
+  margin-top: 0.75rem;
+  background: rgb(217 195 165 / 0.22);
+  overflow: hidden;
+}
+
+.lp-splash-progress span {
+  display: block;
+  height: 100%;
+  background: var(--lp-champagne);
+  transform-origin: left;
+  animation: lp-progress 1.35s 0.1s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@keyframes lp-letter {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(6px);
+  }
+}
+
+@keyframes lp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes lp-progress {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Hero intro stagger; the splash sets --lp-intro-delay */
+.lp-intro {
+  animation: lp-rise 1.1s var(--lp-ease) both;
+  animation-delay: calc(var(--lp-intro-delay, 0.1s) + var(--i, 0) * 0.12s);
+}
+
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+}
+
+/* Shared section chrome for Method, Works and Philosophy */
+.lp-section {
+  position: relative;
+  padding: clamp(5rem, 10vw, 8rem) 0;
+}
+
+.lp-section + .lp-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(76rem, 90%);
+  height: 1px;
+  translate: -50% 0;
+  background: linear-gradient(90deg, transparent, var(--lp-line), transparent);
+}
+
+.lp-section-head {
+  max-width: 44rem;
+  margin: 0 auto clamp(3rem, 6vw, 4.5rem);
+  text-align: center;
+}
+
+.lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--lp-rose-ink);
+}
+
+.lp-eyebrow::before,
+.lp-eyebrow::after {
+  content: '';
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.lp-heading {
+  margin: 0;
+  font-family: var(--lp-font);
+  font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  color: var(--lp-wine);
+}
+
+.lp-lead {
+  margin: 1.1rem auto 0;
+  max-width: 36rem;
+  font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+  line-height: 1.7;
+  color: rgb(28 22 23 / 0.72);
+  text-wrap: balance;
+}
+
+/* Method, nail cards */
+.lp-method {
+  background: var(--lp-alabaster);
+}
+
+.lp-steps {
+  display: grid;
+  gap: 3rem;
+  margin: 0 auto;
+  padding: 1rem 0 0;
+  max-width: 64rem;
+  list-style: none;
+}
+
+.lp-step-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid rgb(184 138 120 / 0.3);
+  border-radius: 0.4rem;
+  background: var(--lp-ivory);
+  padding: 2.75rem 1.75rem 2.25rem;
+  text-align: center;
+  transform-origin: 50% 0%;
+  box-shadow: 0 18px 38px -24px rgb(37 7 13 / 0.35);
+}
+
+.lp-step .pin-card-nail {
+  position: absolute;
+  z-index: 3;
+  top: -0.8rem;
+  left: 50%;
+  width: 2.3rem;
+  height: auto;
+  transform: translateX(-50%);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgb(26 14 18 / 0.38));
+}
+
+.lp-step-number {
+  font-family: var(--lp-serif);
+  font-size: 2.6rem;
+  font-weight: 500;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+  color: var(--lp-rose);
+}
+
+.lp-step-title {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--lp-wine);
+}
+
+.lp-step-body {
+  margin: 0;
+  max-width: 20rem;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: rgb(28 22 23 / 0.8);
+}
+
+@media (min-width: 900px) {
+  .lp-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .lp-step-card {
+    min-height: 100%;
+  }
+}
+
+/* Works */
+.lp-works {
+  background: var(--lp-ivory);
+}
+
+.lp-works-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-work {
+  min-width: 0;
+}
+
+.lp-work:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc((100% - 1rem) / 2);
+}
+
+.lp-work-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  border: 1px solid var(--lp-line);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, var(--lp-alabaster), var(--lp-ivory));
+  padding: 1rem 0.75rem 0.85rem;
+  transition:
+    transform 0.6s var(--lp-ease),
+    box-shadow 0.6s var(--lp-ease),
+    border-color 0.6s ease;
+}
+
+.lp-work-media {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+
+.lp-work-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.8s var(--lp-ease);
+}
+
+.lp-work-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
+.lp-work-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+}
+
+.lp-work-tag {
+  border-radius: 999px;
+  background: rgb(62 13 21 / 0.07);
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-wine);
+}
+
+@media (hover: hover) {
+  .lp-work-card:hover {
+    transform: translateY(-8px);
+    border-color: rgb(184 138 120 / 0.55);
+    box-shadow: 0 40px 70px -42px rgb(37 7 13 / 0.45);
+  }
+
+  .lp-work-card:hover .lp-work-media img {
+    transform: scale(1.04);
+  }
+}
+
+@media (min-width: 900px) {
+  .lp-works-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+
+  .lp-work {
+    grid-column: span 2;
+  }
+
+  .lp-work:nth-child(4) {
+    grid-column: 2 / span 2;
+  }
+
+  .lp-work:last-child:nth-child(odd) {
+    grid-column: span 2;
+    justify-self: stretch;
+    width: auto;
+  }
+
+  .lp-work-card {
+    border-radius: 1.75rem;
+    padding: 2rem 1.75rem 1.5rem;
+  }
+
+  .lp-work-media img {
+    max-width: 17rem;
+  }
+
+  .lp-work-caption {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1.25rem;
+  }
+
+  .lp-work-title {
+    font-size: 1.1rem;
+  }
+
+  .lp-work-tag {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.85rem;
+  }
+}
+
+/* Philosophy */
+.lp-philosophy {
+  background:
+    radial-gradient(60% 70% at 50% 50%, var(--lp-ivory), transparent 75%),
+    var(--lp-alabaster);
+}
+
+.lp-philosophy-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.lp-philosophy-mark {
+  display: block;
+  height: 0.55em;
+  margin-top: 0.5rem;
+  font-family: var(--lp-serif);
+  font-size: clamp(6rem, 12vw, 9rem);
+  line-height: 1;
+  color: var(--lp-champagne);
+}
+
+.lp-philosophy-quote {
+  margin: 0;
+  max-width: 52rem;
+  font-size: clamp(1.6rem, 3.3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.45;
+  text-wrap: balance;
+  color: var(--lp-wine);
+}
+
+.lp-philosophy-sign {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2.25rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--lp-rose-ink);
+}
+
+.lp-philosophy-sign::before {
+  content: '';
+  width: 3rem;
+  height: 1px;
+  background: currentColor;
+}
+
+/* WebGL silk fallback for the burgundy contact section */
+.silk--burgundy .silk-fallback {
+  background:
+    radial-gradient(90% 70% at 15% 0%, rgb(84 18 30 / 0.9), transparent 60%),
+    radial-gradient(80% 60% at 90% 100%, rgb(37 7 13 / 0.9), transparent 65%),
+    var(--lp-wine);
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .lp-intro,
+  .lp-splash-mark span,
+  .lp-splash-sub,
+  .lp-splash-progress span {
+    animation: none;
+  }
+
+  .lp-work-card,
+  .lp-work-media img {
+    transition: none;
+  }
+}

@@ -14,7 +14,6 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { ArrowLeft } from 'lucide-react'
-import huluProfile from '@/assets/hulu-portrait-v2.png'
 import { SectionLuxuryBg } from '@/components/layout/SectionLuxuryBg'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { bindRevealTimeline, forceRevealVisible } from '@/lib/gsapReveal'
@@ -23,19 +22,19 @@ import { EASE, viewportOnce } from '@/lib/motion'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const headlineParts = ['אני לא מתחילה מעיצוב.', 'אני מתחילה מהעסק שלך.']
+const headlineParts = ['שורפתי ימים על שיחות שלא סוגרות.', 'עד שבניתי נכס שסוגר בשבילי.']
 
 const understandingLines = [
-  'מי את.',
-  'למי את פונה.',
-  'מה את רוצה לשדר.',
-  'ומה צריך לקרות כדי שהאתר באמת יעבוד עבורך.',
+  'רדפתי אחרי "אני אחשוב על זה".',
+  'חיממתי את כולן בשיחות של שעות.',
+  'ואז הבנתי: האתר צריך לעשות את הפסיכולוגיה.',
+  'ברגע שבניתי את הנוסחה — הלקוחות הגיעו מוכנות לסליקה.',
 ]
 
 const personalLines = [
-  'אני הולו, ואני חיה ונושמת עיצוב כל חיי.',
-  'אני מאמינה שאין דבר כזה "עוד סתם אתר" ושכל עסק מביא איתו סיפור ייחודי, ולכל סיפור מגיע במה שתעשה וואו אמיתי.',
-  'אני מתמחה בחיבור המדויק שבין עיצוב אסתטי עוצר נשימה, קופירייטינג שנוגע בנקודות הנכונות, ופיתוח טכנולוגי מתקדם.',
+  'הייתי שם: ימים שלמים על ייעוץ ומכירה מתישים.',
+  'הבנתי שהחימום וההחלטה חייבים לקרות בדף — לא בוואטסאפ.',
+  'מאז אני בונה בקוד ובמילים דפים שגורמים ללקוחות להגיע מוכנות לשלם.',
 ]
 
 function AboutPortrait({
@@ -150,12 +149,12 @@ function AboutPortrait({
             transition={{ duration: 1.1, ease: EASE }}
           >
             <img
-              src={huluProfile}
+              src="/images/hulu-editorial.jpg"
               alt="הולו, מעצבת אתרים"
               width={640}
               height={800}
               decoding="async"
-              className="about-image-float relative aspect-[4/5] w-full rotate-1 object-contain shadow-[0_20px_40px_-14px_rgb(90_14_35_/_0.22)]"
+              className="about-image-float relative aspect-[4/5] w-full rotate-1 object-cover object-[center_62%] shadow-[0_20px_40px_-14px_rgb(90_14_35_/_0.22)]"
             />
             <span className="about-scan-line" aria-hidden />
             {!reduced && (
@@ -314,7 +313,7 @@ export function About() {
 
           <div className="about-body text-center text-base leading-relaxed text-primary/85 md:text-lg lg:text-start dark:text-white/80">
             <p className="about-intro-line">
-              לפני שאני פותחת את תוכנת העיצוב, אני רוצה להבין את העסק שלך.
+              זה לא התחיל מעיצוב יפה. זה התחיל מתסכול אמיתי.
             </p>
 
             <ul className="about-understanding mt-4">
@@ -324,8 +323,8 @@ export function About() {
             </ul>
 
             <p className="about-belief mt-5">
-              כי אתר טוב לא מתחיל בצבעים.{' '}
-              <span className="text-burgundy">הוא מתחיל בהבנה.</span>
+              עכשיו אני בונה את אותו נכס —{' '}
+              <span className="text-burgundy">גם לכן.</span>
             </p>
           </div>
 
@@ -337,7 +336,7 @@ export function About() {
               aria-controls="about-personal-story"
               className="about-personal-toggle group"
             >
-              קצת עליי
+              הסיפור שלי
               <ArrowLeft
                 className={`size-3.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${showPersonal ? '-rotate-90' : 'group-hover:-translate-x-1'}`}
                 aria-hidden

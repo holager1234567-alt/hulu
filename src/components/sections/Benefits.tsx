@@ -18,14 +18,14 @@ import { cn } from '@/lib/utils'
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const headlineLines = [
-  { text: 'ראית איך זה יכול להיראות.', accent: false },
-  { text: 'עכשיו בואי נבנה את האתר של העסק שלך.', accent: true },
+  { text: 'כל יום בלי הדף הזה', accent: false },
+  { text: 'עולה לכן לקוחות.', accent: true },
 ] as const
 
 const readySignals = [
-  'יש לך עסק פעיל ולקוחות.',
-  'את רוצה שהאתר ירגיש כמו העסק שלך.',
-  'את מוכנה לעבור מהתעניינות לצעד הבא.',
+  'עוד שיחות ששואבות אנרגיה.',
+  'עוד "אני אחשוב על זה" שלא חוזר.',
+  'עוד לקוחה שהולכת למתחרה — כי לא היה איפה לשלם.',
 ] as const
 
 export function Benefits() {
@@ -133,10 +133,10 @@ export function Benefits() {
               variants={headlineStagger}
             >
               <motion.p className="bridge-subhead-line" variants={lineVariants}>
-                לא עוד אתר שנראה טוב.
+                הזמן לא מחכה. והלקוחות שלכן — גם לא.
               </motion.p>
               <motion.p className="bridge-subhead-line" variants={lineVariants}>
-                אתר שמרגיש כמו העסק שלך ועובד כמוך.
+                כמה עוד תשלמו על זה בזמן, באנרגיה ובכסף שלא נכנס?
               </motion.p>
             </motion.div>
           </header>
@@ -151,18 +151,18 @@ export function Benefits() {
                 variants={staggerContainer}
               >
                 <motion.h3 className="bridge-path-title" variants={staggerItem}>
-                  אם את עדיין בונה את העסק
+                  אם ממשיכות כמו עכשיו
                 </motion.h3>
                 <motion.p className="bridge-path-text" variants={staggerItem}>
-                  את עדיין בודקת מה עובד,
+                  וואטסאפ שלא נגמר,
                   <br />
-                  למי את פונה ומה בדיוק את מציעה.
+                  שיחות ששואבות — ולקוחות שבורחות.
                 </motion.p>
                 <motion.p
                   className="bridge-path-emphasis font-display"
                   variants={staggerItem}
                 >
-                  אולי עוד לא.
+                  זה עולה לכן כל יום.
                 </motion.p>
               </motion.article>
 
@@ -181,7 +181,7 @@ export function Benefits() {
                   className="bridge-path-title bridge-path-title--accent"
                   variants={lineVariants}
                 >
-                  אבל אם...
+                  המחיר של לחכות:
                 </motion.h3>
                 <ul className="bridge-ready-list">
                   {readySignals.map((signal) => (

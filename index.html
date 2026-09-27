@@ -6,21 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="הולו, אתרים ודפי נחיתה פרימיום לבעלות עסקים — נוכחות דיגיטלית שחוסכת זמן בשירות וממירה מתעניינות ללקוחות משלמות"
+      content="__SITE_DESCRIPTION__"
     />
-    <meta name="theme-color" content="#942839" />
-    <meta property="og:title" content="הולו אלמו | עיצוב ובניית אתרים" />
+    <meta name="theme-color" content="#161616" />
+    <meta property="og:title" content="__SITE_TITLE__" />
     <meta
       property="og:description"
-      content="הולו, אתרים ודפי נחיתה פרימיום לבעלות עסקים — נוכחות דיגיטלית שחוסכת זמן בשירות וממירה מתעניינות ללקוחות משלמות"
+      content="__SITE_DESCRIPTION__"
     />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="he_IL" />
     <style>
       #app-boot {
         min-height: 100svh;
-        background: #ffffff;
-        color: #121212;
+        background: #161616;
+        color: #faf7f2;
       }
 
       .app-boot-shell {
@@ -41,7 +41,7 @@
         height: 1.35rem;
         max-width: 18rem;
         border-radius: 999px;
-        background: rgb(17 17 17 / 0.08);
+        background: rgb(232 213 181 / 0.08);
         margin: 0 auto 0.85rem;
       }
 
@@ -73,16 +73,12 @@
         }
       }
     </style>
-    <link rel="preload" href="/fonts/Heebo-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
-    <link rel="preload" href="/fonts/Assistant-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
-    <link rel="preload" as="image" href="/images/portfolio/cohen-law-hero.png" fetchpriority="high" />
-    <title>הולו אלמו | עיצוב ובניית אתרים</title>
+    <link rel="preload" href="/fonts/heebo/Heebo-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/assistant/Assistant-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" as="image" href="/images/hulu-hero-cloud-cutout.png" fetchpriority="high" />
+    <title>__SITE_TITLE__</title>
     <script>
-      if (localStorage.getItem('hulu-theme') === 'dark') {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
+      document.documentElement.classList.remove('dark')
     </script>
   </head>
   <body>

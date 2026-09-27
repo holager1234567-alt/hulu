@@ -1,4 +1,4 @@
-import { WHATSAPP_FLOAT_MESSAGE, whatsAppUrl } from '@/lib/whatsapp'
+import { WHATSAPP_CTA_URL } from '@/lib/whatsapp'
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -16,13 +16,13 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function WhatsAppFloat() {
   return (
     <a
-      href={whatsAppUrl(WHATSAPP_FLOAT_MESSAGE)}
+      href={WHATSAPP_CTA_URL}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="שליחת הודעה בוואטסאפ"
-      className="whatsapp-float pointer-events-auto fixed z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25D366] max-md:bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] max-md:start-4 md:bottom-8 md:start-8 md:h-16 md:w-16"
+      className="whatsapp-float pointer-events-auto fixed z-40 flex h-11 w-11 items-center justify-center rounded-full border border-cream/25 bg-burgundy text-cream shadow-[0_8px_24px_-6px_rgb(71_5_19_/_0.65)] transition-[transform,background-color,box-shadow] hover:scale-105 hover:bg-burgundy-light hover:shadow-[0_12px_28px_-6px_rgb(71_5_19_/_0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream/50 max-md:bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] max-md:start-4 md:bottom-7 md:start-7 md:h-12 md:w-12"
     >
-      <WhatsAppIcon className="h-7 w-7 md:h-8 md:w-8" />
+      <WhatsAppIcon className="h-5 w-5 md:h-[1.35rem] md:w-[1.35rem]" />
     </a>
   )
 }

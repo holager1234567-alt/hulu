@@ -11,17 +11,18 @@ import { scheduleScrollTriggerRefresh } from '@/lib/scrollTriggerRefresh'
 import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 import { cn } from '@/lib/utils'
 
-import { WHATSAPP_FLOAT_MESSAGE, whatsAppUrl } from '@/lib/whatsapp'
+import { WHATSAPP_CTA_URL } from '@/lib/whatsapp'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const JOURNEY_FINALE_PRELINE = 'אני חושבת שאת יודעת....'
-const JOURNEY_FINALE_HEADLINE = 'שהגיע הזמן לתת לעסק שלך אתר שעובד.'
+const JOURNEY_FINALE_PRELINE = 'זה לא אתן.'
+const JOURNEY_FINALE_HEADLINE =
+  'הגיע הזמן שיהיה לכן נכס שעובד בשבילכן.'
 const JOURNEY_FINALE_BODY =
-  'עני על כמה שאלות קצרות, ואבין איפה העסק שלך נמצא היום ומה האתר שלך צריך כדי להתחיל לעבוד בשבילך.'
-const JOURNEY_FINALE_WHATSAPP_CTA = 'אפשר לדבר גם בווצאפ'
+  'במקום שאתן תעבדו מסביב לשעון בשבילו. ענו על כמה שאלות קצרות — ונתחיל לבנות את הדף שסוגר.'
+const JOURNEY_FINALE_WHATSAPP_CTA = 'אפשר גם בוואטסאפ'
 
-const HEADLINE_LINES = ['שהגיע הזמן', 'לתת לעסק שלך', 'אתר שעובד.'] as const
+const HEADLINE_LINES = ['הגיע הזמן שיהיה לכן', 'נכס שעובד בשבילכן.'] as const
 
 export function Contact() {
   const reduced = useReducedMotion()
@@ -163,7 +164,7 @@ export function Contact() {
               className="contact-journey-whatsapp h-9 rounded-full border border-primary/20 bg-white/60 px-5 text-xs font-medium text-primary hover:border-burgundy/35 hover:bg-white/85 hover:text-burgundy"
             >
               <a
-                href={whatsAppUrl(WHATSAPP_FLOAT_MESSAGE)}
+                href={WHATSAPP_CTA_URL}
                 target="_blank"
                 rel="noopener noreferrer"
               >

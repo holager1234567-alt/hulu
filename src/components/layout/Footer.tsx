@@ -1,75 +1,63 @@
-import { Link } from 'react-router-dom'
-import { Logo } from '@/components/layout/Logo'
+import { Link, useLocation } from 'react-router-dom'
 
-const quickLinks = [
-  { href: '#top', label: 'בית' },
-  { href: '#about', label: 'אודות' },
-  { href: '#process', label: 'תהליך' },
-  { href: '#work', label: 'פרויקטים' },
-  { href: '#contact', label: 'צור קשר' },
-]
+import { site } from '@/content/site'
+import { WhatsAppCta } from '@/components/ui/WhatsAppCta'
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
 
-type FooterProps = {
-  variant?: 'default' | 'finale'
-}
+const linkClass = 'text-cream/70 no-underline transition-colors duration-300 hover:text-champagne'
 
-export function Footer({ variant = 'default' }: FooterProps) {
-  const isFinale = variant === 'finale'
+export function Footer() {
+  const { pathname } = useLocation()
+  const prefix = pathname === '/' ? '' : '/'
 
   return (
-    <footer className={isFinale ? 'site-footer site-footer--finale relative' : 'relative'}>
-      <hr className={isFinale ? 'site-footer-divider site-footer-divider--soft' : 'tech-divider'} aria-hidden />
-      <div className={`container-site grid gap-10 md:grid-cols-2 ${isFinale ? 'py-12 md:py-14' : 'py-16'}`}>
-        <div>
-          <Logo className="h-10 w-auto min-w-[120px] md:h-12 md:min-w-[140px]" />
-          <p className="mt-3 max-w-xs text-sm text-muted dark:text-white/60">
-            אתרים מדויקים, יוקרתיים ואסטרטגיים לעסקים שרוצים נוכחות דיגיטלית
-            ברמה שלהם.
-          </p>
+    <footer className="bg-wine-deep font-assistant text-cream/70">
+      <div className="mx-auto grid w-full max-w-[76rem] gap-12 px-5 pt-16 pb-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr] md:gap-10">
+        <div className="flex flex-col items-start gap-4">
+          <a href={`${prefix}#top`} dir="ltr" className="font-lux text-[1.6rem] font-bold tracking-[0.32em] text-cream no-underline">
+            {site.chrome.wordmark}
+          </a>
+          <p className="m-0 max-w-[22rem] text-[0.98rem] leading-[1.7]">{site.legalFooter.blurb}</p>
+          <WhatsAppCta className="mt-1 inline-flex items-center gap-2.5 rounded-full border border-champagne/25 px-4 py-2 text-[0.95rem] font-bold text-cream no-underline transition-colors hover:border-champagne/60 hover:text-champagne [&_svg]:size-4">
+            <WhatsAppIcon />
+            <span dir="ltr">{site.legalFooter.phone}</span>
+          </WhatsAppCta>
         </div>
-        <div>
-          <p className="mb-4 text-sm font-semibold text-primary dark:text-white">
-            ניווט
-          </p>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-2 sm:max-w-xs">
-            {quickLinks.map((link) => (
+
+        <nav aria-label={site.legalFooter.navAria}>
+          <p className="m-0 mb-4 text-sm font-extrabold tracking-wide text-champagne">{site.legalFooter.navLabel}</p>
+          <ul className="m-0 grid list-none gap-2.5 p-0 text-[0.98rem] font-semibold">
+            {site.legalFooter.links.map((link) => (
               <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="text-sm text-muted transition-colors hover:text-burgundy dark:text-white/60 dark:hover:text-gold"
-                >
+                <a href={`${prefix}${link.href}`} className={linkClass}>
                   {link.label}
                 </a>
               </li>
             ))}
           </ul>
+        </nav>
+
+        <div>
+          <p className="m-0 mb-4 text-sm font-extrabold tracking-wide text-champagne">{site.legalFooter.infoLabel}</p>
+          <ul className="m-0 grid list-none gap-2.5 p-0 text-[0.98rem] font-semibold">
+            <li>
+              <Link to="/privacy-policy" className={linkClass}>
+                {site.footer.privacy}
+              </Link>
+            </li>
+            <li>
+              <Link to="/accessibility" className={linkClass}>
+                {site.footer.accessibility}
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <div className="border-t border-neutral-100 dark:border-white/5">
-        <div className="container-site flex flex-col items-center gap-3 py-6 text-center">
-          <p className="text-xs text-muted dark:text-white/40">
-            © {new Date().getFullYear()} הולו. כל הזכויות שמורות.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            <Link
-              to="/privacy-policy"
-              className="text-sm text-muted hover:underline dark:text-white/40"
-            >
-              מדיניות פרטיות
-            </Link>
-          </div>
-          <p className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted/90 dark:text-white/35">
-            <span>אתר זה נבנה על ידי</span>
-            <a
-              href="#about"
-              aria-label="אודות הולו"
-              className="inline-flex rounded-sm opacity-75 transition-opacity duration-300 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40"
-            >
-              <Logo className="h-4 w-auto md:h-[1.125rem]" />
-            </a>
-          </p>
-        </div>
+      <div className="border-t border-champagne/15">
+        <p className="mx-auto m-0 w-full max-w-[76rem] px-5 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] text-center text-[0.82rem] text-cream/45 sm:px-8 sm:text-start">
+          {site.legalFooter.rights(new Date().getFullYear())}
+        </p>
       </div>
     </footer>
   )

@@ -1,27 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Menu, X } from 'lucide-react'
-import { LeadPopupTrigger } from '@/components/forms/LeadPopup'
-import { Button } from '@/components/ui/button'
-import { Logo } from '@/components/layout/Logo'
+import { ArrowLeft, Menu, X } from 'lucide-react'
+
+import { buttonVariants } from '@/components/ui/button'
+import { WhatsAppCta } from '@/components/ui/WhatsAppCta'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useHeaderScrollState } from '@/hooks/useHeaderScrollState'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import { useTheme } from '@/hooks/useTheme'
+import { site } from '@/content/site'
 import { cn } from '@/lib/utils'
-import { LEAD_FLOW_CTA_LABEL } from '@/lib/waveForms'
 
-const links = [
-  { href: '#about', label: 'אודות' },
-  { href: '#process', label: 'תהליך' },
-  { href: '#work', label: 'פרויקטים' },
-  { href: '#contact', label: 'צור קשר' },
-]
+export const NAV_LINKS = site.legalFooter.links
 
 export function Header() {
   const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
-  const { scrolled, visible } = useHeaderScrollState()
-  const { toggle, Icon } = useTheme()
+  const { visible } = useHeaderScrollState()
 
   useBodyScrollLock(isMobile && open)
 
@@ -32,31 +25,26 @@ export function Header() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 px-3 pt-2 transition-transform duration-300 md:px-6 md:pt-4',
-        !visible && '-translate-y-[calc(100%+1rem)] pointer-events-none',
+        'fixed inset-x-0 top-0 z-50 border-b border-champagne/40 bg-cream/80 font-assistant backdrop-blur-xl transition-transform duration-500 ease-luxury',
+        !visible && 'pointer-events-none -translate-y-full',
       )}
     >
-      <div
-        className={cn(
-          'container-site relative flex h-11 items-center justify-between rounded-lg border transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] header-glass md:h-16',
-          scrolled
-            ? 'header-scrolled-line border-black/8 bg-white/88 shadow-soft dark:border-white/12 dark:bg-black/72'
-            : 'border-transparent bg-white/45 dark:bg-black/35',
-        )}
-      >
+      <div className="mx-auto flex h-[4.5rem] max-w-[76rem] items-center justify-between gap-4 px-5 sm:px-8">
         <a
           href="#top"
-          className="logo-hover flex shrink-0 items-center text-primary dark:text-white"
+          dir="ltr"
+          aria-label={site.chrome.home}
+          className="font-lux text-[1.35rem] font-bold tracking-[0.32em] text-wine no-underline"
         >
-          <Logo className="h-8 w-auto min-w-[96px] md:h-14 md:min-w-[160px]" />
+          {site.chrome.wordmark}
         </a>
 
-        <nav className="hidden items-center gap-8 lg:flex">
-          {links.map((link) => (
+        <nav className="hidden items-center gap-8 lg:flex" aria-label={site.chrome.mainNav}>
+          {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="nav-link-underline text-sm text-muted transition-colors duration-300 hover:text-burgundy dark:text-white/70 dark:hover:text-white"
+              className="relative text-[0.98rem] font-semibold text-espresso/75 no-underline transition-colors after:absolute after:inset-x-0 after:-bottom-1.5 after:h-px after:origin-center after:scale-x-0 after:bg-wine after:transition-transform after:duration-500 after:ease-luxury hover:text-wine hover:after:scale-x-100"
             >
               {link.label}
             </a>
@@ -64,52 +52,36 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggle}
-            aria-label="החלפת מצב תצוגה"
-            className="hidden sm:inline-flex"
-          >
-            <Icon className="h-4 w-4" strokeWidth={1.5} />
-          </Button>
-          <Button asChild variant="burgundy" size="sm" className="hidden rounded-full sm:inline-flex">
-            <LeadPopupTrigger>{LEAD_FLOW_CTA_LABEL}</LeadPopupTrigger>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
+          <WhatsAppCta className={cn(buttonVariants({ size: 'sm' }), 'px-5')}>{site.header.talk}</WhatsAppCta>
+          <button
+            type="button"
             onClick={() => setOpen((value) => !value)}
-            aria-label="תפריט"
+            aria-label={open ? site.chrome.closeMenu : site.chrome.openMenu}
+            aria-expanded={open}
+            className="inline-grid size-10 place-items-center rounded-full border border-rosegold/30 text-wine transition-colors hover:bg-wine/5 lg:hidden [&_svg]:size-5"
           >
-            {open ? (
-              <X className="h-5 w-5" strokeWidth={1.5} />
-            ) : (
-              <Menu className="h-5 w-5" strokeWidth={1.5} />
-            )}
-          </Button>
+            {open ? <X strokeWidth={1.5} /> : <Menu strokeWidth={1.5} />}
+          </button>
         </div>
       </div>
 
       {open ? (
-        <div className="container-site mt-2 rounded-lg border border-black/5 bg-white/90 p-4 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-black/80 lg:hidden">
-          <nav className="flex flex-col gap-3">
-            {links.map((link) => (
+        <div className="mx-4 mb-4 rounded-3xl border border-rosegold/30 bg-ivory p-3 shadow-[0_24px_48px_-28px_rgb(37_7_13/0.35)] lg:hidden">
+          <nav className="flex flex-col gap-0.5" aria-label={site.chrome.mobileNav}>
+            {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-md px-3 py-2 text-sm text-primary hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+                className="rounded-xl px-4 py-3 text-[1.05rem] font-semibold text-wine no-underline hover:bg-alabaster"
               >
                 {link.label}
               </a>
             ))}
-            <Button asChild variant="burgundy" className="mt-2">
-              <LeadPopupTrigger onClick={() => setOpen(false)}>
-                {LEAD_FLOW_CTA_LABEL}
-              </LeadPopupTrigger>
-            </Button>
+            <WhatsAppCta className={cn(buttonVariants(), 'mt-2 w-full')} onClick={() => setOpen(false)}>
+              {site.header.demo}
+              <ArrowLeft aria-hidden />
+            </WhatsAppCta>
           </nav>
         </div>
       ) : null}

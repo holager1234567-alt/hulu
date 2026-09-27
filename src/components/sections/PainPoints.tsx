@@ -14,17 +14,17 @@ import { cn } from '@/lib/utils'
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const REGULAR_POINTS = [
-  'עיצוב גנרי שנראה בדיוק כמו כל המתחרות שלך',
-  'עומס טקסטים שמבלבל את הגולשת וגורם לה לנטוש',
-  'חוסר מיקוד שמקשה להבין מה את באמת מציעה',
-  'אין מסלול ברור שמוביל את הגולשת ליצירת קשר',
+  'שיחות מכירה של שעות על אותן שאלות שוב ושוב',
+  'וואטסאפ שלא נגמר — בלי שהלקוחה באמת מוכנה לשלם',
+  'לקוחות נעלמות עם האשראי ביד, כי אין איפה לסגור',
+  'אתן עובדות מסביב לשעון — בלי נכס שעובד בשבילכן',
 ] as const
 
 const PREMIUM_POINTS = [
-  'נראות יוקרתית שמבססת סמכות ומצדיקה מחירים גבוהים',
-  'מסר מדויק שנוגע ישירות בצורך של קהל היעד',
-  'חוויית משתמש חלקה שמניעה לפעולה בביטחון',
-  'מנגנון לקביעת פגישות ואיסוף לידים מסביב לשעון',
+  'מקצר 80% משיחות המכירה המתישות',
+  'הופך מתעניינות למשלמות — על אוטומט',
+  'עיצוב בורדו יוקרתי + אנימציות שמחזיקות תשומת לב',
+  'רק 10 דקות מהזמן שלכן — והדף סוגר בשבילכן',
 ] as const
 
 function ComparePoint({
@@ -353,19 +353,19 @@ export function PainPoints() {
           <h2
             id="compare-heading"
             className="compare-headline"
-            aria-label="להפוך לקוחה מתעניינת ללקוחה משלמת"
+            aria-label="זה לא אתן. זה שאין לכן נכס שסוגר."
           >
             <span className="compare-headline-line">
-              <span className="compare-headline-inner">להפוך לקוחה מתעניינת</span>
+              <span className="compare-headline-inner">זה לא אתן.</span>
             </span>
             <span className="compare-headline-line">
-              <span className="compare-headline-inner compare-headline-accent">ללקוחה משלמת</span>
+              <span className="compare-headline-inner compare-headline-accent">זה שאין לכן נכס שסוגר.</span>
             </span>
             <span className="compare-headline-accent-line" aria-hidden />
           </h2>
 
           <p className="compare-subheadline">
-            ההבדל בין דף נחיתה סטנדרטי שלא מייצר תוצאות לבין דף נחיתה שמביא עבודה אמיתית
+            השירות שלכן מעולה. אתן יודעות למכור. פשוט חסר לכן דף שמסנן, מחמם וסוגר — עוד לפני שהצ׳אט נפתח.
           </p>
           <hr className="compare-header-rule" aria-hidden />
         </header>
@@ -382,7 +382,7 @@ export function PainPoints() {
                 <span className="compare-card-topline compare-card-topline--muted" aria-hidden />
                 <div className="compare-card-head compare-card-head--centered">
                   <p className="compare-card-eyebrow font-mono-tech">BEFORE</p>
-                  <h3 className="compare-card-title">דף נחיתה תבניתי סטנדרטי</h3>
+                  <h3 className="compare-card-title">בלי נכס דיגיטלי שסוגר</h3>
                 </div>
                 <ul className="compare-point-list">
                   {REGULAR_POINTS.map((point, index) => (
@@ -407,14 +407,14 @@ export function PainPoints() {
                 <span className="compare-card-topline compare-card-topline--accent" aria-hidden />
                 <span className="compare-card-badge">
                   <Sparkles className="compare-card-badge-icon" aria-hidden />
-                  הסטנדרט החדש שלך
+                  הפתרון שלכן
                 </span>
                 <div className="compare-card-head compare-card-head--centered">
                   <p className="compare-card-eyebrow compare-card-eyebrow--premium font-mono-tech">
                     AFTER
                   </p>
                   <h3 className="compare-card-title compare-card-title--premium">
-                    דף נחיתה פרימיום שנבנה ביחד
+                    דף / אתר שסוגר בשבילכן
                   </h3>
                 </div>
                 <ul className="compare-point-list">

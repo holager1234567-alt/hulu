@@ -1,13 +1,17 @@
 import { useEffect } from 'react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotionPreference } from '@/hooks/useReducedMotionPreference'
+import { scrollToElement } from '@/lib/smoothScroll'
 
 export function useSmoothAnchorScroll(enabled = true) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useReducedMotionPreference()
 
   useEffect(() => {
     if (!enabled || reducedMotion) return
 
     const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
       const anchor = (event.target as Element | null)?.closest('a[href^="#"]')
       if (!(anchor instanceof HTMLAnchorElement)) return
 
@@ -18,10 +22,8 @@ export function useSmoothAnchorScroll(enabled = true) {
       if (!(target instanceof HTMLElement)) return
 
       event.preventDefault()
-
-      // `gsap-scroll-active` keeps html scroll-behavior auto so ScrollTrigger's own
-      // scroll writes stay instant, but user-initiated jumps should still glide.
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      const margin = Number.parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0
+      scrollToElement(target, -margin)
       window.history.pushState(null, '', hash)
     }
 

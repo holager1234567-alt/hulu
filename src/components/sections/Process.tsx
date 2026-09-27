@@ -15,23 +15,22 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const steps = [
   {
-    title: 'שיחת אסטרטגיה בזום',
-    text: '45 דקות שבהן מבינים את העסק, הקהל והיעדים — ומגדירים מה האתר צריך להשיג.',
+    title: 'איפיון ממוקד ב־10 דקות',
+    text: 'בלי תהליכים אינסופיים — רק מה שסוגר עסקאות: קהל, הצעה ומסר חד.',
   },
   {
-    title: 'עיצוב ופיתוח מותאם',
-    text: 'עיצוב פרימיום, סבבי תיקונים מובנים ומסירה מקצועית — עד שהאתר מרגיש בדיוק כמו העסק שלך.',
+    title: 'עיצוב יוקרתי + פיתוח ב־Cursor',
+    text: 'בורדו עמוק, טיפוגרפיה חדה, קוד נקי ואנימציות ממגנטות שמחזיקות תשומת לב.',
   },
   {
-    title: 'עליה לאוויר ואינטגרציות',
-    text: 'השקה, חיבור לקביעת פגישות, איסוף לידים וכל מה שצריך כדי שהאתר יתחיל לעבוד בשבילך.',
+    title: 'טקסט להמרה + חיבור לסליקה',
+    text: 'מילים שעובדות על הרגש, וחיבור לאוטומציה/סליקה — כדי שהמתעניינת תהפוך למשלמת.',
   },
 ] as const
 
 const headlineLines = [
-  { text: 'תהליך פרימיום', accent: false },
-  { text: 'בשלושה שלבים', accent: false },
-  { text: 'ברורים.', accent: true },
+  { text: 'מה בדיוק', accent: false },
+  { text: 'אתן מקבלות.', accent: true },
 ]
 
 export function Process() {
@@ -279,21 +278,19 @@ export function Process() {
               </h2>
 
               <p className="process-lead mt-5 max-w-md text-base leading-relaxed text-muted md:mt-6 md:text-lg dark:text-white/65">
-                מותאם לבעלות עסקים שרוצות נוכחות דיגיטלית שחוסכת זמן בשירות
-                וממירה מתעניינות ללקוחות משלמות.
+                הכל מכוון למטרה אחת: פחות שיחות מתישות. יותר לקוחות שסוגרות לבד.
               </p>
             </div>
 
             <aside className="process-diff process-diff--lux">
               <span className="process-diff-glow" aria-hidden />
               <p className="process-diff-lead font-display text-lg font-semibold leading-snug text-burgundy md:text-xl">
-                אני לא מתחילה מהמסך.
+                אתן משקיעות 10 דקות.
                 <br />
-                אני מתחילה מהעסק.
+                הדף עושה את השאר.
               </p>
               <p className="process-diff-note mt-3 max-w-xs text-sm leading-relaxed text-muted dark:text-white/50">
-                לפני העיצוב, אני מבינה מה צריך לקרות באתר כדי שהלקוחה הנכונה תרגיש
-                שהיא הגיעה למקום הנכון.
+                איפיון חד, עיצוב שמעביר סמכות, וטקסט שמוביל ישר לסגירה.
               </p>
             </aside>
           </header>
@@ -370,7 +367,7 @@ export function Process() {
           <span className="process-closing-glow" aria-hidden />
           <p className="process-closing-text font-display font-bold leading-tight text-burgundy">
             <span className="block">ומכאן</span>
-            <span className="block">האתר מתחיל לעבוד בשבילך.</span>
+            <span className="block">הדף עובד בשבילכן.</span>
           </p>
           <LeadPopupTrigger className="process-closing-link group">
             <span>{LEAD_FLOW_CTA_LABEL}</span>

@@ -83,7 +83,7 @@ const projects: Project[] = [
   },
 ]
 
-const headlineLines = ['אתרים שנבנו סביב המותג.']
+const headlineLines = ['נכנסות לדף.', 'מרגישות מותג מוביל.']
 
 function BrowserMockup({
   src,
@@ -410,7 +410,7 @@ export function Portfolio() {
           </h2>
 
           <p className="portfolio-subhead mt-5 text-base leading-relaxed text-muted dark:text-white/65 md:text-lg">
-            כל פרויקט נבנה סביב העסק שמאחוריו, כדי להרגיש מדויק, ייחודי ונכון לקהל שלו.
+            בורדו עמוק. אנימציות חדות. קוד מדויק ב־Cursor — סמכות בשנייה הראשונה.
           </p>
 
           <hr className="tech-divider portfolio-header-divider mx-auto mt-6 max-w-xs origin-center md:mt-8 md:max-w-sm" />
@@ -428,7 +428,7 @@ export function Portfolio() {
             <hr className="tech-divider mb-6" aria-hidden />
 
             <p className="text-sm leading-relaxed text-primary md:text-base dark:text-white/85">
-              כאן תראו איך עסקים שונים קיבלו אתר שמתאים לשפה, לקהל ולרמה שלהם.
+              ככה נראית סמכות על המסך — וכך לקוחות מרגישות שהן הגיעו למותג מוביל.
             </p>
 
             <div className="portfolio-cta-btn-wrap mt-8 flex w-full justify-center">
